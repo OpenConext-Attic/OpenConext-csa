@@ -12,7 +12,7 @@ target
 *rebel.xml
 testfiles
 .DS_Store
-coin-selfservice-war/src/test/resources/coin-selfservice.properties.backup
-coin-selfservice-war/src/main/webapp/css/screen.css
+csa-war/src/test/resources/coin-selfservice.properties.backup
+csa-war/src/main/webapp/css/screen.css
 ConvenientLocalTestJson.java
 style_dashboard_acc.css

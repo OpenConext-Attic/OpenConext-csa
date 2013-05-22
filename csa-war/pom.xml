@@ -1,0 +1,636 @@
+<!--
+  ~ Copyright 2013 SURFnet bv, The Netherlands
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.surfnet.coin</groupId>
+    <artifactId>csa-parent</artifactId>
+    <version>3.4.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.surfnet.coin</groupId>
+  <artifactId>csa-war</artifactId>
+  <packaging>war</packaging>
+  <name>OpenConext : Cloud Services API WAR</name>
+
+  <repositories>
+    <repository>
+      <id>rubygems-releases</id>
+      <url>http://rubygems-proxy.torquebox.org/releases</url>
+    </repository>
+  </repositories>
+
+  <properties>
+    <coin-shared.version>3.1.0</coin-shared.version>
+    <coin-test.version>3.1.0</coin-test.version>
+    <coin-master.test-dependencies.version>3.1.1</coin-master.test-dependencies.version>
+    <coin-api.version>2.15.0</coin-api.version>
+    <spring-security-opensaml.version>3.2.0</spring-security-opensaml.version>
+    <flyway.version>1.5</flyway.version>
+    <jackson.version>1.9.5</jackson.version>
+    <xstream.version>1.4.2</xstream.version>
+    <bonecp.version>0.7.1.RELEASE</bonecp.version>
+    <mujina-idp.version>2.15.1</mujina-idp.version>
+    <dumbster.version>1.6</dumbster.version>
+    <!--<selenium.version>2.25.0</selenium.version>-->
+    <selenium.version>2.32.0</selenium.version>
+    <freemarker.version>[2.3.19,2.4)</freemarker.version>
+    <api-secure.version>1.1.1-SNAPSHOT</api-secure.version>
+    <selenium.test.url>http://localhost:8280/selfservice/</selenium.test.url>
+    <jetty.port>8280</jetty.port>
+
+
+    
+    <!-- default webdriver for selenium tests. To be overridden on a per 
+      profile base -->
+    <selenium.webdriver>firefox</selenium.webdriver>
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>nl.surfnet.apis</groupId>
+      <artifactId>apis-resource-server-library</artifactId>
+      <version>${api-secure.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>nl.surfnet.apis</groupId>
+      <artifactId>apis-surfconext-authn</artifactId>
+      <version>${api-secure.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.lambdaj</groupId>
+      <artifactId>lambdaj</artifactId>
+      <version>2.3.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.imgscalr</groupId>
+      <artifactId>imgscalr-lib</artifactId>
+      <version>4.2</version>
+    </dependency>
+    <!-- Check the available versions using 
+    http://rubygems-proxy.torquebox.org/releases/rubygems/compass/maven-metadata.xml -->
+    <dependency>
+      <groupId>rubygems</groupId>
+      <artifactId>compass</artifactId>
+      <version>0.12.2</version>
+      <type>gem</type>
+    </dependency>
+    <dependency>
+      <groupId>org.surfnet.coin</groupId>
+      <artifactId>coin-shared</artifactId>
+      <version>${coin-shared.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-config</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-taglibs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.surfnet.coin</groupId>
+      <artifactId>spring-security-opensaml</artifactId>
+      <version>${spring-security-opensaml.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xercesImpl</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>${hsqldb.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.googlecode.flyway</groupId>
+      <artifactId>flyway-core</artifactId>
+      <version>${flyway.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.thoughtworks.xstream</groupId>
+      <artifactId>xstream</artifactId>
+      <version>${xstream.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.surfnet.coin</groupId>
+      <artifactId>coin-api-serviceregistry-client</artifactId>
+      <version>${coin-api.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.surfnet.coin</groupId>
+      <artifactId>coin-api-client</artifactId>
+      <version>${coin-api.version}</version>
+    </dependency>
+
+    <!-- test local -->
+    <dependency>
+      <groupId>org.surfnet.coin</groupId>
+      <artifactId>coin-test</artifactId>
+      <version>${coin-test.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.surfnet.coin</groupId>
+      <artifactId>coin-master-test-dependencies</artifactId>
+      <version>${coin-master.test-dependencies.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>hsqldb</groupId>
+          <artifactId>hsqldb</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.stax-utils</groupId>
+      <artifactId>stax-utils</artifactId>
+      <version>20060502</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.bea.xml</groupId>
+          <artifactId>jsr173-ri</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache-core</artifactId>
+      <version>2.5.1</version>
+
+    </dependency>
+
+    <dependency>
+      <groupId>org.swift.common</groupId>
+      <artifactId>jira-soap</artifactId>
+      <version>5.0.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>11.0.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>1.3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.2.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>4.2.0.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib-nodep</artifactId>
+      <version>2.2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jolbox</groupId>
+      <artifactId>bonecp</artifactId>
+      <version>${bonecp.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.2.1</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.2.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+      <version>1.5.9</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Begin Selenium -->
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-firefox-driver</artifactId>
+      <version>${selenium.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-support</artifactId>
+      <version>${selenium.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-htmlunit-driver</artifactId>
+      <version>${selenium.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.icegreen</groupId>
+      <artifactId>greenmail</artifactId>
+      <version>1.3.1b</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>dumbster</groupId>
+      <artifactId>dumbster</artifactId>
+      <version>${dumbster.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- End Selenium -->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.20</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>${freemarker.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>nl.iprofs.modules.context-logging</groupId>
+      <artifactId>context-logging</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.surfnet.coin</groupId>
+      <artifactId>sab-client</artifactId>
+      <version>3.3.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.googlecode.flyway</groupId>
+        <artifactId>flyway-maven-plugin</artifactId>
+        <version>1.6.1</version>
+        <configuration>
+          <user>foo</user>
+          <password>bar</password>
+          <url>jdbc:hsqldb:mem:coin</url>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <configuration>
+          <contextHandlers>
+            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
+              <contextPath>/mujina-idp</contextPath>
+              <war>${settings.localRepository}/org/surfnet/coin/mujina-idp/${mujina-idp.version}/mujina-idp-${mujina-idp.version}.war</war>
+              <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
+            </contextHandler>
+          </contextHandlers>
+          <webAppConfig>
+            <contextPath>/selfservice</contextPath>
+            <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
+            <defaultsDescriptor>${basedir}/src/test/resources/jettywebdefault.xml</defaultsDescriptor>
+          </webAppConfig>
+          <contextXml>${basedir}/src/test/resources/jetty-context.xml</contextXml>
+          <connectors>
+            <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+              <port>8280</port>
+              <host>0.0.0.0</host>
+            </connector>
+          </connectors>
+          <stopKey>stopselfservice</stopKey>
+          <stopPort>9280</stopPort>
+          <reload>manual</reload>
+          <useTestClasspath>true</useTestClasspath>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.surfnet.coin</groupId>
+            <artifactId>coin-master-test-dependencies</artifactId>
+            <version>${coin-master.test-dependencies.version}</version>
+            <type>pom</type>
+          </dependency>
+          <dependency>
+            <groupId>org.surfnet.coin</groupId>
+            <artifactId>mujina-idp</artifactId>
+            <type>war</type>
+            <version>${mujina-idp.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>${maven.plugin.eclipse.version}</version>
+        <configuration>
+          <ajdtVersion>none</ajdtVersion>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>css-javascript-minifier</id>
+      <activation>
+        <!--<activeByDefault>true</activeByDefault>-->
+        <property>
+          <name>!skipCssJs</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>de.saumya.mojo</groupId>
+            <artifactId>gem-maven-plugin</artifactId>
+            <version>0.28.6</version>
+            <extensions>true</extensions>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+
+                <phase>generate-resources</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <execArgs>${project.build.directory}/rubygems/bin/compass
+                compile ${basedir}/src/main/webapp
+                ${basedir}/src/main/webapp/sass/screen.sass</execArgs>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>com.samaxes.maven</groupId>
+            <artifactId>maven-minify-plugin</artifactId>
+            <version>1.3.5</version>
+            <executions>
+              <execution>
+                <phase>process-resources</phase>
+                <configuration>
+                  <cssSourceDir>css</cssSourceDir>
+                  <cssSourceIncludes>
+                    <cssSourceInclude>*.css</cssSourceInclude>
+                  </cssSourceIncludes>
+                  <cssFinalFile>style.css</cssFinalFile>
+
+                  <jsSourceDir>js</jsSourceDir>
+                  <jsSourceFiles>
+                    <!-- All javascript files are setup explicitly here, to conserve
+                      their order in the minified version. -->
+                    <jsSourceFile>jquery/jquery-1.8.3.min.js</jsSourceFile>
+                    <jsSourceFile>bootstrap/bootstrap-2.0.3.min.js</jsSourceFile>
+                    <jsSourceFile>bootstrap/bootstrap-tooltip.js</jsSourceFile>
+                    <jsSourceFile>bootstrap/bootstrap-popover.js</jsSourceFile>
+                    <jsSourceFile>bootstrap/bootstrap-transition.js</jsSourceFile>
+                    <jsSourceFile>bootstrap/bootbox.min.js</jsSourceFile>
+
+                    <jsSourceFile>jquery/jquery.datatables.1.9.4.min.js</jsSourceFile>
+                    <jsSourceFile>jquery/jquery.datatables.columnfilter.1.4.7.js</jsSourceFile>
+                    <jsSourceFile>jquery/jquery.ui.widget.js</jsSourceFile>
+                    <jsSourceFile>jquery/jquery.fileupload.js</jsSourceFile>
+                    <jsSourceFile>jquery/jquery.iframe-transport.js</jsSourceFile>
+                    <jsSourceFile>jquery/select2.js</jsSourceFile>
+                    <jsSourceFile>jquery/jquery.transit.js</jsSourceFile>
+                    <jsSourceFile>jquery/jquery.tickback.min.js</jsSourceFile>
+
+                    <jsSourceFile>main.js</jsSourceFile>
+
+                    <jsSourceFile>modules/app-grid.js</jsSourceFile>
+                    <jsSourceFile>modules/gallery.js</jsSourceFile>
+                    <jsSourceFile>modules/global.js</jsSourceFile>
+                    <jsSourceFile>modules/message.js</jsSourceFile>
+                    <jsSourceFile>modules/graphs.js</jsSourceFile>
+                    <jsSourceFile>modules/idp-status.js</jsSourceFile>
+                    <jsSourceFile>modules/respond.js</jsSourceFile>
+                    <jsSourceFile>modules/table.js</jsSourceFile>
+                    <jsSourceFile>modules/compound-sp-edit.js</jsSourceFile>
+                    <jsSourceFile>modules/notifications.js</jsSourceFile>
+                    <jsSourceFile>modules/app-detail.js</jsSourceFile>
+                    <jsSourceFile>modules/shop-admin.js</jsSourceFile>
+                    <jsSourceFile>modules/sp-services.js</jsSourceFile>
+                    <jsSourceFile>modules/taxonomy.js</jsSourceFile>
+                    <jsSourceFile>modules/csp-taxonomy.js</jsSourceFile>
+
+                    <jsSourceFile>tools/html5shiv.js</jsSourceFile>
+                    <jsSourceFile>tools/ios-orientationchange-fix.js</jsSourceFile>
+                    <jsSourceFile>tools/sizewatcher.js</jsSourceFile>
+
+                  </jsSourceFiles>
+                  <jsFinalFile>script.js</jsFinalFile>
+                </configuration>
+                <goals>
+                  <goal>minify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>selenium</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>2.12</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+                <configuration>
+                  <excludes>
+                    <exclude>none</exclude>
+                  </excludes>
+                  <includes>
+                    <include>**/*TestSelenium.java</include>
+                    <include>**/*TestIntegration.java</include>
+                  </includes>
+                  <systemProperties>
+                    <property>
+                      <name>selenium.test.url</name>
+                      <value>${selenium.test.url}</value>
+                    </property>
+                    <property>
+                      <name>selenium.webdriver</name>
+                      <value>${selenium.webdriver}</value>
+                    </property>
+                  </systemProperties>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty-maven-plugin</artifactId>
+            <version>${jetty.version}</version>
+            <configuration>
+              <scanIntervalSeconds>0</scanIntervalSeconds>
+              <contextHandlers>
+                <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
+                  <contextPath>/mujina-idp</contextPath>
+                  <war>${settings.localRepository}/org/surfnet/coin/mujina-idp/${mujina-idp.version}/mujina-idp-${mujina-idp.version}.war</war>
+                  <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
+                </contextHandler>
+              </contextHandlers>
+              <webAppConfig>
+                <contextPath>/selfservice</contextPath>
+                <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
+                <defaultsDescriptor>${basedir}/src/test/resources/jettywebdefault.xml</defaultsDescriptor>
+              </webAppConfig>
+              <contextXml>${basedir}/src/test/resources/jetty-context.xml</contextXml>
+              <connectors>
+                <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                  <port>${jetty.port}</port>
+                  <host>0.0.0.0</host>
+                </connector>
+              </connectors>
+              <daemon>true</daemon>
+              <scanIntervalSeconds>0</scanIntervalSeconds>
+              <stopKey>stopselfservice</stopKey>
+              <stopPort>9280</stopPort>
+              <useTestClasspath>true</useTestClasspath>
+            </configuration>
+            <executions>
+              <execution>
+                <id>start-jetty</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop-jetty</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>selenium-headless</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <selenium.webdriver>htmlunit</selenium.webdriver>
+      </properties>
+    </profile>
+  </profiles>
+
+</project>

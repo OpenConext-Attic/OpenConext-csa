@@ -18,31 +18,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <modules>
-    <module>coin-selfservice-war</module>
-    <module>dashboard-dist</module>
-    <module>showroom-dist</module>
-    <module>sab-client</module>
+    <module>csa-war</module>
+    <module>csa-dist</module>
   </modules>
 
   <parent>
     <groupId>org.surfnet.coin</groupId>
     <artifactId>coin-master</artifactId>
-    <version>3.1.1</version>
+    <version>3.2.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.surfnet.coin</groupId>
-  <artifactId>coin-selfservice-parent</artifactId>
-  <version>3.3.0-SNAPSHOT</version>
+  <artifactId>csa-parent</artifactId>
+  <version>3.4.0-SNAPSHOT</version>
 
-  <name>OpenConect : selfservice parent pom</name>
-  <inceptionYear>2012</inceptionYear>
+  <name>OpenConext : Cloud Services API</name>
+  <inceptionYear>2013</inceptionYear>
 
   <packaging>pom</packaging>
 
   <scm>
-    <connection>scm:git:git@github.com:OpenConext/OpenConext-selfservice.git</connection>
-    <url>scm:git:git@github.com:OpenConext/OpenConext-selfservice.git</url>
-    <developerConnection>scm:git:git@github.com:OpenConext/OpenConext-selfservice.git</developerConnection>
+    <connection>scm:git:git@github.com:gvanderploeg/OpenConext-csa.git</connection>
+    <url>scm:git:git@github.com:gvanderploeg/OpenConext-csa.git</url>
+    <developerConnection>scm:git:git@github.com:gvanderploeg/OpenConext-csa.git</developerConnection>
   </scm>
 
   <repositories>
