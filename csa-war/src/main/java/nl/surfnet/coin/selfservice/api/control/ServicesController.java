@@ -16,8 +16,6 @@
 
 package nl.surfnet.coin.selfservice.api.control;
 
-import static java.util.Collections.sort;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,9 +47,11 @@ import org.surfnet.oaaas.auth.principal.AuthenticatedPrincipal;
 import org.surfnet.oaaas.conext.SAMLAuthenticatedPrincipal;
 import org.surfnet.oaaas.model.VerifyTokenResponse;
 
+import static java.util.Collections.sort;
+
 @Controller
-@RequestMapping(value = "/api/*")
-public class ApiController {
+@RequestMapping
+public class ServicesController {
 
   private @Value("${WEB_APPLICATION_CHANNEL}")
   String protocol;
@@ -74,26 +74,21 @@ public class ApiController {
   @Value("${public.api.lmng.guids}")
   private String[] guids;
 
-  @RequestMapping(method = RequestMethod.GET,value = "/public/services.json")
+  @RequestMapping(method = RequestMethod.GET,value = "/api/public/services.json")
   public @ResponseBody
-  List<Service> getPublicServices(@RequestParam(value = "lang", defaultValue = "en") String language,
-      final HttpServletRequest request) {
-    if ((Boolean) (request.getAttribute("lmngActive"))) {
-      List<CompoundServiceProvider> csPs = compoundSPService.getAllPublicCSPs();
-      List<Service> result = buildApiServices(csPs, language);
+  List<Service> getPublicServices(@RequestParam(value = "lang", defaultValue = "en") String language) {
+    List<CompoundServiceProvider> csPs = compoundSPService.getAllPublicCSPs();
+    List<Service> result = buildApiServices(csPs, language);
 
-      // add public service from LMNG directly
-      for (String guid : guids) {
-        Article currentArticle = lmngService.getService(guid);
-        Service currentPS = new Service(currentArticle.getServiceDescriptionNl(), currentArticle.getDetailLogo(),
-            null, true, lmngDeepLinkBaseUrl + guid);
-        result.add(currentPS);
-      }
-      sort(result);
-      return result;
-    } else {
-      throw new RuntimeException("Only allowed in showroom, not in dashboard");
+    // add public service from LMNG directly
+    for (String guid : guids) {
+      Article currentArticle = lmngService.getService(guid);
+      Service currentPS = new Service(currentArticle.getServiceDescriptionNl(), currentArticle.getDetailLogo(),
+          null, true, lmngDeepLinkBaseUrl + guid);
+      result.add(currentPS);
     }
+    sort(result);
+    return result;
   }
 
   private String getServiceLogo(CompoundServiceProvider csP) {
@@ -107,30 +102,26 @@ public class ApiController {
     return detailLogo;
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/protected/services.json")
+  @RequestMapping(method = RequestMethod.GET, value = "/api/protected/services.json")
   public @ResponseBody
   List<Service> getProtectedServices(@RequestParam(value = "lang", defaultValue = "en") String language,
       final HttpServletRequest request) {
-    if ((Boolean) (request.getAttribute("lmngActive"))) {
-      String ipdEntityId = getIdpEntityIdFromToken(request);
-      IdentityProvider identityProvider = idpService.getIdentityProvider(ipdEntityId);
-      List<CompoundServiceProvider> csPs = compoundSPService.getCSPsByIdp(identityProvider);
-      List<CompoundServiceProvider> scopedSsPs = new ArrayList<CompoundServiceProvider>();
-      /*
-       * We only want the SP's that are currently linked to the IdP, not the also included SP's that are NOT IdP-only
-       */
-      for (CompoundServiceProvider csp : csPs) {
-         if (csp.getServiceProvider().isLinked() && !csp.isHideInProtectedShowroom()) {
-           scopedSsPs.add(csp);
-         } 
-      }
-      List<Service> result = buildApiServices(scopedSsPs , language);
-
-      sort(result);
-      return result;
-    } else {
-      throw new RuntimeException("Only allowed in showroom, not in dashboard");
+    String ipdEntityId = getIdpEntityIdFromToken(request);
+    IdentityProvider identityProvider = idpService.getIdentityProvider(ipdEntityId);
+    List<CompoundServiceProvider> csPs = compoundSPService.getCSPsByIdp(identityProvider);
+    List<CompoundServiceProvider> scopedSsPs = new ArrayList<CompoundServiceProvider>();
+    /*
+     * We only want the SP's that are currently linked to the IdP, not the also included SP's that are NOT IdP-only
+     */
+    for (CompoundServiceProvider csp : csPs) {
+       if (csp.getServiceProvider().isLinked() && !csp.isHideInProtectedShowroom()) {
+         scopedSsPs.add(csp);
+       }
     }
+    List<Service> result = buildApiServices(scopedSsPs , language);
+
+    sort(result);
+    return result;
   }
 
   /**

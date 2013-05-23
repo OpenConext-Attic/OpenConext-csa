@@ -16,7 +16,6 @@
 
 package nl.surfnet.coin.selfservice.csaclient;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,61 +23,76 @@ import java.util.List;
 import java.util.Map;
 
 import nl.surfnet.coin.selfservice.api.model.LicenseInformation;
+import nl.surfnet.coin.selfservice.api.model.Service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Client for the CSA API. To be used by systems that need license information.
+ * Client for the CSA API.
  */
 @Component
-public class CsaClient {
+public class CsaClient implements Csa {
 
   private static final Logger LOG = LoggerFactory.getLogger(CsaClient.class);
 
   /**
-   * Location of the API, no query parameters
+   * Location of the API
    */
-  @Value(value="${csa.location.licenses:not-defined-as-property}")
-  private String csaLicensesLocation;
+  @Value(value="${csa.location.base:not-defined-as-property}")
+  private String csaBaseLocation;
 
   RestTemplate tpl = new RestTemplate();
+  private String csaEndpoint;
 
+  @Override
+  public List<Service> getPublicServices() {
+    String url = "/public/services.json";
+    return getFromCsa(url, null, Service[].class);
+  }
+
+  @Override
+  public List<Service> getServicesForIdp(String idpEntityId) {
+    String url = "/protected/services.json?idpEntityId={idpEntityId}";
+    Map variables = new HashMap<String, String>();
+    variables.put("idpEntityId", idpEntityId);
+    return (List<Service>) getFromCsa(url, variables, Service[].class);
+  }
+
+  @Override
   public List<LicenseInformation> getLicenseInformation(String idpEntityId) {
-    List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>();
-    acceptableMediaTypes.add(MediaType.APPLICATION_JSON);
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.setAccept(acceptableMediaTypes);
-
-    String locationWithParam = csaLicensesLocation + "?idpEntityId={idpEntityId}";
+    String locationWithParam = "/license/licenses.json?idpEntityId={idpEntityId}";
 
     LOG.debug("Will query CSA API with URL: {}", locationWithParam);
     Map variables = new HashMap<String, String>();
     variables.put("idpEntityId", idpEntityId);
-    try {
-      ResponseEntity<LicenseInformation[]> entity = tpl.getForEntity(locationWithParam, LicenseInformation[].class, variables);
-      LicenseInformation[] licenseInformations = entity.getBody();
-      if (licenseInformations != null) {
-        LOG.debug("Got {} results from CSA API: {}", licenseInformations.length, licenseInformations);
-        return Arrays.asList(licenseInformations);
-      }
-      LOG.info("No result from query to CSA, will return empty list.");
-      return Collections.emptyList();
-    } catch (Exception e) {
-      LOG.error("Exception while using CSA API, will return empty list.", e);
-      return Collections.emptyList();
+    LicenseInformation[] licenseInformations  = (LicenseInformation[]) getFromCsa(locationWithParam, variables, LicenseInformation[].class);
+    if (licenseInformations != null) {
+      LOG.debug("Got {} results from CSA API: {}", licenseInformations.length, licenseInformations);
+      return Arrays.asList(licenseInformations);
     }
+    LOG.info("No result from query to CSA, will return empty list.");
+    return Collections.emptyList();
   }
 
-  public void setCsaLicensesLocation(String csaLicensesLocation) {
-    this.csaLicensesLocation = csaLicensesLocation;
+  private<T> T getFromCsa(String url, Map<String, ?> variables, Class clazz) {
+    try {
+      ResponseEntity<T> entity = tpl.getForEntity(csaBaseLocation + url, clazz, variables);
+      return entity.getBody();
+    } catch (RuntimeException rte) {
+      // TODO: differentiate between 4xx and 5xx?
+      LOG.error("While using CSA API, will return null", rte);
+      return null;
+    }
+
   }
 
+  public void setCsaBaseLocation(String csaBaseLocation) {
+    this.csaBaseLocation = csaBaseLocation;
+  }
 }

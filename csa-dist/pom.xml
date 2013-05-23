@@ -25,7 +25,7 @@
 
   <groupId>org.surfnet.coin</groupId>
   <artifactId>csa-dist</artifactId>
-  <name>OpenConext : Cloud Services API distribution package</name>
+  <name>OpenConext : Cloud Services API distr. package</name>
   <packaging>pom</packaging>
 
   <build>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package nl.surfnet.coin.selfservice.cdkclient;
+package nl.surfnet.coin.selfservice.csaclient;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,9 +37,9 @@ import org.slf4j.LoggerFactory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class CdkClientTest {
+public class CsaClientTest {
 
-  private static final Logger LOG = LoggerFactory.getLogger(CdkClientTest.class);
+  private static final Logger LOG = LoggerFactory.getLogger(CsaClientTest.class);
 
 
   private LocalTestServer server;
@@ -48,12 +48,11 @@ public class CdkClientTest {
   public void setupServer() throws Exception {
     server = new LocalTestServer(null, null);
 
-    server.register("/test", new HttpRequestHandler() {
+    server.register("/test/license/licenses.json", new HttpRequestHandler() {
       @Override
       public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
         LOG.debug("Request: {}", request.getRequestLine().getUri());
         assertTrue("Request should contain idp", request.getRequestLine().getUri().contains("idpEntityId=someIdp"));
-//        response.setEntity(.....);
         response.setEntity(new StringEntity("[{\"spEntityId\":\"spEntityId\",\"status\":\"AVAILABLE\",\"license\":{\"startDate\":1367911454753,\"endDate\":1367911454753,\"licenseNumber\":\"DWS-XX-GLK76\",\"institutionName\":\"Institution Name\",\"groupLicense\":true}}]"));
         response.setHeader("Content-Type", "application/json");
         response.setStatusCode(200);
@@ -67,9 +66,9 @@ public class CdkClientTest {
   public void licenseInformation() throws IOException {
     String endpoint = "http:/" + server.getServiceAddress().toString() + "/test";
     LOG.debug("Server listens at: {}", endpoint);
-    CdkClient cdkClient = new CdkClient();
-    cdkClient.setCdkLicensesLocation(endpoint);
-    List<LicenseInformation> licenseInformation = cdkClient.getLicenseInformation("someIdp");
+    CsaClient csaClient = new CsaClient();
+    csaClient.setCsaBaseLocation(endpoint);
+    List<LicenseInformation> licenseInformation = csaClient.getLicenseInformation("someIdp");
     assertEquals(1, licenseInformation.size());
     assertEquals(LicenseStatus.AVAILABLE, licenseInformation.get(0).getStatus());
   }
