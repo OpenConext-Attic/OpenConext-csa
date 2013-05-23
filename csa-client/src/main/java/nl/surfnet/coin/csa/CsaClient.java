@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package nl.surfnet.coin.selfservice.csaclient;
+package nl.surfnet.coin.csa;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,20 +22,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nl.surfnet.coin.selfservice.api.model.LicenseInformation;
-import nl.surfnet.coin.selfservice.api.model.Service;
+import javax.inject.Named;
+
+import nl.surfnet.coin.csa.model.LicenseInformation;
+import nl.surfnet.coin.csa.model.Service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 /**
  * Client for the CSA API.
  */
-@Component
+@Named
 public class CsaClient implements Csa {
 
   private static final Logger LOG = LoggerFactory.getLogger(CsaClient.class);
@@ -43,7 +43,6 @@ public class CsaClient implements Csa {
   /**
    * Location of the API
    */
-  @Value(value="${csa.location.base:not-defined-as-property}")
   private String csaBaseLocation;
 
   RestTemplate tpl = new RestTemplate();

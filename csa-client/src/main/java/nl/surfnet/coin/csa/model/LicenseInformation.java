@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package nl.surfnet.coin.selfservice.api.model;
-
-import nl.surfnet.coin.selfservice.domain.License;
+package nl.surfnet.coin.csa.model;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
@@ -41,11 +39,11 @@ public class LicenseInformation {
   public void setStatus(LicenseStatus status) {
     this.status = status;
   }
-  
+
   public License getLicense() {
     return license;
   }
-  
+
   public void setLicense(License license) {
     this.license = license;
   }

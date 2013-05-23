@@ -42,7 +42,6 @@
     <coin-api.version>2.15.0</coin-api.version>
     <spring-security-opensaml.version>3.2.0</spring-security-opensaml.version>
     <flyway.version>1.5</flyway.version>
-    <jackson.version>1.9.5</jackson.version>
     <xstream.version>1.4.2</xstream.version>
     <bonecp.version>0.7.1.RELEASE</bonecp.version>
     <mujina-idp.version>2.15.1</mujina-idp.version>
@@ -151,12 +150,6 @@
       <groupId>com.googlecode.flyway</groupId>
       <artifactId>flyway-core</artifactId>
       <version>${flyway.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>${jackson.version}</version>
     </dependency>
 
     <dependency>

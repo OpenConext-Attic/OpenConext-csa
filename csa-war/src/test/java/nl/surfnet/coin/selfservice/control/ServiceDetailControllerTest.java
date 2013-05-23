@@ -21,13 +21,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nl.surfnet.coin.selfservice.api.model.LicenseInformation;
-import nl.surfnet.coin.selfservice.csaclient.CsaClient;
+import nl.surfnet.coin.csa.CsaClient;
 import nl.surfnet.coin.selfservice.dao.ConsentDao;
 import nl.surfnet.coin.selfservice.domain.CoinUser;
 import nl.surfnet.coin.selfservice.domain.CompoundServiceProvider;
 import nl.surfnet.coin.selfservice.domain.IdentityProvider;
-import nl.surfnet.coin.selfservice.domain.License;
 import nl.surfnet.coin.selfservice.domain.OAuthTokenInfo;
 import nl.surfnet.coin.selfservice.domain.ServiceProvider;
 import nl.surfnet.coin.selfservice.service.OAuthTokenService;
@@ -183,27 +181,5 @@ public class ServiceDetailControllerTest {
     assertEquals(csp, modelAndView.getModelMap().get("compoundSp"));
     assertNotNull(modelAndView.getModelMap().get("oAuthTokens"));
     assertNull(modelAndView.getModelMap().get("mayHaveGivenConsent"));
-  }
-
-  @Test
-  public void enrichWithLicense() {
-
-    IdentityProvider idp = new IdentityProvider();
-    idp.setId("mockIdP");
-    CompoundServiceProvider csp = new CompoundServiceProvider();
-    csp.setServiceProvider(new ServiceProvider("theSpEntityId"));
-    when(compoundSPService.getCSPById(idp, 1L, false)).thenReturn(csp);
-
-    LicenseInformation licenseInformation = new LicenseInformation();
-    License theLicense = new License();
-    licenseInformation.setLicense(theLicense);
-    licenseInformation.setSpEntityId("theSpEntityId");
-    when(csaClient.getLicenseInformation("mockIdP")).thenReturn(Arrays.asList(licenseInformation));
-
-    final ModelAndView modelAndView = controller.serviceDetail(1, null, "false", idp, request);
-    assertEquals("app-detail", modelAndView.getViewName());
-    CompoundServiceProvider compoundSp = (CompoundServiceProvider) modelAndView.getModelMap().get("compoundSp");
-    assertEquals(theLicense, compoundSp.getLicense());
-
   }
 }

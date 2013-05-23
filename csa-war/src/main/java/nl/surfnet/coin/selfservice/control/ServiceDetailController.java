@@ -28,8 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import nl.surfnet.coin.api.client.OpenConextOAuthClient;
 import nl.surfnet.coin.api.client.domain.Group20;
 import nl.surfnet.coin.api.client.domain.Person;
-import nl.surfnet.coin.selfservice.api.model.LicenseInformation;
-import nl.surfnet.coin.selfservice.csaclient.CsaClient;
+import nl.surfnet.coin.csa.model.LicenseInformation;
+import nl.surfnet.coin.csa.CsaClient;
 import nl.surfnet.coin.selfservice.dao.ConsentDao;
 import nl.surfnet.coin.selfservice.domain.CoinUser;
 import nl.surfnet.coin.selfservice.domain.CompoundServiceProvider;
@@ -116,7 +116,6 @@ public class ServiceDetailController extends BaseController {
     Map<String, Object> m = new HashMap<String, Object>();
     CompoundServiceProvider compoundServiceProvider = compoundSPService.getCSPById(selectedidp, compoundSpId,
         Boolean.valueOf(refreshCache));
-    compoundServiceProvider = enrichWithLicense(compoundServiceProvider, selectedidp.getId());
     m.put(COMPOUND_SP, compoundServiceProvider);
 
     String spEntityId = compoundServiceProvider.getServiceProviderEntityId();
@@ -141,23 +140,6 @@ public class ServiceDetailController extends BaseController {
     m.put("lmngDeepLinkUrl", lmngDeepLinkBaseUrl);
 
     return new ModelAndView("app-detail", m);
-  }
-
-  /**
-   * Given a CompoundServiceProvider, enrich it with license data, from the CDK API.
-   *
-   * @param compoundServiceProvider the CSP to enrich
-   * @return the same CompoundServiceProvider
-   */
-  private CompoundServiceProvider enrichWithLicense(CompoundServiceProvider compoundServiceProvider, String idpEntityId) {
-    List<LicenseInformation> licenseInformation = csaClient.getLicenseInformation(idpEntityId);
-    for (LicenseInformation li : licenseInformation) {
-      if (li.getSpEntityId().equals(compoundServiceProvider.getSp().getId())) {
-        LOG.debug("Found license for CSP '{}' in list of license information from CDK: {}", compoundServiceProvider, li);
-        compoundServiceProvider.setLicenses(Arrays.asList(li.getLicense()));
-      }
-    }
-    return compoundServiceProvider;
   }
 
   @RequestMapping(value = "/app-recommend")

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package nl.surfnet.coin.selfservice.csaclient;
+package nl.surfnet.coin.csa;
 
 import java.io.IOException;
 import java.util.List;
 
-import nl.surfnet.coin.selfservice.api.model.LicenseInformation;
-import nl.surfnet.coin.selfservice.api.model.LicenseStatus;
+import nl.surfnet.coin.csa.model.LicenseInformation;
+import nl.surfnet.coin.csa.model.LicenseStatus;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -29,13 +29,11 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.localserver.LocalTestServer;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class CsaClientTest {
 
@@ -52,7 +50,7 @@ public class CsaClientTest {
       @Override
       public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
         LOG.debug("Request: {}", request.getRequestLine().getUri());
-        assertTrue("Request should contain idp", request.getRequestLine().getUri().contains("idpEntityId=someIdp"));
+        Assert.assertTrue("Request should contain idp", request.getRequestLine().getUri().contains("idpEntityId=someIdp"));
         response.setEntity(new StringEntity("[{\"spEntityId\":\"spEntityId\",\"status\":\"AVAILABLE\",\"license\":{\"startDate\":1367911454753,\"endDate\":1367911454753,\"licenseNumber\":\"DWS-XX-GLK76\",\"institutionName\":\"Institution Name\",\"groupLicense\":true}}]"));
         response.setHeader("Content-Type", "application/json");
         response.setStatusCode(200);
@@ -69,7 +67,7 @@ public class CsaClientTest {
     CsaClient csaClient = new CsaClient();
     csaClient.setCsaBaseLocation(endpoint);
     List<LicenseInformation> licenseInformation = csaClient.getLicenseInformation("someIdp");
-    assertEquals(1, licenseInformation.size());
-    assertEquals(LicenseStatus.AVAILABLE, licenseInformation.get(0).getStatus());
+    Assert.assertEquals(1, licenseInformation.size());
+    Assert.assertEquals(LicenseStatus.AVAILABLE, licenseInformation.get(0).getStatus());
   }
 }

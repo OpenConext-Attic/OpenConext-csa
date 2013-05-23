@@ -14,8 +14,29 @@
  * limitations under the License.
  */
 
-package nl.surfnet.coin.selfservice.api.model;
+package nl.surfnet.coin.csa;
 
-public enum LicenseStatus {
-  AVAILABLE, UNAVAILABLE, UNKNOWN;
+import java.util.List;
+
+import nl.surfnet.coin.csa.model.LicenseInformation;
+import nl.surfnet.coin.csa.model.Service;
+
+/**
+ * Mock implementation of CSA
+ */
+public class CsaMock implements Csa {
+  @Override
+  public List<Service> getPublicServices() {
+    return null;
+  }
+
+  @Override
+  public List<Service> getServicesForIdp(String idpEntityId) {
+    return null;
+  }
+
+  @Override
+  public List<LicenseInformation> getLicenseInformation(String idpEntityId) {
+    return null;
+  }
 }

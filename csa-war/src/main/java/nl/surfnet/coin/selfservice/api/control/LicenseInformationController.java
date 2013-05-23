@@ -22,8 +22,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import nl.surfnet.coin.selfservice.api.model.LicenseInformation;
-import nl.surfnet.coin.selfservice.api.model.LicenseStatus;
+import nl.surfnet.coin.csa.model.LicenseInformation;
+import nl.surfnet.coin.csa.model.LicenseStatus;
 import nl.surfnet.coin.selfservice.domain.CompoundServiceProvider;
 import nl.surfnet.coin.selfservice.domain.IdentityProvider;
 import nl.surfnet.coin.selfservice.domain.License;
@@ -65,7 +65,7 @@ public class LicenseInformationController {
     license.setInstitutionName("Institution Name");
     license.setLicenseNumber("DWS-XX-GLK76");
     license.setStartDate(new Date());
-    licenseInformation.setLicense(license);
+//    licenseInformation.setLicense(license);
     licenseInformation.setSpEntityId("spEntityId");
     licenseInformation.setStatus(LicenseStatus.AVAILABLE);
     result.add(licenseInformation);
