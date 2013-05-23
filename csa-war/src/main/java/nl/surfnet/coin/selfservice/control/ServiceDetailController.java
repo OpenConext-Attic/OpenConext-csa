@@ -29,7 +29,7 @@ import nl.surfnet.coin.api.client.OpenConextOAuthClient;
 import nl.surfnet.coin.api.client.domain.Group20;
 import nl.surfnet.coin.api.client.domain.Person;
 import nl.surfnet.coin.selfservice.api.model.LicenseInformation;
-import nl.surfnet.coin.selfservice.cdkclient.CdkClient;
+import nl.surfnet.coin.selfservice.csaclient.CsaClient;
 import nl.surfnet.coin.selfservice.dao.ConsentDao;
 import nl.surfnet.coin.selfservice.domain.CoinUser;
 import nl.surfnet.coin.selfservice.domain.CompoundServiceProvider;
@@ -99,7 +99,7 @@ public class ServiceDetailController extends BaseController {
   private int maxRecommendationEmails = 20;
 
   @Resource
-  private CdkClient cdkClient;
+  private CsaClient csaClient;
 
   /**
    * Controller for detail page.
@@ -150,7 +150,7 @@ public class ServiceDetailController extends BaseController {
    * @return the same CompoundServiceProvider
    */
   private CompoundServiceProvider enrichWithLicense(CompoundServiceProvider compoundServiceProvider, String idpEntityId) {
-    List<LicenseInformation> licenseInformation = cdkClient.getLicenseInformation(idpEntityId);
+    List<LicenseInformation> licenseInformation = csaClient.getLicenseInformation(idpEntityId);
     for (LicenseInformation li : licenseInformation) {
       if (li.getSpEntityId().equals(compoundServiceProvider.getSp().getId())) {
         LOG.debug("Found license for CSP '{}' in list of license information from CDK: {}", compoundServiceProvider, li);

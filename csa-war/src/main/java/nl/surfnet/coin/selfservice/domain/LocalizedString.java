@@ -18,10 +18,15 @@
  */
 package nl.surfnet.coin.selfservice.domain;
 
-import nl.surfnet.coin.shared.domain.DomainObject;
-import org.hibernate.annotations.Proxy;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
-import javax.persistence.*;
+import nl.surfnet.coin.shared.domain.DomainObject;
+
+import org.hibernate.annotations.Proxy;
 
 @SuppressWarnings("serial")
 @Entity

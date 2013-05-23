@@ -19,7 +19,6 @@
 package nl.surfnet.coin.selfservice.dao;
 
 import nl.surfnet.coin.selfservice.domain.LocalizedString;
-import nl.surfnet.coin.selfservice.domain.MultilingualString;
 import nl.surfnet.coin.shared.service.GenericService;
 
 

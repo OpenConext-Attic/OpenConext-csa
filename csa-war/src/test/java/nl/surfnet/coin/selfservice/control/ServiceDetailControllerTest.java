@@ -22,8 +22,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nl.surfnet.coin.selfservice.api.model.LicenseInformation;
-import nl.surfnet.coin.selfservice.cdkclient.CdkClient;
-import nl.surfnet.coin.selfservice.command.LinkRequest;
+import nl.surfnet.coin.selfservice.csaclient.CsaClient;
 import nl.surfnet.coin.selfservice.dao.ConsentDao;
 import nl.surfnet.coin.selfservice.domain.CoinUser;
 import nl.surfnet.coin.selfservice.domain.CompoundServiceProvider;
@@ -48,7 +47,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-import sun.misc.ProxyGenerator;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -91,7 +89,7 @@ public class ServiceDetailControllerTest {
   private HttpServletRequest request;
 
   @Mock
-  private CdkClient cdkClient;
+  private CsaClient csaClient;
 
   @Before
   public void setUp() throws Exception {
@@ -200,7 +198,7 @@ public class ServiceDetailControllerTest {
     License theLicense = new License();
     licenseInformation.setLicense(theLicense);
     licenseInformation.setSpEntityId("theSpEntityId");
-    when(cdkClient.getLicenseInformation("mockIdP")).thenReturn(Arrays.asList(licenseInformation));
+    when(csaClient.getLicenseInformation("mockIdP")).thenReturn(Arrays.asList(licenseInformation));
 
     final ModelAndView modelAndView = controller.serviceDetail(1, null, "false", idp, request);
     assertEquals("app-detail", modelAndView.getViewName());
@@ -208,5 +206,4 @@ public class ServiceDetailControllerTest {
     assertEquals(theLicense, compoundSp.getLicense());
 
   }
-
 }

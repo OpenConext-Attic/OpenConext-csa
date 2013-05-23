@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package nl.surfnet.coin.selfservice.cdkclient;
+package nl.surfnet.coin.selfservice.csaclient;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,18 +35,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Client for the CDK API. To be used by systems that need license information.
+ * Client for the CSA API. To be used by systems that need license information.
  */
 @Component
-public class CdkClient {
+public class CsaClient {
 
-  private static final Logger LOG = LoggerFactory.getLogger(CdkClient.class);
+  private static final Logger LOG = LoggerFactory.getLogger(CsaClient.class);
 
   /**
    * Location of the API, no query parameters
    */
-  @Value(value="${cdk.location.licenses:not-defined-as-property}")
-  private String cdkLicensesLocation;
+  @Value(value="${csa.location.licenses:not-defined-as-property}")
+  private String csaLicensesLocation;
 
   RestTemplate tpl = new RestTemplate();
 
@@ -57,28 +57,28 @@ public class CdkClient {
     HttpHeaders headers = new HttpHeaders();
     headers.setAccept(acceptableMediaTypes);
 
-    String locationWithParam = cdkLicensesLocation + "?idpEntityId={idpEntityId}";
+    String locationWithParam = csaLicensesLocation + "?idpEntityId={idpEntityId}";
 
-    LOG.debug("Will query CDK API with URL: {}", locationWithParam);
+    LOG.debug("Will query CSA API with URL: {}", locationWithParam);
     Map variables = new HashMap<String, String>();
     variables.put("idpEntityId", idpEntityId);
     try {
       ResponseEntity<LicenseInformation[]> entity = tpl.getForEntity(locationWithParam, LicenseInformation[].class, variables);
       LicenseInformation[] licenseInformations = entity.getBody();
       if (licenseInformations != null) {
-        LOG.debug("Got {} results from CDK API: {}", licenseInformations.length, licenseInformations);
+        LOG.debug("Got {} results from CSA API: {}", licenseInformations.length, licenseInformations);
         return Arrays.asList(licenseInformations);
       }
-      LOG.info("No result from query to CDK, will return empty list.");
+      LOG.info("No result from query to CSA, will return empty list.");
       return Collections.emptyList();
     } catch (Exception e) {
-      LOG.error("Exception while using CDK API, will return empty list.", e);
+      LOG.error("Exception while using CSA API, will return empty list.", e);
       return Collections.emptyList();
     }
   }
 
-  public void setCdkLicensesLocation(String cdkLicensesLocation) {
-    this.cdkLicensesLocation = cdkLicensesLocation;
+  public void setCsaLicensesLocation(String csaLicensesLocation) {
+    this.csaLicensesLocation = csaLicensesLocation;
   }
 
 }
