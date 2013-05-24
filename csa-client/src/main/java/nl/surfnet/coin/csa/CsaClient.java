@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.inject.Named;
 
+import nl.surfnet.coin.csa.model.Facet;
 import nl.surfnet.coin.csa.model.LicenseInformation;
 import nl.surfnet.coin.csa.model.Service;
 
@@ -77,6 +78,12 @@ public class CsaClient implements Csa {
     }
     LOG.info("No result from query to CSA, will return empty list.");
     return Collections.emptyList();
+  }
+
+  @Override
+  public List<Facet> getFacets() {
+    String url = "/protected/facets.json";
+    return (List<Facet>) getFromCsa(url, null, Facet[].class);
   }
 
   private<T> T getFromCsa(String url, Map<String, ?> variables, Class clazz) {

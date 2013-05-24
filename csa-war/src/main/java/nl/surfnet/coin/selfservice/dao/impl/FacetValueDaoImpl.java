@@ -19,9 +19,9 @@
 package nl.surfnet.coin.selfservice.dao.impl;
 
 import nl.surfnet.coin.selfservice.dao.FacetValueDao;
-import nl.surfnet.coin.selfservice.domain.FacetValue;
+import nl.surfnet.coin.csa.model.FacetValue;
 import nl.surfnet.coin.selfservice.domain.InUseFacetValue;
-import nl.surfnet.coin.selfservice.domain.MultilingualString;
+import nl.surfnet.coin.csa.model.MultilingualString;
 import nl.surfnet.coin.shared.service.GenericServiceHibernateImpl;
 import org.springframework.stereotype.Repository;
 

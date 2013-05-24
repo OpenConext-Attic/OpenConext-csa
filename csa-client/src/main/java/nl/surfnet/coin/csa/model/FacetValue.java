@@ -16,10 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package nl.surfnet.coin.selfservice.domain;
+package nl.surfnet.coin.csa.model;
 
 import nl.surfnet.coin.shared.domain.DomainObject;
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Proxy;
 
 import javax.persistence.*;
@@ -32,6 +33,7 @@ public class FacetValue extends DomainObject implements Comparable<FacetValue> {
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "facet_id", nullable = false)
+  @JsonIgnore
   private Facet facet;
 
   @Transient
@@ -82,6 +84,7 @@ public class FacetValue extends DomainObject implements Comparable<FacetValue> {
    * want to be able to have all the FacetValues of a Service separated by spaces therefore this method
    * can be used to underscore-separate the different FacetValues
    */
+  @JsonIgnore
   public String getSearchValue() {
     String val = getValue();
     return val != null ? val.replaceAll(" ", "_").toLowerCase() : val;

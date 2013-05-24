@@ -18,10 +18,19 @@
  */
 package nl.surfnet.coin.selfservice.dao.impl;
 
+import nl.surfnet.coin.csa.model.Facet;
+import nl.surfnet.coin.csa.model.FacetValue;
+import nl.surfnet.coin.csa.model.LocalizedString;
 import nl.surfnet.coin.selfservice.dao.CompoundServiceProviderDao;
 import nl.surfnet.coin.selfservice.dao.FacetDao;
 import nl.surfnet.coin.selfservice.dao.FacetValueDao;
-import nl.surfnet.coin.selfservice.domain.*;
+import nl.surfnet.coin.selfservice.domain.Article;
+import nl.surfnet.coin.selfservice.domain.CompoundServiceProvider;
+import nl.surfnet.coin.selfservice.domain.InUseFacetValue;
+import nl.surfnet.coin.selfservice.domain.ServiceProvider;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +43,12 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -61,7 +69,10 @@ public class FacetValueDaoImplTest implements LocaleResolver {
   @Autowired
   private CompoundServiceProviderDao compoundServiceProviderDao;
 
-  private Locale currentLocale ;
+  private Locale currentLocale;
+
+  private ObjectMapper mapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY).
+          setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
   @Test
   public void testRetrieveFacetOnCompoundServicerProvider() {
@@ -72,7 +83,7 @@ public class FacetValueDaoImplTest implements LocaleResolver {
     compoundServiceProviderDao.saveOrUpdate(csp);
 
     csp = compoundServiceProviderDao.findById(csp.getId());
-    assertEquals(facet.getName() ,csp.getFacetValues().first().getFacet().getName());
+    assertEquals(facet.getName(), csp.getFacetValues().first().getFacet().getName());
   }
 
   @Test
@@ -168,10 +179,13 @@ public class FacetValueDaoImplTest implements LocaleResolver {
   }
 
   @Test
-  public void testDeletePropagation() {
+  public void testJson() throws IOException {
     Facet facet = createFacetWithValue();
 
-    facetDao.delete(facet);
+    String json = mapper.writeValueAsString(facet);
+    facet = mapper.readValue(json, Facet.class);
+    LocalizedString value = facet.getFacetValues().first().getMultilingualString().getLocalizedStrings().get("en");
+    assertEquals("cloud", value.getValue());
   }
 
   private Facet createFacetWithValue() {

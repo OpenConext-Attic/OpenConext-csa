@@ -19,7 +19,7 @@
 package nl.surfnet.coin.selfservice.dao.impl;
 
 import nl.surfnet.coin.selfservice.dao.FacetDao;
-import nl.surfnet.coin.selfservice.domain.Facet;
+import nl.surfnet.coin.csa.model.Facet;
 import nl.surfnet.coin.shared.service.GenericServiceHibernateImpl;
 import org.springframework.stereotype.Repository;
 

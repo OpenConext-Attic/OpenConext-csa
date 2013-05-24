@@ -16,7 +16,6 @@
 
 package nl.surfnet.coin.selfservice.control;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import nl.surfnet.coin.csa.model.Facet;
+import nl.surfnet.coin.csa.model.FacetValue;
 import nl.surfnet.coin.selfservice.dao.FacetDao;
 import nl.surfnet.coin.selfservice.domain.*;
 import nl.surfnet.coin.selfservice.service.impl.CompoundSPService;

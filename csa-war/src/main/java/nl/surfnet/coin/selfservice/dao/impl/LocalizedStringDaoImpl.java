@@ -19,9 +19,7 @@
 package nl.surfnet.coin.selfservice.dao.impl;
 
 import nl.surfnet.coin.selfservice.dao.LocalizedStringDao;
-import nl.surfnet.coin.selfservice.dao.MultilingualStringDao;
-import nl.surfnet.coin.selfservice.domain.LocalizedString;
-import nl.surfnet.coin.selfservice.domain.MultilingualString;
+import nl.surfnet.coin.csa.model.LocalizedString;
 import nl.surfnet.coin.shared.service.GenericServiceHibernateImpl;
 import org.springframework.stereotype.Repository;
 

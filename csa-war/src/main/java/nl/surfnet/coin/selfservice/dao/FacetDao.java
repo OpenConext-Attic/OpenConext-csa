@@ -18,7 +18,7 @@
  */
 package nl.surfnet.coin.selfservice.dao;
 
-import nl.surfnet.coin.selfservice.domain.Facet;
+import nl.surfnet.coin.csa.model.Facet;
 import nl.surfnet.coin.shared.service.GenericService;
 
 public interface FacetDao extends GenericService<Facet> {

@@ -16,10 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package nl.surfnet.coin.selfservice.domain;
+package nl.surfnet.coin.csa.model;
 
 import nl.surfnet.coin.shared.domain.DomainObject;
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Proxy;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -115,6 +116,7 @@ public class Facet extends DomainObject implements Comparable<Facet> {
     this.parent = parent;
   }
 
+  @JsonIgnore
   public boolean isUsedFacetValues() {
     for (FacetValue facetValue : facetValues) {
       if (facetValue.getCount() > 0) {

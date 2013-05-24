@@ -37,6 +37,7 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import nl.surfnet.coin.csa.model.FacetValue;
 import nl.surfnet.coin.selfservice.domain.Field.Key;
 import nl.surfnet.coin.selfservice.domain.Field.Source;
 import nl.surfnet.coin.selfservice.domain.Provider.Language;

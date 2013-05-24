@@ -16,6 +16,10 @@
 
 package nl.surfnet.coin.selfservice.control.shopadmin;
 
+import nl.surfnet.coin.csa.model.Facet;
+import nl.surfnet.coin.csa.model.FacetValue;
+import nl.surfnet.coin.csa.model.LocalizedString;
+import nl.surfnet.coin.csa.model.MultilingualString;
 import nl.surfnet.coin.selfservice.control.BaseController;
 import nl.surfnet.coin.selfservice.dao.FacetDao;
 import nl.surfnet.coin.selfservice.dao.FacetValueDao;
@@ -30,8 +34,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/shopadmin/*")

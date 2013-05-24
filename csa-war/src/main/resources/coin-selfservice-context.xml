@@ -222,10 +222,10 @@
         <value>nl.surfnet.coin.selfservice.domain.FieldString</value>
         <value>nl.surfnet.coin.selfservice.domain.FieldImage</value>
         <value>nl.surfnet.coin.selfservice.domain.Screenshot</value>
-        <value>nl.surfnet.coin.selfservice.domain.Facet</value>
-        <value>nl.surfnet.coin.selfservice.domain.FacetValue</value>
-        <value>nl.surfnet.coin.selfservice.domain.MultilingualString</value>
-        <value>nl.surfnet.coin.selfservice.domain.LocalizedString</value>
+        <value>nl.surfnet.coin.csa.model.Facet</value>
+        <value>nl.surfnet.coin.csa.model.FacetValue</value>
+        <value>nl.surfnet.coin.csa.model.MultilingualString</value>
+        <value>nl.surfnet.coin.csa.model.LocalizedString</value>
       </list>
     </property>
     <property name="namingStrategy">

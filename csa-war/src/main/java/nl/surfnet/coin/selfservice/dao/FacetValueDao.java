@@ -18,7 +18,7 @@
  */
 package nl.surfnet.coin.selfservice.dao;
 
-import nl.surfnet.coin.selfservice.domain.FacetValue;
+import nl.surfnet.coin.csa.model.FacetValue;
 import nl.surfnet.coin.selfservice.domain.InUseFacetValue;
 import nl.surfnet.coin.shared.service.GenericService;
 

@@ -18,6 +18,7 @@ package nl.surfnet.coin.csa;
 
 import java.util.List;
 
+import nl.surfnet.coin.csa.model.Facet;
 import nl.surfnet.coin.csa.model.LicenseInformation;
 import nl.surfnet.coin.csa.model.Service;
 
@@ -41,4 +42,9 @@ public interface Csa {
    * Get a list of license information models, scoped by the given IDP entity ID
    */
   List<LicenseInformation> getLicenseInformation(String idpEntityId);
+
+  /**
+   * Get all facets
+   */
+  List<Facet> getFacets();
 }

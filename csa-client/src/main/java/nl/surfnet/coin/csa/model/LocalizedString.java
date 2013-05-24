@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package nl.surfnet.coin.selfservice.domain;
+package nl.surfnet.coin.csa.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,6 +26,7 @@ import javax.persistence.ManyToOne;
 
 import nl.surfnet.coin.shared.domain.DomainObject;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Proxy;
 
 @SuppressWarnings("serial")
@@ -41,6 +42,7 @@ public class LocalizedString extends DomainObject {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "multilingual_string_id", nullable = false)
+  @JsonIgnore
   private MultilingualString multilingualString;
 
   public LocalizedString() {

@@ -16,9 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package nl.surfnet.coin.selfservice.domain;
+package nl.surfnet.coin.csa.model;
 
 import nl.surfnet.coin.shared.domain.DomainObject;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Proxy;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -34,6 +35,7 @@ import java.util.*;
 public class MultilingualString extends DomainObject {
 
   @Transient
+  @JsonIgnore
   public static final Locale defaultLocale = Locale.ENGLISH;
 
   /*
@@ -41,6 +43,7 @@ public class MultilingualString extends DomainObject {
    * no be added as this is always included being the default.
    */
   @Transient
+  @JsonIgnore
   private static final List<String> availableLocales = Arrays.asList(new String[]{"nl"});
 
   @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "multilingualString")
@@ -51,6 +54,7 @@ public class MultilingualString extends DomainObject {
     return localizedStrings;
   }
 
+  @JsonIgnore
   public List<LocalizedString> getAllowedLocalizedStrings() {
     List<LocalizedString> result = new ArrayList<LocalizedString>();
     for (String locale : availableLocales) {
