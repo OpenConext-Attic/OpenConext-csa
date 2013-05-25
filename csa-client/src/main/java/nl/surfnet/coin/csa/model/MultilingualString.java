@@ -94,7 +94,6 @@ public class MultilingualString extends DomainObject {
 
   /*
    * Note: this is a deliberate design choice. We want to be able to transparently call getValue without passing in HttpServletRequest and / or Locale.
-   *
    */
   private Locale getLocale() {
     Locale locale = null;

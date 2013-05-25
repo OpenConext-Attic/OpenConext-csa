@@ -184,8 +184,10 @@ public class FacetValueDaoImplTest implements LocaleResolver {
 
     String json = mapper.writeValueAsString(facet);
     facet = mapper.readValue(json, Facet.class);
-    LocalizedString value = facet.getFacetValues().first().getMultilingualString().getLocalizedStrings().get("en");
-    assertEquals("cloud", value.getValue());
+    FacetValue facetValue = facet.getFacetValues().first();
+    LocalizedString localizedString = facetValue.getMultilingualString().getLocalizedStrings().get("en");
+    assertEquals("cloud", localizedString.getValue());
+    assertEquals("cloud", facetValue.getValue());
   }
 
   private Facet createFacetWithValue() {
