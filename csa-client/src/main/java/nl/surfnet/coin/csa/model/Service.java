@@ -39,6 +39,9 @@ public class Service implements Comparable<Service> {
   @JsonProperty
   private Map<Category, List<CategoryValue>> categories;
 
+  public Service() {
+  }
+
   public Service(String name, String logoUrl, String websiteUrl, boolean hasCrmLink, String crmLink) {
     this.name = name;
     this.logoUrl = logoUrl;

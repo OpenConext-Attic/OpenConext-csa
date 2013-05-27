@@ -41,7 +41,7 @@ public class MockAuthorizationServerFilter implements Filter {
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
     AuthenticatedPrincipal principal = new SAMLAuthenticatedPrincipal("john.doe", Arrays.asList(new String[]{"user"}), new HashMap<String, String>(), Arrays.asList(new String[]{"showroom_shopmanager"}), "https://mujina-idp.acc.showroom.surfconext.nl/", "John Doe");
-    VerifyTokenResponse tokenResponse = new VerifyTokenResponse("client-name-mocked", Arrays.asList(new String[]{"read"}), principal, null);
+    VerifyTokenResponse tokenResponse = new VerifyTokenResponse("client-name-mocked", Arrays.asList(new String[]{"read","cross-idp-allowed"}), principal, null);
     request.setAttribute(AuthorizationServerFilter.VERIFY_TOKEN_RESPONSE, tokenResponse);
     chain.doFilter(request, response);
   }

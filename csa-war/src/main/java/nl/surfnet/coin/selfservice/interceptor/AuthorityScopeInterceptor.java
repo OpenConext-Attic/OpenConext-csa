@@ -55,6 +55,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  */
 public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
 
+  public static final String SELF_SERVICE_OAUTH_CLIENT_SCOPE = "cross-idp-allowed";
+
   private static final Logger LOG = LoggerFactory.getLogger(AuthorityScopeInterceptor.class);
 
   private static List<String> TOKEN_CHECK_METHODS = Arrays.asList(new String[] { POST.name(), DELETE.name(), PUT.name() });

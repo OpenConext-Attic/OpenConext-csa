@@ -24,17 +24,23 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 
 public class Category {
 
+
   private String name;
+  private List<CategoryValue> values;
+
+  public Category() {
+  }
 
   public Category(String name) {
     this.name = name;
   }
-  private List<CategoryValue> values;
+  public void setName(String name) {
+    this.name = name;
+  }
 
   public List<CategoryValue> getValues() {
     return values;
   }
-
   public void setValues(List<CategoryValue> values) {
     this.values = values;
   }

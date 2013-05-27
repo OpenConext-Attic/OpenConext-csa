@@ -16,36 +16,29 @@
 
 package nl.surfnet.coin.selfservice.api.control;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
 import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.selfservice.domain.Article;
 import nl.surfnet.coin.selfservice.domain.CompoundServiceProvider;
 import nl.surfnet.coin.selfservice.domain.IdentityProvider;
 import nl.surfnet.coin.selfservice.domain.Provider.Language;
+import nl.surfnet.coin.selfservice.interceptor.AuthorityScopeInterceptor;
 import nl.surfnet.coin.selfservice.service.IdentityProviderService;
 import nl.surfnet.coin.selfservice.service.LmngService;
 import nl.surfnet.coin.selfservice.service.impl.CompoundSPService;
-
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.surfnet.oaaas.auth.AuthorizationServerFilter;
 import org.surfnet.oaaas.auth.principal.AuthenticatedPrincipal;
 import org.surfnet.oaaas.conext.SAMLAuthenticatedPrincipal;
 import org.surfnet.oaaas.model.VerifyTokenResponse;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Collections.sort;
 
@@ -53,13 +46,17 @@ import static java.util.Collections.sort;
 @RequestMapping
 public class ServicesController {
 
-  private @Value("${WEB_APPLICATION_CHANNEL}")
+  private
+  @Value("${WEB_APPLICATION_CHANNEL}")
   String protocol;
-  private @Value("${WEB_APPLICATION_HOST_AND_PORT}")
+  private
+  @Value("${WEB_APPLICATION_HOST_AND_PORT}")
   String hostAndPort;
-  private @Value("${WEB_APPLICATION_CONTEXT_PATH}")
+  private
+  @Value("${WEB_APPLICATION_CONTEXT_PATH}")
   String contextPath;
-  private @Value("${lmngDeepLinkBaseUrl}")
+  private
+  @Value("${lmngDeepLinkBaseUrl}")
   String lmngDeepLinkBaseUrl;
 
   @Resource
@@ -74,8 +71,9 @@ public class ServicesController {
   @Value("${public.api.lmng.guids}")
   private String[] guids;
 
-  @RequestMapping(method = RequestMethod.GET,value = "/api/public/services.json")
-  public @ResponseBody
+  @RequestMapping(method = RequestMethod.GET, value = "/api/public/services.json")
+  public
+  @ResponseBody
   List<Service> getPublicServices(@RequestParam(value = "lang", defaultValue = "en") String language) {
     List<CompoundServiceProvider> csPs = compoundSPService.getAllPublicCSPs();
     List<Service> result = buildApiServices(csPs, language);
@@ -84,7 +82,7 @@ public class ServicesController {
     for (String guid : guids) {
       Article currentArticle = lmngService.getService(guid);
       Service currentPS = new Service(currentArticle.getServiceDescriptionNl(), currentArticle.getDetailLogo(),
-          null, true, lmngDeepLinkBaseUrl + guid);
+              null, true, lmngDeepLinkBaseUrl + guid);
       result.add(currentPS);
     }
     sort(result);
@@ -96,17 +94,31 @@ public class ServicesController {
     if (detailLogo != null) {
       if (detailLogo.startsWith("/")) {
         detailLogo = protocol + "://" + hostAndPort + (StringUtils.hasText(contextPath) ? contextPath : "")
-            + detailLogo;
+                + detailLogo;
       }
     }
     return detailLogo;
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/services.json")
-  public @ResponseBody
+  public
+  @ResponseBody
   List<Service> getProtectedServices(@RequestParam(value = "lang", defaultValue = "en") String language,
-      final HttpServletRequest request) {
+                                     final HttpServletRequest request) {
     String ipdEntityId = getIdpEntityIdFromToken(request);
+    return doGetServicesForIdP(language, ipdEntityId);
+  }
+
+  @RequestMapping(method = RequestMethod.GET, value = "/api/protected/idp/services.json")
+  public
+  @ResponseBody
+  List<Service> getProtectedServicesByIdp(@RequestParam(value = "lang", defaultValue = "en") String language, @RequestParam(value = "idpEntityId") String idpEntityId,
+                                          final HttpServletRequest request) {
+    verifyScope(request, AuthorityScopeInterceptor.SELF_SERVICE_OAUTH_CLIENT_SCOPE);
+    return doGetServicesForIdP(language, idpEntityId);
+  }
+
+  private List<Service> doGetServicesForIdP(String language, String ipdEntityId) {
     IdentityProvider identityProvider = idpService.getIdentityProvider(ipdEntityId);
     List<CompoundServiceProvider> csPs = compoundSPService.getCSPsByIdp(identityProvider);
     List<CompoundServiceProvider> scopedSsPs = new ArrayList<CompoundServiceProvider>();
@@ -114,22 +126,19 @@ public class ServicesController {
      * We only want the SP's that are currently linked to the IdP, not the also included SP's that are NOT IdP-only
      */
     for (CompoundServiceProvider csp : csPs) {
-       if (csp.getServiceProvider().isLinked() && !csp.isHideInProtectedShowroom()) {
-         scopedSsPs.add(csp);
-       }
+      if (csp.getServiceProvider().isLinked() && !csp.isHideInProtectedShowroom()) {
+        scopedSsPs.add(csp);
+      }
     }
-    List<Service> result = buildApiServices(scopedSsPs , language);
+    List<Service> result = buildApiServices(scopedSsPs, language);
 
     sort(result);
     return result;
   }
 
-  /**
+  /*
    * Retrieve IDP Entity ID from the oauth token stored in the request
    * 
-   * @param request
-   *          httpServletRequest to look in.
-   * @return identityProvider of the principle
    */
   private String getIdpEntityIdFromToken(final HttpServletRequest request) {
     VerifyTokenResponse verifyTokenResponse = (VerifyTokenResponse) request.getAttribute(AuthorizationServerFilter.VERIFY_TOKEN_RESPONSE);
@@ -141,14 +150,20 @@ public class ServicesController {
     throw new IllegalArgumentException("Only type of Principal supported is SAMLAuthenticatedPrincipal, not " + authenticatedPrincipal.getClass());
   }
 
+  private void verifyScope(HttpServletRequest request, String scopeRequired) {
+    VerifyTokenResponse verifyTokenResponse = (VerifyTokenResponse) request.getAttribute(AuthorizationServerFilter.VERIFY_TOKEN_RESPONSE);
+    List<String> scopes = verifyTokenResponse.getScopes();
+    if (CollectionUtils.isEmpty(scopes) || !scopes.contains(scopeRequired)) {
+      throw new SecurityException("Scope required is '" + scopeRequired + "', but not granted");
+    }
+  }
+
   /**
    * Convert the list of found services to a list of services that can be
    * displayed in the API (either public or private)
-   * 
-   * @param services
-   *          list of services to convert (compound service providers)
-   * @param language
-   *          language to use in the result
+   *
+   * @param services list of services to convert (compound service providers)
+   * @param language language to use in the result
    * @return a list of api services
    */
   private List<Service> buildApiServices(List<CompoundServiceProvider> services, String language) {
@@ -157,7 +172,7 @@ public class ServicesController {
     for (CompoundServiceProvider csP : services) {
       String crmLink = csP.isArticleAvailable() ? (lmngDeepLinkBaseUrl + csP.getLmngId()) : null;
       result.add(new Service(isEn ? csP.getSp().getName(Language.EN) : csP.getSp().getName(Language.NL),
-          getServiceLogo(csP), csP.getServiceUrl(), csP.isArticleAvailable(), crmLink));
+              getServiceLogo(csP), csP.getServiceUrl(), csP.isArticleAvailable(), crmLink));
     }
     return result;
   }

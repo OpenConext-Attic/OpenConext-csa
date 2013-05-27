@@ -95,7 +95,9 @@ public class CompoundSPService {
   }
 
   public List<CompoundServiceProvider> getCSPsByIdp(IdentityProvider identityProvider) {
-
+    if (identityProvider == null) {
+      return new ArrayList<CompoundServiceProvider>();
+    }
     // Base: the list of all service providers for this IDP
     List<ServiceProvider> allServiceProviders = serviceProviderService.getAllServiceProviders(identityProvider.getId());
     return getCSPs(identityProvider, allServiceProviders);

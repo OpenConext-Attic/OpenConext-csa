@@ -25,6 +25,9 @@ public class Taxonomy {
 
   private List<Category> categories;
 
+  public Taxonomy() {
+  }
+
   public Taxonomy(List<Category> categories) {
     this.categories = categories;
   }

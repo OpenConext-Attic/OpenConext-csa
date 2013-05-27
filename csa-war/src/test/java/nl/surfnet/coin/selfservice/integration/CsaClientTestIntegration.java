@@ -21,6 +21,7 @@ package nl.surfnet.coin.selfservice.integration;
 import nl.surfnet.coin.csa.CsaClient;
 import nl.surfnet.coin.csa.model.LicenseInformation;
 import nl.surfnet.coin.csa.model.LicenseStatus;
+import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.model.Taxonomy;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,7 +40,28 @@ public class CsaClientTestIntegration {
   @Test
   public void taxonomy() throws IOException {
     Taxonomy taxonomy = csaClient.getTaxonomy();
-    assertEquals(2, taxonomy.getCategories());
+    assertEquals(2, taxonomy.getCategories().size());
+  }
+
+  @Test
+  public void publicServices() throws IOException {
+    List<Service> publicServices = csaClient.getPublicServices();
+    assertEquals(58,   publicServices.size());
+  }
+
+  @Test
+  public void servicesByIdp() throws IOException {
+    List<Service> services = csaClient.getServicesForIdp("http://mock-idp");
+    assertEquals(29,   services.size());
+
+    services = csaClient.getServicesForIdp("does-not-exist");
+    assertEquals(0,   services.size());
+  }
+
+  @Test
+  public void protectedServices() throws IOException {
+    List<Service> protectedServices = csaClient.getProtectedServices();
+    assertEquals(29,   protectedServices.size());
   }
 
 }

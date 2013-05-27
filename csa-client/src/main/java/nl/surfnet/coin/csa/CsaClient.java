@@ -51,26 +51,32 @@ public class CsaClient implements Csa {
 
   @Override
   public List<Service> getPublicServices() {
-    String url = "/public/services.json";
-    return getFromCsa(url, null, Service[].class);
+    String url = "/api/public/services.json";
+    return getFromCsa(url, null, List.class);
+  }
+
+  @Override
+  public List<Service> getProtectedServices() {
+    String url = "/api/protected/services.json";
+    return (List<Service>) getFromCsa(url, null, List.class);
   }
 
   @Override
   public List<Service> getServicesForIdp(String idpEntityId) {
-    String url = "/protected/services.json?idpEntityId={idpEntityId}";
+    String url = "/api/protected/idp/services.json?idpEntityId={idpEntityId}";
     Map variables = new HashMap<String, String>();
     variables.put("idpEntityId", idpEntityId);
-    return (List<Service>) getFromCsa(url, variables, Service[].class);
+    return (List<Service>) getFromCsa(url, variables, List.class);
   }
 
   @Override
   public Taxonomy getTaxonomy() {
-    return (Taxonomy) getFromCsa("/api/protected/taxonomy.json", null, Taxonomy.class);
+    return (Taxonomy) getFromCsa("/api/public/taxonomy.json", null, Taxonomy.class);
   }
 
   @Override
   public Service getService(long id) {
-    String location = "/protected/services/{id}.json";
+    String location = "/api/protected/services/{id}.json";
 
     Map variables = new HashMap<String, String>();
     variables.put("id", id);

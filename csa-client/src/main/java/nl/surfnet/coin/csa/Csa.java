@@ -35,8 +35,13 @@ public interface Csa {
   List<Service> getPublicServices();
 
   /**
-   * Get a list of services, scoped by the given IDP entity ID
+   * Get a list oof all protected services scoped by the Idp of the logged in person
    */
+  List<Service> getProtectedServices();
+
+    /**
+     * Get a list of services, scoped by the given IDP entity ID
+     */
   List<Service> getServicesForIdp(String idpEntityId);
 
   /**

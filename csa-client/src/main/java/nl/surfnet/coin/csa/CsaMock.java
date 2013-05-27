@@ -34,6 +34,11 @@ public class CsaMock implements Csa {
   }
 
   @Override
+  public List<Service> getProtectedServices() {
+    return Collections.emptyList();
+  }
+
+  @Override
   public List<Service> getServicesForIdp(String idpEntityId) {
     return Collections.emptyList();
   }

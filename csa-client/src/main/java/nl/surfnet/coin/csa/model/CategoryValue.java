@@ -19,7 +19,11 @@ package nl.surfnet.coin.csa.model;
 public class CategoryValue {
 
   private int count;
+
   private String value;
+
+  public CategoryValue() {
+  }
 
   public CategoryValue(String value) {
     this.value = value;
@@ -28,7 +32,6 @@ public class CategoryValue {
   public void setCount(int count) {
     this.count = count;
   }
-
   public int getCount() {
     return count;
   }
@@ -36,4 +39,8 @@ public class CategoryValue {
   public String getValue() {
     return value;
   }
+  public void setValue(String value) {
+    this.value = value;
+  }
+
 }
