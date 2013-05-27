@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Named;
-
 import nl.surfnet.coin.csa.model.Facet;
 import nl.surfnet.coin.csa.model.LicenseInformation;
 import nl.surfnet.coin.csa.model.Service;
@@ -37,7 +35,6 @@ import org.springframework.web.client.RestTemplate;
 /**
  * Client for the CSA API.
  */
-@Named
 public class CsaClient implements Csa {
 
   private static final Logger LOG = LoggerFactory.getLogger(CsaClient.class);
@@ -48,7 +45,6 @@ public class CsaClient implements Csa {
   private String csaBaseLocation;
 
   RestTemplate tpl = new RestTemplate();
-  private String csaEndpoint;
 
   @Override
   public List<Service> getPublicServices() {
@@ -107,6 +103,7 @@ public class CsaClient implements Csa {
 
   }
 
+  @Override
   public void setCsaBaseLocation(String csaBaseLocation) {
     this.csaBaseLocation = csaBaseLocation;
   }

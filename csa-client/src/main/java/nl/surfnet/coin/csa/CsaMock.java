@@ -18,15 +18,15 @@ package nl.surfnet.coin.csa;
 
 import java.util.List;
 
-import nl.surfnet.coin.csa.model.Facet;
 import nl.surfnet.coin.csa.model.LicenseInformation;
 import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.model.Taxonomy;
 
 /**
- * Mock implementation of CSA
+ * Mock implementation of CSA. To be filled with lots of data for local development. Perhaps JSON-local-file-backed.
  */
 public class CsaMock implements Csa {
+
   @Override
   public List<Service> getPublicServices() {
     return null;
@@ -45,6 +45,10 @@ public class CsaMock implements Csa {
   @Override
   public Service getService(long id) {
     return null;
+  }
+
+  @Override
+  public void setCsaBaseLocation(String location) {
   }
 
   @Override

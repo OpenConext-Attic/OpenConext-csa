@@ -28,8 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import nl.surfnet.coin.api.client.OpenConextOAuthClient;
 import nl.surfnet.coin.api.client.domain.Group20;
 import nl.surfnet.coin.api.client.domain.Person;
-import nl.surfnet.coin.csa.model.LicenseInformation;
-import nl.surfnet.coin.csa.CsaClient;
+import nl.surfnet.coin.csa.Csa;
 import nl.surfnet.coin.selfservice.dao.ConsentDao;
 import nl.surfnet.coin.selfservice.domain.CoinUser;
 import nl.surfnet.coin.selfservice.domain.CompoundServiceProvider;
@@ -99,7 +98,7 @@ public class ServiceDetailController extends BaseController {
   private int maxRecommendationEmails = 20;
 
   @Resource
-  private CsaClient csaClient;
+  private Csa csa;
 
   /**
    * Controller for detail page.

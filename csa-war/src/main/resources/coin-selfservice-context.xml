@@ -19,7 +19,7 @@
         http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
 
 
-  <context:component-scan base-package="nl.surfnet.coin.selfservice,nl.surfnet.coin.csa" />
+  <context:component-scan base-package="nl.surfnet.coin.selfservice" />
   <cache:annotation-driven key-generator="methodNameAwareCacheKeyGenerator" />
 
   <!-- Our "own" database for tracking connect/disconnect requests -->
@@ -254,4 +254,7 @@
   <bean id="authorizationServerFilter" class="${authorizationServerFilterClass}">
   </bean>
 
+  <bean id="csa" class="${csaClass}">
+    <property name="csaBaseLocation" value="${csaBaseLocation}" />
+  </bean>
 </beans>

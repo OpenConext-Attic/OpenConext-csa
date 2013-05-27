@@ -50,5 +50,11 @@ public interface Csa {
    */
   Service getService(long id);
 
+  /**
+   * Setter for base location of CSA
+   * @param location base URL of CSA
+   */
+  void setCsaBaseLocation(String location);
+
   Taxonomy getTaxonomy() ;
 }
