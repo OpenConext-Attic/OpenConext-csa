@@ -46,26 +46,6 @@ public class MenuInterceptorTest {
         assertEquals(0, menu.getMenuItems().size());
     }
 
-    @Test
-    public void test_menu_for_idp_admin_has_duplicates() throws Exception {
-        Menu menu = executeTestAndReturnMenu("who cares", true, ROLE_IDP_SURFCONEXT_ADMIN, ROLE_IDP_LICENSE_ADMIN);
-
-        assertEquals(4, menu.getMenuItems().size());
-        assertEquals("jsp.notifications.title", menu.getMenuItems().get(1).getLabel());
-    }
-
-    @Test
-    public void notificationsOnlyWhenLmngActive() throws Exception {        
-        Menu menuWhenLmngActive = executeTestAndReturnMenu("who cares", true, ROLE_IDP_SURFCONEXT_ADMIN, ROLE_IDP_LICENSE_ADMIN);
-
-        Menu menuWhenLmngNotActive = executeTestAndReturnMenu("who cares", false, ROLE_IDP_SURFCONEXT_ADMIN, ROLE_IDP_LICENSE_ADMIN);
-
-        assertEquals(4, menuWhenLmngActive.getMenuItems().size());
-        assertEquals(3, menuWhenLmngNotActive.getMenuItems().size());
-        assertEquals("jsp.notifications.title", menuWhenLmngActive.getMenuItems().get(1).getLabel());
-        assertEquals("jsp.requests-overview.title", menuWhenLmngNotActive.getMenuItems().get(1).getLabel());
-    }
-
     private Menu executeTestAndReturnMenu(String requestUri, Boolean lmngActive, Authority... authorities) throws Exception {
         setUpAuthorities(authorities);
         ModelAndView modelAndView = new ModelAndView();

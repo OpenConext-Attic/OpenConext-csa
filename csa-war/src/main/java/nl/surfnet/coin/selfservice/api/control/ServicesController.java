@@ -114,7 +114,7 @@ public class ServicesController {
   @ResponseBody
   List<Service> getProtectedServicesByIdp(@RequestParam(value = "lang", defaultValue = "en") String language, @RequestParam(value = "idpEntityId") String idpEntityId,
                                           final HttpServletRequest request) {
-    verifyScope(request, AuthorityScopeInterceptor.SELF_SERVICE_OAUTH_CLIENT_SCOPE);
+    verifyScope(request, AuthorityScopeInterceptor.DASHBOARD_OAUTH_CLIENT_SCOPE);
     return doGetServicesForIdP(language, idpEntityId);
   }
 

@@ -48,7 +48,7 @@
 <body>
   <script>document.body.className = 'js-loading'</script>
   
-  <spring:url value="/app-overview.shtml" var="homeUrl" htmlEscape="true" />
+  <spring:url value="/shopadmin/all-spslmng.shtml" var="homeUrl" htmlEscape="true" />
 <div id="swappable-menus">
   <header class="header">
     <a class="logo" href="${homeUrl}"> <img src="<c:url value="/images/surf-conext-logo.png"/>" alt="Surf Conext">
@@ -57,72 +57,12 @@
     <nav class="primary-navigation">
       <ul>
         <li class="user">
-          <spring:message code="jsp.general.welcome" /> <a href="<spring:url value="/user.shtml" htmlEscape="true" />">
+          <spring:message code="jsp.general.welcome" />
+          <span>
             <sec:authentication property="principal.displayName" scope="request" htmlEscape="true" />
-          </a>
+          </span>
         </li>
 
-        <li class="role-switch">
-          <c:if test="${fn:length(idps) gt 1}">
-            <ul class="user-dropdown">
-              <c:forEach items="${idps}" var="idp">
-                <li class="user-role-manager ${selectedidp.id == idp.id ? 'active' : ''}" data-roleId="${idp.id}">
-                      <spring:url var="toggleLink" value="/app-overview.shtml" htmlEscape="true">
-                        <spring:param name="idpId" value="${idp.id}" />
-                      </spring:url>
-                      <a href="${toggleLink}">
-                        <tags:providername provider="${idp}" />
-                      </a>
-                </li>
-              </c:forEach>
-            </ul>
-          </c:if>
-          <c:if test="${fn:length(idps) == 1}">
-            <tags:providername provider="${idps[0]}" />
-          </c:if>
-        </li>
-
-        <spring:url value="" var="langNL" htmlEscape="true">
-          <c:forEach var="par" items="${paramValues}">
-            <c:if test="${par.key ne 'lang'}">
-              <spring:param name="${par.key}" value="${par.value[0]}" />
-            </c:if>
-          </c:forEach>
-          <spring:param name="lang" value="nl" />
-        </spring:url>
-        <spring:url value="" var="langEN" htmlEscape="true">
-          <c:forEach var="par" items="${paramValues}">
-            <c:if test="${par.key ne 'lang'}">
-              <spring:param name="${par.key}" value="${par.value[0]}" />
-            </c:if>
-          </c:forEach>
-          <spring:param name="lang" value="en" />
-        </spring:url>
-
-        <li class="language">
-          <div>
-
-          <c:choose>
-            <c:when test="${locale.language  eq 'en'}">
-              <a href="${langNL}" hreflang="nl" title="Nederlands">NL</a> | <span>EN</span>
-            </c:when>
-            <c:otherwise>
-              <span>NL</span> | <a href="${langEN}" hreflang="en" title="English">EN</a>
-            </c:otherwise>
-          </c:choose>
-            </div>
-          </li>
-        <li class="help">
-        <c:if test="${lmngActive}">
-          <c:set var="supporturl"><spring:message code="jsp.general.footertext.supportpages.showroom.url"/></c:set>
-        </c:if>
-        <c:if test="${!lmngActive}">
-          <c:set var="supporturl"><spring:message code="jsp.general.footertext.supportpages.url"/></c:set>
-        </c:if>
-          <a href="${supporturl}"  target="_blank">
-            <spring:message code="jsp.general.footertext.supportpages"/>
-          </a>
-        </li>
         <li class="logout">
           <a href="<spring:url value="/logout.shtml" htmlEscape="true" />">
             <spring:message code="jsp.general.logout" />
@@ -132,19 +72,19 @@
     </nav>
   </header>
   <c:if test="${not empty menu.menuItems}">
-    <nav class="secondary-menu">
-      <ul>
-        <c:forEach items="${menu.menuItems}" var="menuItem">
-          <c:set var="index" value="${fn:indexOf(menuItem.label,'.title')}" />
-          <c:set var="classname" value="${fn:substring(menuItem.label, 4, index)}" />
-          <li class="${classname}<c:if test="${menuItem.selected}"> active</c:if>">
-            <spring:url value="${menuItem.url}" htmlEscape="true" var="url" />
-              <a href="${url}"><spring:message code="${menuItem.label}" /></a>
-          </li>
-        </c:forEach>
-      </ul>
-    </nav>
-  </c:if>
+      <nav class="secondary-menu">
+        <ul>
+          <c:forEach items="${menu.menuItems}" var="menuItem">
+            <c:set var="index" value="${fn:indexOf(menuItem.label,'.title')}" />
+            <c:set var="classname" value="${fn:substring(menuItem.label, 4, index)}" />
+            <li class="${classname}<c:if test="${menuItem.selected}"> active</c:if>">
+              <spring:url value="${menuItem.url}" htmlEscape="true" var="url" />
+                <a href="${url}"><spring:message code="${menuItem.label}" /></a>
+            </li>
+          </c:forEach>
+        </ul>
+      </nav>
+    </c:if>
 
   </div>
 <div>

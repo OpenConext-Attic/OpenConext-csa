@@ -14,4 +14,6 @@
   limitations under the License.
   --%>
 
-<jsp:forward page="app-overview.shtml"/>
+<%
+  response.sendRedirect("shopadmin/all-spslmng.shtml");
+%>

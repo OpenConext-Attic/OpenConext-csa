@@ -55,7 +55,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  */
 public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
 
-  public static final String SELF_SERVICE_OAUTH_CLIENT_SCOPE = "cross-idp-allowed";
+  public static final String DASHBOARD_OAUTH_CLIENT_SCOPE = "dashboard";
 
   private static final Logger LOG = LoggerFactory.getLogger(AuthorityScopeInterceptor.class);
 
@@ -106,25 +106,12 @@ public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
 
   protected void scopeGeneralAuthCons(ModelMap map, List<Authority> authorities, final HttpServletRequest request) {
     boolean isAdmin = containsRole(authorities, ROLE_DISTRIBUTION_CHANNEL_ADMIN, ROLE_IDP_LICENSE_ADMIN, ROLE_IDP_SURFCONEXT_ADMIN);
-    map.put(SERVICE_QUESTION_ALLOWED, containsRole(authorities, ROLE_IDP_SURFCONEXT_ADMIN));
-    map.put(SERVICE_APPLY_ALLOWED, containsRole(authorities, ROLE_IDP_SURFCONEXT_ADMIN));
     map.put(SERVICE_CONNECTION_VISIBLE, containsRole(authorities, ROLE_IDP_SURFCONEXT_ADMIN, ROLE_DISTRIBUTION_CHANNEL_ADMIN));
     map.put(FACET_CONNECTION_VISIBLE, isAdmin);
     map.put(DEEPLINK_TO_SURFMARKET_ALLOWED, containsRole(authorities, ROLE_IDP_LICENSE_ADMIN, ROLE_DISTRIBUTION_CHANNEL_ADMIN));
-    map.put(FILTER_APP_GRID_ALLOWED, false); //isAdmin);
-    map.put(IS_ADMIN_USER, isAdmin);
-    map.put(IS_GOD, isDistributionChannelGod(authorities));
-    map.put(RAW_ARP_ATTRIBUTES_VISIBLE, containsRole(authorities, ROLE_IDP_SURFCONEXT_ADMIN));
+    map.put(IS_GOD, true);
   }
   
-  private Boolean isLmngActive(final HttpServletRequest request) {
-    Boolean result = Boolean.FALSE;
-    if (null != request.getAttribute("lmngActive")) {
-      result = (Boolean) request.getAttribute("lmngActive");
-    }
-    return result;
-  }
-
   /**
    * Reduce list based on whether the SP 'is linked' to the current IdP.
    * 
@@ -184,10 +171,6 @@ public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
     return false;
   }
   
-  protected boolean isDistributionChannelGod(List<Authority> authorities) {
-    return containsRole(authorities, ROLE_DISTRIBUTION_CHANNEL_ADMIN);
-  }
-
   public static boolean isDistributionChannelAdmin() {
     return containsRole(SpringSecurity.getCurrentUser().getAuthorityEnums(), ROLE_DISTRIBUTION_CHANNEL_ADMIN);
   }

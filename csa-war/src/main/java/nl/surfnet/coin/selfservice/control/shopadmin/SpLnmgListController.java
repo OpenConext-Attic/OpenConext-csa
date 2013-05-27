@@ -24,6 +24,7 @@ import nl.surfnet.coin.selfservice.domain.CompoundServiceProvider;
 import nl.surfnet.coin.selfservice.domain.ServiceProvider;
 import nl.surfnet.coin.selfservice.service.LmngService;
 import nl.surfnet.coin.selfservice.service.ServiceProviderService;
+import nl.surfnet.coin.selfservice.service.impl.CompoundSPService;
 import nl.surfnet.coin.selfservice.service.impl.LmngUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -58,14 +59,15 @@ public class SpLnmgListController extends BaseController {
   @Autowired
   private LmngIdentifierDao lmngIdentifierDao;
 
+  @Resource
+  private CompoundSPService compoundSPService;
+
   @Autowired
   private CompoundServiceProviderDao compoundServiceProviderDao;
 
   @RequestMapping(value = "/all-spslmng")
   public ModelAndView listAllSpsLmng(Map<String, Object> model) {
-    if (model == null) {
-      model = new HashMap<String, Object>();
-    }
+    List<CompoundServiceProvider> services = compoundSPService.getAllCSPs();
 
     List<LmngServiceBinding> lmngServiceBindings = new ArrayList<LmngServiceBinding>();
     for (ServiceProvider serviceProvider : providerService.getAllServiceProviders(false)) {

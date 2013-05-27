@@ -66,7 +66,7 @@
                   <tbody>
                     <c:forEach items="${compoundSps}" var="compoundSp">
                       <spring:url value="/app-detail.shtml" var="detailUrl" htmlEscape="true">
-                        <spring:param name="compoundSpId" value="${compoundSp.id}" />
+                        <spring:param name="serviceProviderEntityId" value="${compoundSp.serviceProviderEntityId}" />
                       </spring:url>
                       
                       <c:set var="serviceDescription"><tags:providername provider="${compoundSp.sp}" /></c:set>

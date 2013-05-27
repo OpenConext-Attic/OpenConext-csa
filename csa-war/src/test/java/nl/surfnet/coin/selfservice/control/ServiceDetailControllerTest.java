@@ -67,27 +67,9 @@ public class ServiceDetailControllerTest {
   private CoinUser coinUser;
 
   @Mock
-  private LocaleResolver localeResolver;
-
-  @Mock
-  private ServiceProviderService providerService;
-
-  @Mock
-  private OAuthTokenService oAuthTokenService;
-  
-  @Mock
-  private ConsentDao consentDao;
-
-  @Mock
-  private PersonAttributeLabelServiceJsonImpl labelService;
-
-  @Mock
   private CompoundSPService compoundSPService;
   
   private HttpServletRequest request;
-
-  @Mock
-  private CsaClient csaClient;
 
   @Before
   public void setUp() throws Exception {
@@ -95,8 +77,6 @@ public class ServiceDetailControllerTest {
     MockitoAnnotations.initMocks(this);
     
     request = new MockHttpServletRequest();
-    request.setAttribute("showOauthTokens", Boolean.TRUE);
-    request.setAttribute("ebLinkActive", Boolean.TRUE);
     when(coinUser.getUid()).thenReturn("urn:collab:person:example.edu:john.doe");
     SecurityContextHolder.getContext().setAuthentication(getAuthentication());
   }
@@ -107,79 +87,19 @@ public class ServiceDetailControllerTest {
     IdentityProvider idp = new IdentityProvider();
     idp.setId("mockIdP");
     CompoundServiceProvider csp = new CompoundServiceProvider();
-    when(compoundSPService.getCSPById(idp, 1L, false)).thenReturn(csp);
-    when(consentDao.mayHaveGivenConsent(coinUser.getUid(), "mockSp")).thenReturn(null);
+    when(compoundSPService.getCSPById("serviceProviderEntityId")).thenReturn(csp);
 
     OAuthTokenInfo info = new OAuthTokenInfo("cafebabe-cafe-babe-cafe-babe-cafebabe", "mockDao");
     info.setUserId(coinUser.getUid());
-    List<OAuthTokenInfo> infos = Arrays.asList(info);
-    when(oAuthTokenService.getOAuthTokenInfoList(eq(coinUser.getUid()), (ServiceProvider) any())).thenReturn(infos);
 
-    final ModelAndView modelAndView = controller.serviceDetail(1, null, "false", idp, request);
+    final ModelAndView modelAndView = controller.serviceDetail("serviceProviderEntityId", request);
     assertEquals("app-detail", modelAndView.getViewName());
     assertEquals(csp, modelAndView.getModelMap().get("compoundSp"));
-    assertTrue(modelAndView.getModelMap().containsKey("revoked"));
     assertNull(modelAndView.getModelMap().get("revoked"));
-  }
-
-  @Test
-  public void revokeAccessTokens() {
-    IdentityProvider idp = new IdentityProvider();
-    idp.setId("mockIdP");
-
-    ServiceProvider sp = new ServiceProvider("mockSp");
-    sp.setLinked(true);
-
-    when(providerService.getServiceProvider("mockSp", "mockIdP")).thenReturn(sp);
-
-    final RedirectView view = controller.revokeKeys(1, "mockSp", idp);
-    verify(oAuthTokenService).revokeOAuthTokens(coinUser.getUid(), sp);
-    assertEquals("app-detail.shtml?compoundSpId=1&revoked=true", view.getUrl());
   }
 
   private Authentication getAuthentication() {
     return new TestingAuthenticationToken(coinUser, "");
   }
   
-  @Test
-  public void testWithoutOathTokens() {
-    //disable oathTokens
-    request.setAttribute("showOauthTokens", Boolean.FALSE);
-    
-    IdentityProvider idp = new IdentityProvider();
-    idp.setId("mockIdP");
-    CompoundServiceProvider csp = new CompoundServiceProvider();
-    when(compoundSPService.getCSPById(idp, 1L, false)).thenReturn(csp);
-    when(consentDao.mayHaveGivenConsent(coinUser.getUid(), "mockSp")).thenReturn(null);
-    
-    when(oAuthTokenService.getOAuthTokenInfoList(eq(coinUser.getUid()), (ServiceProvider) any())).thenThrow(new IllegalStateException("Illegal Call to API Database"));
-
-    final ModelAndView modelAndView = controller.serviceDetail(1, "revoked", "false", idp, request);
-    assertEquals("app-detail", modelAndView.getViewName());
-    assertEquals(csp, modelAndView.getModelMap().get("compoundSp"));
-    assertNull(modelAndView.getModelMap().get("oAuthTokens"));
-    assertNull(modelAndView.getModelMap().get("revoked"));
-  }
-  
-  @Test
-  public void testWithoutConsent() {
-    request.setAttribute("ebLinkActive", Boolean.FALSE);
-    
-    IdentityProvider idp = new IdentityProvider();
-    idp.setId("mockIdP");
-    CompoundServiceProvider csp = new CompoundServiceProvider();
-    when(compoundSPService.getCSPById(idp, 1L, false)).thenReturn(csp);
-    when(consentDao.mayHaveGivenConsent(coinUser.getUid(), "mockSp")).thenThrow(new IllegalStateException("Illegal call to consent database"));
-
-    OAuthTokenInfo info = new OAuthTokenInfo("cafebabe-cafe-babe-cafe-babe-cafebabe", "mockDao");
-    info.setUserId(coinUser.getUid());
-    List<OAuthTokenInfo> infos = Arrays.asList(info);
-    when(oAuthTokenService.getOAuthTokenInfoList(eq(coinUser.getUid()), (ServiceProvider) any())).thenReturn(infos);
-
-    final ModelAndView modelAndView = controller.serviceDetail(1, "revoked", "false", idp, request);
-    assertEquals("app-detail", modelAndView.getViewName());
-    assertEquals(csp, modelAndView.getModelMap().get("compoundSp"));
-    assertNotNull(modelAndView.getModelMap().get("oAuthTokens"));
-    assertNull(modelAndView.getModelMap().get("mayHaveGivenConsent"));
-  }
 }

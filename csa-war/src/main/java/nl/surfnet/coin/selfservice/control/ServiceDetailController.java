@@ -70,161 +70,25 @@ public class ServiceDetailController extends BaseController {
 
   private static final Logger LOG = LoggerFactory.getLogger(ServiceDetailController.class);
 
-  @Resource(name = "providerService")
-  private ServiceProviderService providerService;
-
   @Resource
   private CompoundSPService compoundSPService;
-
-  @Resource(name = "oAuthTokenService")
-  private OAuthTokenService oAuthTokenService;
-
-  @Resource(name = "emailService")
-  private EmailService emailService;
-
-  @Resource
-  private OpenConextOAuthClient apiClient;
-
-  @Resource
-  private ConsentDao consentDao;
-
-  @Resource(name = "personAttributeLabelService")
-  private PersonAttributeLabelServiceJsonImpl personAttributeLabelService;
 
   @Value("${lmngDeepLinkBaseUrl}")
   private String lmngDeepLinkBaseUrl;
 
-  @Value("${maxRecommendationEmails}")
-  private int maxRecommendationEmails = 20;
 
-  @Resource
-  private Csa csa;
-
-  /**
+  /*
    * Controller for detail page.
-   * 
-   * @param compoundSpId
-   *          the compound service provider id
-   * @return ModelAndView
+   *
    */
   @RequestMapping(value = "/app-detail")
-  public ModelAndView serviceDetail(@RequestParam(value = "compoundSpId") long compoundSpId,
-      @RequestParam(required = false) String revoked,
-      @RequestParam(value = "refreshCache", required = false, defaultValue = "false") String refreshCache,
-      @ModelAttribute(value = "selectedidp") IdentityProvider selectedidp, HttpServletRequest request) {
+  public ModelAndView serviceDetail(@RequestParam(value = "serviceProviderEntityId") String serviceProviderEntityId,
+      HttpServletRequest request) {
     Map<String, Object> m = new HashMap<String, Object>();
-    CompoundServiceProvider compoundServiceProvider = compoundSPService.getCSPById(selectedidp, compoundSpId,
-        Boolean.valueOf(refreshCache));
+    CompoundServiceProvider compoundServiceProvider = compoundSPService.getCSPById(serviceProviderEntityId);
     m.put(COMPOUND_SP, compoundServiceProvider);
-
-    String spEntityId = compoundServiceProvider.getServiceProviderEntityId();
-    if ((Boolean) (request.getAttribute("ebLinkActive"))) {
-      final Boolean mayHaveGivenConsent = consentDao.mayHaveGivenConsent(SpringSecurity.getCurrentUser().getUid(),
-          spEntityId);
-      m.put("mayHaveGivenConsent", mayHaveGivenConsent);
-    }
-
-    final Map<String, PersonAttributeLabel> attributeLabelMap = personAttributeLabelService.getAttributeLabelMap();
-    m.put("personAttributeLabels", attributeLabelMap);
-
-    if ((Boolean) (request.getAttribute("showOauthTokens"))) {
-      final List<OAuthTokenInfo> oAuthTokens = oAuthTokenService.getOAuthTokenInfoList(SpringSecurity.getCurrentUser()
-          .getUid(), compoundServiceProvider.getServiceProvider());
-
-      m.put("oAuthTokens", oAuthTokens);
-
-      m.put("revoked", revoked);
-    }
-
     m.put("lmngDeepLinkUrl", lmngDeepLinkBaseUrl);
-
     return new ModelAndView("app-detail", m);
   }
 
-  @RequestMapping(value = "/app-recommend")
-  public ModelAndView recommendApp(@RequestParam(value = "compoundSpId") long compoundSpId,
-      @ModelAttribute(value = "selectedidp") IdentityProvider selectedidp) {
-    Map<String, Object> m = new HashMap<String, Object>();
-
-    CompoundServiceProvider compoundServiceProvider = compoundSPService.getCSPById(selectedidp, compoundSpId, false);
-    m.put(COMPOUND_SP, compoundServiceProvider);
-    m.put("maxRecommendationEmails", maxRecommendationEmails);
-    return new ModelAndView("app-recommend", m);
-  }
-
-  @RequestMapping(value = "/do-app-recommend", method = RequestMethod.POST)
-  public @ResponseBody
-  String doRecommendApp(
-      @RequestParam(value = "compoundSpId") long compoundSpId,
-      @RequestParam(value = "recommendPersonalNote", required = false) String recommendPersonalNote,
-      @RequestParam(value = "emailSelect2") String emailSelect2,
-      @RequestParam(value = "detailAppStoreLink") String detailAppStoreLink,
-      @CookieValue(value = "org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE", required = false) String localeAbbr,
-      @ModelAttribute(value = "selectedidp") IdentityProvider selectedidp, HttpServletRequest request) {
-    recommendPersonalNote = StringUtils.hasText(recommendPersonalNote) ? ((recommendPersonalNote.replace("\n\r", "")
-        .trim().length() == 0) ? null : recommendPersonalNote) : null;
-    if (!StringUtils.hasText(emailSelect2)) {
-      throw new AjaxResponseException("Required field emails addresses");
-    }
-    String[] recipients = emailSelect2.split(",");
-    Locale locale = StringUtils.hasText(localeAbbr) ? new Locale(localeAbbr) : new Locale("en");
-    CoinUser coinUser = SpringSecurity.getCurrentUser();
-
-    CompoundServiceProvider csp = compoundSPService.getCSPById(selectedidp, compoundSpId, Boolean.FALSE);
-
-    String subject = coinUser.getDisplayName() + " would like to recommend " + csp.getSp().getName();
-
-    Map<String, Object> templateVars = new HashMap<String, Object>();
-    templateVars.put("compoundSp", csp);
-    templateVars.put("recommendPersonalNote", recommendPersonalNote);
-    templateVars.put("invitername", coinUser.getDisplayName());
-
-    String baseUrl = getBaseUrl(request);
-
-    templateVars.put("appstoreURL", baseUrl + detailAppStoreLink);
-
-    emailService.sendTemplatedMultipartEmail(subject, EmailServiceImpl.RECOMMENTATION_EMAIL_TEMPLATE, locale,
-        Arrays.asList(recipients), coinUser.getEmail(), templateVars);
-    return "ok";
-  }
-
-  private String getBaseUrl(HttpServletRequest request) {
-    int serverPort = request.getServerPort();
-    String baseUrl;
-    if (serverPort != 80) {
-      baseUrl = String.format("%s://%s:%d%s/", request.getScheme(), request.getServerName(), request.getServerPort(),
-          request.getContextPath());
-    } else {
-      baseUrl = String.format("%s://%s%s/", request.getScheme(), request.getServerName(), request.getContextPath());
-    }
-    return baseUrl;
-  }
-
-  @SuppressWarnings("unchecked")
-  @RequestMapping("/groupsWithMembers.json")
-  public @ResponseBody
-  List<Group20Wrap> groupsWithMembers(HttpServletRequest request) {
-    List<Group20Wrap> result = (List<Group20Wrap>) request.getSession().getAttribute(GROUPS_WITH_MEMBERS);
-    if (result == null) {
-      CoinUser coinUser = SpringSecurity.getCurrentUser();
-      List<Group20> groups = apiClient.getGroups20(coinUser.getUid(), coinUser.getUid());
-      GroupContext groupsWithMembers = new GroupContext();
-      for (Group20 group : groups) {
-        List<Person> members = apiClient.getGroupMembers(group.getId(), coinUser.getUid());
-        groupsWithMembers.addGroup(group, members);
-      }
-      result = groupsWithMembers.getEntries();
-      request.getSession().setAttribute(GROUPS_WITH_MEMBERS, result);
-    }
-    return result;
-  }
-
-  @RequestMapping(value = "revokekeys.shtml")
-  public RedirectView revokeKeys(@RequestParam(value = "compoundSpId") long compoundSpId,
-      @RequestParam(value = "spEntityId") String spEntityId,
-      @ModelAttribute(value = "selectedidp") IdentityProvider selectedidp) {
-    final ServiceProvider sp = providerService.getServiceProvider(spEntityId, selectedidp.getId());
-    oAuthTokenService.revokeOAuthTokens(SpringSecurity.getCurrentUser().getUid(), sp);
-    return new RedirectView("app-detail.shtml?compoundSpId=" + compoundSpId + "&revoked=true");
-  }
 }

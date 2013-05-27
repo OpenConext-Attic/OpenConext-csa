@@ -86,11 +86,6 @@ public class AuthorityScopeInterceptorTest {
     // intercepted...
     assertNull(technicalSupportMail);
 
-    // also not allowed
-    Map<String, Object> model = modelAndView.getModel();
-    assertFalse((Boolean) model.get(SERVICE_QUESTION_ALLOWED));
-    assertFalse((Boolean) model.get(SERVICE_APPLY_ALLOWED));
-
   }
 
   @Test(expected = AccessDeniedException.class)
@@ -129,10 +124,6 @@ public class AuthorityScopeInterceptorTest {
 
     String technicalSupportMail = sp.getTechnicalSupportMail();
     assertNotNull(technicalSupportMail);
-
-    // also allowed
-    Map<String, Object> model = modelAndView.getModel();
-    assertTrue((Boolean) model.get(SERVICE_APPLY_ALLOWED));
 
   }
 
