@@ -86,6 +86,15 @@ public class CsaClient implements Csa {
     return (List<Facet>) getFromCsa(url, null, Facet[].class);
   }
 
+  @Override
+  public Service getService(long id) {
+    String location = "/protected/services/{id}.json";
+
+    Map variables = new HashMap<String, String>();
+    variables.put("id", id);
+    return (Service) getFromCsa(location, variables, Service.class);
+  }
+
   private<T> T getFromCsa(String url, Map<String, ?> variables, Class clazz) {
     try {
       ResponseEntity<T> entity = tpl.getForEntity(csaBaseLocation + url, clazz, variables);

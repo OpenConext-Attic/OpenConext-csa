@@ -45,4 +45,9 @@ public class CsaMock implements Csa {
   public List<Facet> getFacets() {
     return null;
   }
+
+  @Override
+  public Service getService(long id) {
+    return null;
+  }
 }

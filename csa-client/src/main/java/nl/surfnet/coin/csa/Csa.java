@@ -44,6 +44,12 @@ public interface Csa {
   List<LicenseInformation> getLicenseInformation(String idpEntityId);
 
   /**
+   * Get a service by its CSA ID
+   * @param id the ID
+   */
+  Service getService(long id);
+
+  /**
    * Get all facets
    */
   List<Facet> getFacets();
