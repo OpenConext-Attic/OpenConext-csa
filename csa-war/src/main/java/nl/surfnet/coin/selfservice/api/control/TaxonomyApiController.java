@@ -51,7 +51,7 @@ public class TaxonomyApiController {
   @Resource
   private FacetDao facetDao;
 
-  @RequestMapping(method = RequestMethod.GET, value = "/api/protected/taxonomy.json")
+  @RequestMapping(method = RequestMethod.GET, value = "/api/public/taxonomy.json")
   public @ResponseBody
   Taxonomy getTaxonomy(@RequestParam(value = "lang", defaultValue = "en") String language) {
     List<Facet> facets = facetDao.findAll();

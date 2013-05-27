@@ -39,11 +39,6 @@ public class CsaMock implements Csa {
   }
 
   @Override
-  public List<LicenseInformation> getLicenseInformation(String idpEntityId) {
-    return Collections.emptyList();
-  }
-
-  @Override
   public Service getService(long id) {
     return null;
   }

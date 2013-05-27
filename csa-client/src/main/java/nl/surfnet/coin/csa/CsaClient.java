@@ -16,21 +16,16 @@
 
 package nl.surfnet.coin.csa;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import nl.surfnet.coin.csa.model.Facet;
-import nl.surfnet.coin.csa.model.LicenseInformation;
 import nl.surfnet.coin.csa.model.Service;
-
 import nl.surfnet.coin.csa.model.Taxonomy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Client for the CSA API.
@@ -44,7 +39,14 @@ public class CsaClient implements Csa {
    */
   private String csaBaseLocation;
 
-  RestTemplate tpl = new RestTemplate();
+  private RestTemplate tpl = new RestTemplate();
+
+  public CsaClient() {
+  }
+
+  public CsaClient(String csaBaseLocation) {
+    this.csaBaseLocation = csaBaseLocation;
+  }
 
   @Override
   public List<Service> getPublicServices() {
@@ -61,23 +63,6 @@ public class CsaClient implements Csa {
   }
 
   @Override
-  public List<LicenseInformation> getLicenseInformation(String idpEntityId) {
-
-    String locationWithParam = "/license/licenses.json?idpEntityId={idpEntityId}";
-
-    LOG.debug("Will query CSA API with URL: {}", locationWithParam);
-    Map variables = new HashMap<String, String>();
-    variables.put("idpEntityId", idpEntityId);
-    LicenseInformation[] licenseInformations  = (LicenseInformation[]) getFromCsa(locationWithParam, variables, LicenseInformation[].class);
-    if (licenseInformations != null) {
-      LOG.debug("Got {} results from CSA API: {}", licenseInformations.length, licenseInformations);
-      return Arrays.asList(licenseInformations);
-    }
-    LOG.info("No result from query to CSA, will return empty list.");
-    return Collections.emptyList();
-  }
-
-  @Override
   public Taxonomy getTaxonomy() {
     return (Taxonomy) getFromCsa("/api/protected/taxonomy.json", null, Taxonomy.class);
   }
@@ -91,16 +76,9 @@ public class CsaClient implements Csa {
     return (Service) getFromCsa(location, variables, Service.class);
   }
 
-  private<T> T getFromCsa(String url, Map<String, ?> variables, Class clazz) {
-    try {
-      ResponseEntity<T> entity = tpl.getForEntity(csaBaseLocation + url, clazz, variables);
-      return entity.getBody();
-    } catch (RuntimeException rte) {
-      // TODO: differentiate between 4xx and 5xx?
-      LOG.error("While using CSA API, will return null", rte);
-      return null;
-    }
-
+  private <T> T getFromCsa(String url, Map<String, ?> variables, Class clazz) {
+    ResponseEntity<T> entity = tpl.getForEntity(csaBaseLocation + url, clazz, variables);
+    return entity.getBody();
   }
 
   @Override

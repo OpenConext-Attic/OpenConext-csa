@@ -125,31 +125,6 @@ public class ServicesController {
   }
 
   /**
-   * Handle CORS preflight request.
-   * 
-   * @param origin
-   *          the Origin header
-   * @param methods
-   *          the "Access-Control-Request-Method" header
-   * @param headers
-   *          the "Access-Control-Request-Headers" header
-   * @return a ResponseEntity with 204 (no content) and the right response
-   *         headers
-   */
-  @RequestMapping(method = RequestMethod.OPTIONS, value = "/protected/**")
-  public ResponseEntity<String> preflightCORS(@RequestHeader("Origin") String origin,
-      @RequestHeader(value = "Access-Control-Request-Method", required = false) String[] methods,
-      @RequestHeader(value = "Access-Control-Request-Headers", required = false) String[] headers) {
-    HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.set("Allow", "GET, OPTIONS, HEAD");
-    responseHeaders.set("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD");
-    responseHeaders.set("Access-Control-Allow-Headers", "Authorization");
-    responseHeaders.set("Access-Control-Max-Age", "86400"); // allow cache of 1
-                                                            // day
-    return new ResponseEntity<String>(null, responseHeaders, HttpStatus.OK);
-  }
-
-  /**
    * Retrieve IDP Entity ID from the oauth token stored in the request
    * 
    * @param request

@@ -31,20 +31,12 @@ import static junit.framework.Assert.assertEquals;
 
 public class CsaClientTestIntegration {
 
-  private static String endpoint = "http://localhost:8280/selfservice/";
+  private String endpoint = "http://localhost:8280/selfservice/";
 
-  private static CsaClient csaClient = new CsaClient();
-
-  @BeforeClass
-  public static void before() throws Exception {
-    csaClient.setCsaBaseLocation(endpoint);
-  }
+  private CsaClient csaClient = new CsaClient(endpoint);
 
   @Test
-  public void licenseInformation() throws IOException {
-    List<LicenseInformation> licenseInformation = csaClient.getLicenseInformation("someIdp");
-    assertEquals(1, licenseInformation.size());
-    assertEquals(LicenseStatus.AVAILABLE, licenseInformation.get(0).getStatus());
+  public void taxonomy() throws IOException {
   }
 
 }

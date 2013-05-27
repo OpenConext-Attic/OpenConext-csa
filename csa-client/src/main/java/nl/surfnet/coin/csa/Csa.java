@@ -40,11 +40,6 @@ public interface Csa {
   List<Service> getServicesForIdp(String idpEntityId);
 
   /**
-   * Get a list of license information models, scoped by the given IDP entity ID
-   */
-  List<LicenseInformation> getLicenseInformation(String idpEntityId);
-
-  /**
    * Get a service by its CSA ID
    * @param id the ID
    */
