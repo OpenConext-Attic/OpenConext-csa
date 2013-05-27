@@ -20,21 +20,36 @@ package nl.surfnet.coin.csa.model;
 
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 public class Category {
+
 
   private String name;
 
   public Category(String name) {
     this.name = name;
   }
-  private List<String> values;
+  private List<CategoryValue> values;
 
-  public List<String> getValues() {
+  public List<CategoryValue> getValues() {
     return values;
   }
 
-  public void setValues(List<String> values) {
+  public void setValues(List<CategoryValue> values) {
     this.values = values;
   }
+  public String getName() {
+    return name;
+  }
 
+  @JsonIgnore
+  public boolean isUsedFacetValues() {
+    for (CategoryValue categoryValue : values) {
+      if (categoryValue.getCount() > 0) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

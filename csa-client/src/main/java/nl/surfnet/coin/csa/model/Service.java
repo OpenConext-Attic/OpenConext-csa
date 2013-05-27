@@ -16,6 +16,9 @@
 
 package nl.surfnet.coin.csa.model;
 
+import java.util.List;
+import java.util.Map;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
@@ -31,6 +34,10 @@ public class Service implements Comparable<Service> {
   private boolean hasCrmLink;
   @JsonProperty("surfmarket_url")
   private String crmLink;
+
+
+  @JsonProperty
+  private Map<Category, List<CategoryValue>> categories;
 
   public Service(String name, String logoUrl, String websiteUrl, boolean hasCrmLink, String crmLink) {
     this.name = name;
@@ -78,6 +85,14 @@ public class Service implements Comparable<Service> {
 
   public void setCrmLink(String crmLink) {
     this.crmLink = crmLink;
+  }
+
+  public Map<Category, List<CategoryValue>> getCategories() {
+    return categories;
+  }
+
+  public void setCategories(Map<Category, List<CategoryValue>> categories) {
+    this.categories = categories;
   }
 
   @Override

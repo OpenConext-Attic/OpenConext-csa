@@ -16,6 +16,7 @@
 
 package nl.surfnet.coin.csa;
 
+import java.util.Collections;
 import java.util.List;
 
 import nl.surfnet.coin.csa.model.LicenseInformation;
@@ -29,17 +30,17 @@ public class CsaMock implements Csa {
 
   @Override
   public List<Service> getPublicServices() {
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
   public List<Service> getServicesForIdp(String idpEntityId) {
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
   public List<LicenseInformation> getLicenseInformation(String idpEntityId) {
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
@@ -53,6 +54,6 @@ public class CsaMock implements Csa {
 
   @Override
   public Taxonomy getTaxonomy() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null;
   }
 }
