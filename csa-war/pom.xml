@@ -435,7 +435,6 @@
     <profile>
       <id>css-javascript-minifier</id>
       <activation>
-        <!--<activeByDefault>true</activeByDefault>-->
         <property>
           <name>!skipCssJs</name>
         </property>

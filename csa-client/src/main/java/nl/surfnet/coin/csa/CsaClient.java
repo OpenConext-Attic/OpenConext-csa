@@ -28,6 +28,7 @@ import nl.surfnet.coin.csa.model.Facet;
 import nl.surfnet.coin.csa.model.LicenseInformation;
 import nl.surfnet.coin.csa.model.Service;
 
+import nl.surfnet.coin.csa.model.Taxonomy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -81,9 +82,8 @@ public class CsaClient implements Csa {
   }
 
   @Override
-  public List<Facet> getFacets() {
-    String url = "/protected/facets.json";
-    return (List<Facet>) getFromCsa(url, null, Facet[].class);
+  public Taxonomy getTaxonomy() {
+    return (Taxonomy) getFromCsa("/api/protected/taxonomy.json", null, Taxonomy.class);
   }
 
   @Override

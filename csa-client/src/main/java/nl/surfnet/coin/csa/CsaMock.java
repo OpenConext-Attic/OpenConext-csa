@@ -21,6 +21,7 @@ import java.util.List;
 import nl.surfnet.coin.csa.model.Facet;
 import nl.surfnet.coin.csa.model.LicenseInformation;
 import nl.surfnet.coin.csa.model.Service;
+import nl.surfnet.coin.csa.model.Taxonomy;
 
 /**
  * Mock implementation of CSA
@@ -42,12 +43,12 @@ public class CsaMock implements Csa {
   }
 
   @Override
-  public List<Facet> getFacets() {
+  public Service getService(long id) {
     return null;
   }
 
   @Override
-  public Service getService(long id) {
-    return null;
+  public Taxonomy getTaxonomy() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 }

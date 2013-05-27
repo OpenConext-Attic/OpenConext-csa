@@ -21,6 +21,7 @@ import java.util.List;
 import nl.surfnet.coin.csa.model.Facet;
 import nl.surfnet.coin.csa.model.LicenseInformation;
 import nl.surfnet.coin.csa.model.Service;
+import nl.surfnet.coin.csa.model.Taxonomy;
 
 /**
  * Interface of CSA, the Cloud Services API.
@@ -49,8 +50,5 @@ public interface Csa {
    */
   Service getService(long id);
 
-  /**
-   * Get all facets
-   */
-  List<Facet> getFacets();
+  Taxonomy getTaxonomy() ;
 }

@@ -17,6 +17,7 @@
   <properties>
     <jackson.version>1.9.5</jackson.version>
     <coin-shared.version>3.1.0</coin-shared.version>
+    <apis.version>1.2.3-SNAPSHOT</apis.version>
 
   </properties>
 
