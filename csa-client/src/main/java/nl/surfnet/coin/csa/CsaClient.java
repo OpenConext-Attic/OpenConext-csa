@@ -21,6 +21,7 @@ import nl.surfnet.coin.csa.model.Taxonomy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -77,7 +78,12 @@ public class CsaClient implements Csa {
   }
 
   private <T> T getFromCsa(String url, Map<String, ?> variables, Class clazz) {
-    ResponseEntity<T> entity = tpl.getForEntity(csaBaseLocation + url, clazz, variables);
+    ResponseEntity<T> entity;
+    if (CollectionUtils.isEmpty(variables)) {
+      entity = tpl.getForEntity(csaBaseLocation + url, clazz);
+    } else {
+      entity = tpl.getForEntity(csaBaseLocation + url, clazz, variables);
+    }
     return entity.getBody();
   }
 

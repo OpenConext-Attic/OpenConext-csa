@@ -18,8 +18,8 @@ package nl.surfnet.coin.csa.model;
 
 public class CategoryValue {
 
-  int count;
-  String value;
+  private int count;
+  private String value;
 
   public CategoryValue(String value) {
     this.value = value;

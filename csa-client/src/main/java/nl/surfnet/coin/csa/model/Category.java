@@ -24,7 +24,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 
 public class Category {
 
-
   private String name;
 
   public Category(String name) {

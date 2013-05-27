@@ -57,11 +57,13 @@ public class TaxonomyApiController {
     List<Facet> facets = facetDao.findAll();
     List<Category> categories = new ArrayList<Category>();
     for (Facet facet : facets) {
-      categories.add(new Category(facet.getName()));
-      List<String> values = new ArrayList<String>();
+      Category category = new Category(facet.getName());
+      categories.add(category);
+      List<CategoryValue> values = new ArrayList<CategoryValue>();
       for (FacetValue facetValue : facet.getFacetValues()) {
-        values.add(facetValue.getValue()) ;
+        values.add(new CategoryValue(facetValue.getValue())) ;
       }
+      category.setValues(values);
     }
     return new Taxonomy(categories);
   }

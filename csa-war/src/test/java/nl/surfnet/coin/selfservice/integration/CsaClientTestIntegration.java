@@ -21,6 +21,7 @@ package nl.surfnet.coin.selfservice.integration;
 import nl.surfnet.coin.csa.CsaClient;
 import nl.surfnet.coin.csa.model.LicenseInformation;
 import nl.surfnet.coin.csa.model.LicenseStatus;
+import nl.surfnet.coin.csa.model.Taxonomy;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -31,12 +32,14 @@ import static junit.framework.Assert.assertEquals;
 
 public class CsaClientTestIntegration {
 
-  private String endpoint = "http://localhost:8280/selfservice/";
+  private String endpoint = "http://localhost:8280/selfservice";
 
   private CsaClient csaClient = new CsaClient(endpoint);
 
   @Test
   public void taxonomy() throws IOException {
+    Taxonomy taxonomy = csaClient.getTaxonomy();
+    assertEquals(2, taxonomy.getCategories());
   }
 
 }
