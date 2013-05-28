@@ -21,6 +21,8 @@ import nl.surfnet.coin.janus.domain.ARP;
 
 import java.util.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Mock implementation of CSA. To be filled with lots of data for local development. Perhaps JSON-local-file-backed.
  */
