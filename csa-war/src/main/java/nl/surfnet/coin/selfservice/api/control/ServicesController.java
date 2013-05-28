@@ -81,8 +81,9 @@ public class ServicesController extends BaseApiController{
     // add public service from LMNG directly
     for (String guid : guids) {
       Article currentArticle = lmngService.getService(guid);
-      Service currentPS = new Service(currentArticle.getServiceDescriptionNl(), currentArticle.getDetailLogo(),
-              null, true, lmngDeepLinkBaseUrl + guid);
+      //TODO: here we use id 0 as there is no CSP. How to handle this in the public API? We probably do not want to expose the ID at all there.
+      Service currentPS = new Service(0L, currentArticle.getServiceDescriptionNl(), currentArticle.getDetailLogo(),
+          null, true, lmngDeepLinkBaseUrl + guid);
       result.add(currentPS);
     }
     sort(result);
@@ -149,8 +150,8 @@ public class ServicesController extends BaseApiController{
     boolean isEn = language.equalsIgnoreCase("en");
     for (CompoundServiceProvider csP : services) {
       String crmLink = csP.isArticleAvailable() ? (lmngDeepLinkBaseUrl + csP.getLmngId()) : null;
-      result.add(new Service(isEn ? csP.getSp().getName(Language.EN) : csP.getSp().getName(Language.NL),
-              getServiceLogo(csP), csP.getServiceUrl(), csP.isArticleAvailable(), crmLink));
+      result.add(new Service(csP.getId(), isEn ? csP.getSp().getName(Language.EN) : csP.getSp().getName(Language.NL),
+          getServiceLogo(csP), csP.getServiceUrl(), csP.isArticleAvailable(), crmLink));
     }
     return result;
   }

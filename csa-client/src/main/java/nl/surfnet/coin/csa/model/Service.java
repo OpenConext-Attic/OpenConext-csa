@@ -16,38 +16,84 @@
 
 package nl.surfnet.coin.csa.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class Service implements Comparable<Service> {
 
+  private long id;
+
   private String name;
-  @JsonProperty("logo_url_service")
+
+  private String description;
+
   private String logoUrl;
-  @JsonProperty("website_service")
+
   private String websiteUrl;
-  @JsonProperty("is_surfmarket_connected")
+
+  private String appUrl;
+
+  private String serviceUrl;
+
+  private String crmUrl;
+
+  private String detailLogoUrl;
+
+  private String supportUrl;
+
+  private String eulaUrl;
+
+  private List<String> screenshotUrls;
+
+  private String supportMail;
+
+  private String enduserDescription;
+
+  private String institutionDescription;
+
+  /**
+   * Whether this service is connected to the IdP in the service registry
+   */
+  private boolean connected;
+
+  /**
+   * Whether this service is connected to an item in the CRM
+   */
   private boolean hasCrmLink;
-  @JsonProperty("surfmarket_url")
-  private String crmLink;
 
+  /**
+   * The article in the CRM this service is linked to. If set, hasCrmLink is true;
+   */
+  private CrmArticle crmArticle;
 
-  @JsonProperty
+  /**
+   * The license from the CRM. If set, hasCrmLink is true
+   */
+  private License license;
+
   private Map<Category, List<CategoryValue>> categories;
+
+  private String spEntityId;
+
+  private Map<String, List<String>> arp;
 
   public Service() {
   }
 
-  public Service(String name, String logoUrl, String websiteUrl, boolean hasCrmLink, String crmLink) {
+  public Service(long id, String name, String logoUrl, String websiteUrl, boolean hasCrmLink, String crmUrl) {
+    this.id = id;
     this.name = name;
     this.logoUrl = logoUrl;
     this.websiteUrl = websiteUrl;
     this.hasCrmLink = hasCrmLink;
-    this.crmLink = crmLink;
+    this.crmUrl = crmUrl;
   }
 
   public String getName() {
@@ -82,12 +128,12 @@ public class Service implements Comparable<Service> {
     this.hasCrmLink = hasCrmLink;
   }
 
-  public String getCrmLink() {
-    return crmLink;
+  public String getCrmUrl() {
+    return crmUrl;
   }
 
-  public void setCrmLink(String crmLink) {
-    this.crmLink = crmLink;
+  public void setCrmUrl(String crmUrl) {
+    this.crmUrl = crmUrl;
   }
 
   public Map<Category, List<CategoryValue>> getCategories() {
@@ -114,5 +160,146 @@ public class Service implements Comparable<Service> {
       return 1;
     }
     return this.name.compareTo(otherName);
+  }
+
+  public boolean isConnected() {
+    return connected;
+  }
+
+  public void setConnected(boolean connected) {
+    this.connected = connected;
+  }
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public License getLicense() {
+    return license;
+  }
+
+  public void setLicense(License license) {
+    this.license = license;
+  }
+
+  @JsonIgnore
+  public String getSearchFacetValues() {
+    Collection<String> values = new ArrayList<String>();
+    if (categories != null && !categories.isEmpty()) {
+      for (List<CategoryValue> c : categories.values()) {
+        for (CategoryValue value : c) {
+          values.add(value.getSearchValue());
+        }
+      }
+    }
+    return StringUtils.join(values, " ");
+  }
+
+  public String getAppUrl() {
+    return appUrl;
+  }
+
+  public void setAppUrl(String appUrl) {
+    this.appUrl = appUrl;
+  }
+
+  public String getSpEntityId() {
+    return spEntityId;
+  }
+
+  public void setSpEntityId(String spEntityId) {
+    this.spEntityId = spEntityId;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getServiceUrl() {
+    return serviceUrl;
+  }
+
+  public void setServiceUrl(String serviceUrl) {
+    this.serviceUrl = serviceUrl;
+  }
+
+  public String getDetailLogoUrl() {
+    return detailLogoUrl;
+  }
+
+  public void setDetailLogoUrl(String detailLogoUrl) {
+    this.detailLogoUrl = detailLogoUrl;
+  }
+
+  public CrmArticle getCrmArticle() {
+    return crmArticle;
+  }
+
+  public void setCrmArticle(CrmArticle crmArticle) {
+    this.crmArticle = crmArticle;
+  }
+
+  public String getSupportUrl() {
+    return supportUrl;
+  }
+
+  public void setSupportUrl(String supportUrl) {
+    this.supportUrl = supportUrl;
+  }
+
+  public String getEulaUrl() {
+    return eulaUrl;
+  }
+
+  public void setEulaUrl(String eulaUrl) {
+    this.eulaUrl = eulaUrl;
+  }
+
+  public List<String> getScreenshotUrls() {
+    return screenshotUrls;
+  }
+
+  public void setScreenshotUrls(List<String> screenshotUrls) {
+    this.screenshotUrls = screenshotUrls;
+  }
+
+  public String getSupportMail() {
+    return supportMail;
+  }
+
+  public void setSupportMail(String supportMail) {
+    this.supportMail = supportMail;
+  }
+
+  public String getEnduserDescription() {
+    return enduserDescription;
+  }
+
+  public void setEnduserDescription(String enduserDescription) {
+    this.enduserDescription = enduserDescription;
+  }
+
+  public String getInstitutionDescription() {
+    return institutionDescription;
+  }
+
+  public void setInstitutionDescription(String institutionDescription) {
+    this.institutionDescription = institutionDescription;
+  }
+
+  public Map<String, List<String>> getArp() {
+    return arp;
+  }
+
+  public void setArp(Map<String, List<String>> arp) {
+    this.arp = arp;
   }
 }

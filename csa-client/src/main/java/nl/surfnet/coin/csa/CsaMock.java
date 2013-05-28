@@ -17,8 +17,10 @@
 package nl.surfnet.coin.csa;
 
 import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
+import nl.surfnet.coin.csa.model.Category;
 import nl.surfnet.coin.csa.model.Action;
 import nl.surfnet.coin.csa.model.LicenseInformation;
 import nl.surfnet.coin.csa.model.Service;
@@ -31,9 +33,17 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class CsaMock implements Csa {
 
+  private List<Service> someServices() {
+    return Arrays.asList(
+      new Service(1L, "service 1", "http://logo-url", "http://website-url", false, null),
+      new Service(2L, "service 2", "http://logo-url", "http://website-url", true, "foobar-crmlink"),
+      new Service(3L, "service 3", "http://logo-url", "http://website-url", false, null),
+      new Service(4L, "service 4", "http://logo-url", "http://website-url", false, null)
+    );
+  }
   @Override
   public List<Service> getPublicServices() {
-    return Collections.emptyList();
+    return someServices();
   }
 
   @Override
@@ -43,12 +53,17 @@ public class CsaMock implements Csa {
 
   @Override
   public List<Service> getServicesForIdp(String idpEntityId) {
-    return Collections.emptyList();
+    return someServices();
+  }
+
+  @Override
+  public Service getServiceForIdp(String id, long serviceId) {
+    return new Service(serviceId, "service " + serviceId, "http://123", "http://123231", false, null);
   }
 
   @Override
   public Service getService(long id) {
-    return null;
+    return new Service(id, "service " + id, "http://123", "http://123231", false, null);
   }
 
   @Override
@@ -57,7 +72,11 @@ public class CsaMock implements Csa {
 
   @Override
   public Taxonomy getTaxonomy() {
-    return null;
+    return new Taxonomy(Arrays.asList(
+      new Category("cat1"),
+      new Category("cat2"),
+      new Category("cat3")
+    ));
   }
 
   @Override

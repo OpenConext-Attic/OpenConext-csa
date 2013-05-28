@@ -50,6 +50,9 @@ public class Category {
 
   @JsonIgnore
   public boolean isUsedFacetValues() {
+    if (values == null) {
+      return false;
+    }
     for (CategoryValue categoryValue : values) {
       if (categoryValue.getCount() > 0) {
         return true;

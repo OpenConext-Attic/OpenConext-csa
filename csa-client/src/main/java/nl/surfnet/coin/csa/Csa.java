@@ -45,6 +45,15 @@ public interface Csa {
   List<Service> getServicesForIdp(String idpEntityId);
 
   /**
+   * Get a service's details, scoped by the given IDP entity ID
+   * @param id
+   * @param serviceId
+   * @return
+   */
+  Service getServiceForIdp(String id, long serviceId);
+
+
+  /**
    * Get a service by its CSA ID
    * @param id the ID
    */

@@ -17,8 +17,13 @@
 package nl.surfnet.coin.csa;
 
 import nl.surfnet.coin.csa.model.Action;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.model.Taxonomy;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -66,6 +71,12 @@ public class CsaClient implements Csa {
     Map variables = new HashMap<String, String>();
     variables.put("idpEntityId", idpEntityId);
     return (List<Service>) getFromCsa(url, variables, Service[].class);
+  }
+
+  @Override
+  public Service getServiceForIdp(String id, long serviceId) {
+    // FIXME
+    return null;
   }
 
   @Override
