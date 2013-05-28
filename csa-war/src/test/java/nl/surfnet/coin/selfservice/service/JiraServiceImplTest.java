@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.surfnet.coin.selfservice.domain.CoinUser;
-import nl.surfnet.coin.selfservice.domain.JiraTask;
+import nl.surfnet.coin.csa.model.JiraTask;
 import nl.surfnet.coin.selfservice.service.impl.JiraServiceImpl;
 
 import org.hamcrest.core.IsEqual;

@@ -28,9 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import nl.surfnet.coin.selfservice.domain.Action;
+import nl.surfnet.coin.csa.model.Action;
 import nl.surfnet.coin.selfservice.domain.CoinUser;
-import nl.surfnet.coin.selfservice.domain.JiraTask;
+import nl.surfnet.coin.csa.model.JiraTask;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;

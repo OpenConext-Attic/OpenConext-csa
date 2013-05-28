@@ -44,7 +44,7 @@ import static java.util.Collections.sort;
 
 @Controller
 @RequestMapping
-public class ServicesController {
+public class ServicesController extends BaseApiController{
 
   private
   @Value("${WEB_APPLICATION_CHANNEL}")
@@ -134,28 +134,6 @@ public class ServicesController {
 
     sort(result);
     return result;
-  }
-
-  /*
-   * Retrieve IDP Entity ID from the oauth token stored in the request
-   * 
-   */
-  private String getIdpEntityIdFromToken(final HttpServletRequest request) {
-    VerifyTokenResponse verifyTokenResponse = (VerifyTokenResponse) request.getAttribute(AuthorizationServerFilter.VERIFY_TOKEN_RESPONSE);
-    AuthenticatedPrincipal authenticatedPrincipal = verifyTokenResponse.getPrincipal();
-    if (authenticatedPrincipal instanceof SAMLAuthenticatedPrincipal) {
-      SAMLAuthenticatedPrincipal principal = (SAMLAuthenticatedPrincipal) authenticatedPrincipal;
-      return principal.getIdentityProvider();
-    }
-    throw new IllegalArgumentException("Only type of Principal supported is SAMLAuthenticatedPrincipal, not " + authenticatedPrincipal.getClass());
-  }
-
-  private void verifyScope(HttpServletRequest request, String scopeRequired) {
-    VerifyTokenResponse verifyTokenResponse = (VerifyTokenResponse) request.getAttribute(AuthorizationServerFilter.VERIFY_TOKEN_RESPONSE);
-    List<String> scopes = verifyTokenResponse.getScopes();
-    if (CollectionUtils.isEmpty(scopes) || !scopes.contains(scopeRequired)) {
-      throw new SecurityException("Scope required is '" + scopeRequired + "', but not granted");
-    }
   }
 
   /**

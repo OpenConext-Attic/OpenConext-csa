@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.List;
 
 import nl.surfnet.coin.selfservice.domain.CoinUser;
-import nl.surfnet.coin.selfservice.domain.JiraTask;
+import nl.surfnet.coin.csa.model.JiraTask;
 
 public interface JiraService {
 

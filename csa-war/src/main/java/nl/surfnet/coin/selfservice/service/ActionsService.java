@@ -19,8 +19,8 @@ package nl.surfnet.coin.selfservice.service;
 import java.io.IOException;
 import java.util.List;
 
-import nl.surfnet.coin.selfservice.domain.Action;
-import nl.surfnet.coin.selfservice.domain.JiraTask;
+import nl.surfnet.coin.csa.model.Action;
+import nl.surfnet.coin.csa.model.JiraTask;
 
 /**
  * Service for Actions

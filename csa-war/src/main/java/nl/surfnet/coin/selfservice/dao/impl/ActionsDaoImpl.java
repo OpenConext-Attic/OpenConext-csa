@@ -30,7 +30,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import nl.surfnet.coin.selfservice.dao.ActionsDao;
-import nl.surfnet.coin.selfservice.domain.Action;
+import nl.surfnet.coin.csa.model.Action;
 
 /**
  * Implementation of the ActionsDao, using a RDBMS for persistence

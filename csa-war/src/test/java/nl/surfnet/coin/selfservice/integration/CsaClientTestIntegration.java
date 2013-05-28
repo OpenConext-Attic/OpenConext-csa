@@ -19,10 +19,7 @@
 package nl.surfnet.coin.selfservice.integration;
 
 import nl.surfnet.coin.csa.CsaClient;
-import nl.surfnet.coin.csa.model.LicenseInformation;
-import nl.surfnet.coin.csa.model.LicenseStatus;
-import nl.surfnet.coin.csa.model.Service;
-import nl.surfnet.coin.csa.model.Taxonomy;
+import nl.surfnet.coin.csa.model.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -47,6 +44,12 @@ public class CsaClientTestIntegration {
   public void publicServices() throws IOException {
     List<Service> publicServices = csaClient.getPublicServices();
     assertEquals(58,   publicServices.size());
+  }
+
+  @Test
+  public void actions() throws IOException {
+    List<Action> jiraActions = csaClient.getJiraActions();
+    assertEquals(1,   jiraActions.size());
   }
 
   @Test

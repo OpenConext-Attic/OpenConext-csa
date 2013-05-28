@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import nl.surfnet.coin.selfservice.domain.CoinUser;
-import nl.surfnet.coin.selfservice.domain.JiraTask;
+import nl.surfnet.coin.csa.model.JiraTask;
 import nl.surfnet.coin.selfservice.service.JiraService;
 
 import org.springframework.beans.factory.InitializingBean;

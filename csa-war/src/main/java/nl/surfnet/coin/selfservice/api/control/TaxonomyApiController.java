@@ -46,7 +46,7 @@ import static java.util.Collections.sort;
 
 @Controller
 @RequestMapping
-public class TaxonomyApiController {
+public class TaxonomyApiController extends BaseApiController{
 
   @Resource
   private FacetDao facetDao;

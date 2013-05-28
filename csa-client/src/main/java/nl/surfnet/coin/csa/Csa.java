@@ -16,12 +16,12 @@
 
 package nl.surfnet.coin.csa;
 
+import java.io.IOException;
 import java.util.List;
 
-import nl.surfnet.coin.csa.model.Facet;
-import nl.surfnet.coin.csa.model.LicenseInformation;
-import nl.surfnet.coin.csa.model.Service;
-import nl.surfnet.coin.csa.model.Taxonomy;
+import nl.surfnet.coin.csa.model.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Interface of CSA, the Cloud Services API.
@@ -57,4 +57,6 @@ public interface Csa {
   void setCsaBaseLocation(String location);
 
   Taxonomy getTaxonomy() ;
+
+  List<Action> getJiraActions();
 }

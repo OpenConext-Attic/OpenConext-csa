@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import nl.surfnet.coin.db.AbstractInMemoryDatabaseTest;
-import nl.surfnet.coin.selfservice.domain.Action;
+import nl.surfnet.coin.csa.model.Action;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;

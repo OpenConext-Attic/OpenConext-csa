@@ -31,7 +31,7 @@ import java.io.IOException;
 import nl.surfnet.coin.selfservice.command.Question;
 import nl.surfnet.coin.selfservice.domain.CoinUser;
 import nl.surfnet.coin.selfservice.domain.IdentityProvider;
-import nl.surfnet.coin.selfservice.domain.JiraTask;
+import nl.surfnet.coin.csa.model.JiraTask;
 import nl.surfnet.coin.selfservice.service.ActionsService;
 import nl.surfnet.coin.selfservice.service.EmailService;
 import nl.surfnet.coin.selfservice.service.JiraService;

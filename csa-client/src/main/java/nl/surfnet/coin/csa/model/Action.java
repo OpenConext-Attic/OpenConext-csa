@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package nl.surfnet.coin.selfservice.domain;
+package nl.surfnet.coin.csa.model;
 
 import java.util.Comparator;
 import java.util.Date;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+
 
 public class Action {
 
@@ -67,7 +70,6 @@ public class Action {
   private Type type;
   private Status status;
   private String institutionId;
-  private ServiceProvider sp;
 
   public Action(String jiraKey, String userId, String userName, Type type, Status status, String body, String idpId,
                 String spId, String institutionId, Date requestDate) {
@@ -144,23 +146,6 @@ public class Action {
             .toComparison();
       }
     };
-  }
-
-  /**
-   * Get the SP this action is about.
-   * This is a transient field, derived from the spId and filled only when needed.
-   * @return ServiceProvider
-   */
-  public ServiceProvider getSp() {
-    return sp;
-  }
-
-  /**
-   * {@see #getSp()}
-   * @param sp
-   */
-  public void setSp(ServiceProvider sp) {
-    this.sp = sp;
   }
 
 

@@ -17,42 +17,32 @@
 package nl.surfnet.coin.selfservice.api.control;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import nl.surfnet.coin.selfservice.control.BaseController;
-import nl.surfnet.coin.selfservice.domain.Action;
-import nl.surfnet.coin.selfservice.domain.IdentityProvider;
+import nl.surfnet.coin.csa.model.Action;
+import nl.surfnet.coin.selfservice.interceptor.AuthorityScopeInterceptor;
 import nl.surfnet.coin.selfservice.service.ActionsService;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/requests")
-public class HistoryController extends BaseController {
+@RequestMapping
+public class HistoryController extends BaseApiController {
 
   @Resource(name = "actionsService")
   private ActionsService actionsService;
 
-  @RequestMapping(value = "/history.shtml")
-  public ModelAndView listActions(@ModelAttribute(value = "selectedidp") IdentityProvider selectedidp, HttpServletRequest request)
-    throws IOException {
-    //if an user acutally links to requests-overview we can dismiss the popup
-    notificationPopupClosed(request);
-
-    Map<String, Object> model = new HashMap<String, Object>();
-
-    actionsService.synchronizeWithJira(selectedidp.getId());
-    final List<Action> actions = actionsService.getActions(selectedidp.getId());
-    model.put("actionList", actions);
-    return new ModelAndView("requests/history", model);
+  @RequestMapping(method = RequestMethod.GET, value = "/api/protected/history.json")
+  public @ResponseBody
+  List<Action> listActions(HttpServletRequest request) throws IOException {
+    verifyScope(request, AuthorityScopeInterceptor.DASHBOARD_OAUTH_CLIENT_SCOPE);
+    String idp = getIdpEntityIdFromToken(request);
+    actionsService.synchronizeWithJira(idp);
+    return actionsService.getActions(idp);
   }
 
 }

@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import nl.surfnet.coin.selfservice.domain.CoinUser;
-import nl.surfnet.coin.selfservice.domain.JiraTask;
+import nl.surfnet.coin.csa.model.JiraTask;
 
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNot;

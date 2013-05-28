@@ -16,6 +16,7 @@
 
 package nl.surfnet.coin.csa;
 
+import nl.surfnet.coin.csa.model.Action;
 import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.model.Taxonomy;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,14 +53,12 @@ public class CsaClient implements Csa {
 
   @Override
   public List<Service> getPublicServices() {
-    String url = "/api/public/services.json";
-    return getFromCsa(url, null, List.class);
+    return getFromCsa("/api/public/services.json", null, List.class);
   }
 
   @Override
   public List<Service> getProtectedServices() {
-    String url = "/api/protected/services.json";
-    return (List<Service>) getFromCsa(url, null, List.class);
+    return getFromCsa("/api/protected/services.json", null, List.class);
   }
 
   @Override
@@ -71,13 +71,17 @@ public class CsaClient implements Csa {
 
   @Override
   public Taxonomy getTaxonomy() {
-    return (Taxonomy) getFromCsa("/api/public/taxonomy.json", null, Taxonomy.class);
+    return getFromCsa("/api/public/taxonomy.json", null, Taxonomy.class);
+  }
+
+  @Override
+  public List<Action> getJiraActions() {
+    return getFromCsa("/api/protected/history.json", null, List.class);
   }
 
   @Override
   public Service getService(long id) {
     String location = "/api/protected/services/{id}.json";
-
     Map variables = new HashMap<String, String>();
     variables.put("id", id);
     return (Service) getFromCsa(location, variables, Service.class);

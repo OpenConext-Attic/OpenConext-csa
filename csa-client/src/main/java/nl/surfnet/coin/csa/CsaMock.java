@@ -19,9 +19,12 @@ package nl.surfnet.coin.csa;
 import java.util.Collections;
 import java.util.List;
 
+import nl.surfnet.coin.csa.model.Action;
 import nl.surfnet.coin.csa.model.LicenseInformation;
 import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.model.Taxonomy;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Mock implementation of CSA. To be filled with lots of data for local development. Perhaps JSON-local-file-backed.
@@ -54,6 +57,11 @@ public class CsaMock implements Csa {
 
   @Override
   public Taxonomy getTaxonomy() {
+    return null;
+  }
+
+  @Override
+  public List<Action> getJiraActions() {
     return null;
   }
 }

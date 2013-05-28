@@ -25,8 +25,8 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import nl.surfnet.coin.selfservice.dao.impl.ActionsDaoImpl;
-import nl.surfnet.coin.selfservice.domain.Action;
-import nl.surfnet.coin.selfservice.domain.JiraTask;
+import nl.surfnet.coin.csa.model.Action;
+import nl.surfnet.coin.csa.model.JiraTask;
 import nl.surfnet.coin.selfservice.service.ActionsService;
 import nl.surfnet.coin.selfservice.service.JiraService;
 import nl.surfnet.coin.selfservice.service.ServiceProviderService;
@@ -47,10 +47,6 @@ public class ActionsServiceImpl implements ActionsService {
   @Override
   public List<Action> getActions(String identityProvider) {
     final List<Action> actions = actionsDao.findActionsByIdP(identityProvider);
-    // Enrich the actions with actual SP information, not only the id.
-    for (Action a : actions) {
-      a.setSp(providerService.getServiceProvider(a.getSpId(), identityProvider));
-    }
     return actions;
   }
 

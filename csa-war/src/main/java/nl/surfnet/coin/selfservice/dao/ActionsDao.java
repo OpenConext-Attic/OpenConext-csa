@@ -18,7 +18,7 @@ package nl.surfnet.coin.selfservice.dao;
 
 import java.util.List;
 
-import nl.surfnet.coin.selfservice.domain.Action;
+import nl.surfnet.coin.csa.model.Action;
 
 /**
  * Dao for action objects
