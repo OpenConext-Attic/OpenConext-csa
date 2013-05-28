@@ -33,7 +33,7 @@ import static org.junit.matchers.JUnitMatchers.hasItems;
 
 public class ActionsDaoImplTest extends AbstractInMemoryDatabaseTest {
 
-  ActionsDaoImpl actionsDao;
+  private ActionsDaoImpl actionsDao;
 
   @Before
   public void myBefore() throws Exception {
@@ -51,7 +51,8 @@ public class ActionsDaoImplTest extends AbstractInMemoryDatabaseTest {
     Action a = new Action("key", "userid", "username", Action.Type.QUESTION, Action.Status.OPEN, "body", "idp", "sp",
         "institute", new Date());
     actionsDao.saveAction(a);
-    Action savedA = actionsDao.findAction(1L);
+    long id = actionsDao.findHighestId();
+    Action savedA = actionsDao.findAction(id);
     assertNotNull(savedA);
     assertThat(savedA.getBody(), is("body"));
     assertThat(savedA.getJiraKey(), is("key"));
@@ -92,13 +93,14 @@ public class ActionsDaoImplTest extends AbstractInMemoryDatabaseTest {
     Action a = new Action(jiraKey, "userid", "username", Action.Type.QUESTION, Action.Status.OPEN, "body", "idp", "sp",
             "institute", new Date());
     actionsDao.saveAction(a);
+    long id = actionsDao.findHighestId();
 
-    final Action before = actionsDao.findAction(1L);
+    final Action before = actionsDao.findAction(id);
     assertThat(before.getStatus(), is(Action.Status.OPEN));
 
     actionsDao.close(jiraKey);
 
-    final Action after = actionsDao.findAction(1L);
+    final Action after = actionsDao.findAction(id);
     assertThat(after.getStatus(), is(Action.Status.CLOSED));
   }
 

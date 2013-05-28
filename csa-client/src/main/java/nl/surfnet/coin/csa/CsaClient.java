@@ -26,9 +26,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * Client for the CSA API.
@@ -53,12 +52,12 @@ public class CsaClient implements Csa {
 
   @Override
   public List<Service> getPublicServices() {
-    return getFromCsa("/api/public/services.json", null, List.class);
+    return getFromCsa("/api/public/services.json", null, Service[].class);
   }
 
   @Override
   public List<Service> getProtectedServices() {
-    return getFromCsa("/api/protected/services.json", null, List.class);
+    return getFromCsa("/api/protected/services.json", null, Service[].class);
   }
 
   @Override
@@ -66,7 +65,7 @@ public class CsaClient implements Csa {
     String url = "/api/protected/idp/services.json?idpEntityId={idpEntityId}";
     Map variables = new HashMap<String, String>();
     variables.put("idpEntityId", idpEntityId);
-    return (List<Service>) getFromCsa(url, variables, List.class);
+    return (List<Service>) getFromCsa(url, variables, Service[].class);
   }
 
   @Override
@@ -76,7 +75,7 @@ public class CsaClient implements Csa {
 
   @Override
   public List<Action> getJiraActions() {
-    return getFromCsa("/api/protected/history.json", null, List.class);
+    return getFromCsa("/api/protected/history.json", null, Action[].class);
   }
 
   @Override
@@ -94,7 +93,17 @@ public class CsaClient implements Csa {
     } else {
       entity = tpl.getForEntity(csaBaseLocation + url, clazz, variables);
     }
-    return entity.getBody();
+    T body = entity.getBody();
+    if (clazz.isArray()) {
+      List<T> result = new ArrayList<T>();
+      //(T) Arrays.<T>asList(body) won't work as the type is not inferred and we end up with s list containing an array
+      T[] arr = (T[]) body;
+      for (T t : arr) {
+        result.add(t);
+      }
+      return (T) result;
+    }
+    return body;
   }
 
   @Override

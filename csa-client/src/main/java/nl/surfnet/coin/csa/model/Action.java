@@ -26,7 +26,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 
 public class Action {
 
-
   public enum Type {
     QUESTION, LINKREQUEST, UNLINKREQUEST;
 
@@ -71,6 +70,7 @@ public class Action {
   private Status status;
   private String institutionId;
 
+  public Action() {}
   public Action(String jiraKey, String userId, String userName, Type type, Status status, String body, String idpId,
                 String spId, String institutionId, Date requestDate) {
     this.userId = userId;

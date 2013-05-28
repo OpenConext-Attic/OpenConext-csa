@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 public class CsaClientTestIntegration {
 
@@ -38,24 +39,35 @@ public class CsaClientTestIntegration {
   public void taxonomy() throws IOException {
     Taxonomy taxonomy = csaClient.getTaxonomy();
     assertEquals(2, taxonomy.getCategories().size());
+
+    assertEquals(2, taxonomy.getCategories().get(0).getValues().size());
   }
 
   @Test
   public void publicServices() throws IOException {
     List<Service> publicServices = csaClient.getPublicServices();
     assertEquals(58,   publicServices.size());
+    for (Service service : publicServices) {
+      assertNotNull(service);
+    }
   }
 
   @Test
   public void actions() throws IOException {
     List<Action> jiraActions = csaClient.getJiraActions();
-    assertEquals(1,   jiraActions.size());
+    assertEquals(3,   jiraActions.size());
+    for (Action action : jiraActions) {
+      assertNotNull(action.getUserId());
+    }
   }
 
   @Test
   public void servicesByIdp() throws IOException {
     List<Service> services = csaClient.getServicesForIdp("http://mock-idp");
     assertEquals(29,   services.size());
+    for (Service service : services) {
+      assertNotNull(service);
+    }
 
     services = csaClient.getServicesForIdp("does-not-exist");
     assertEquals(0,   services.size());
@@ -65,6 +77,9 @@ public class CsaClientTestIntegration {
   public void protectedServices() throws IOException {
     List<Service> protectedServices = csaClient.getProtectedServices();
     assertEquals(29,   protectedServices.size());
+    for (Service service : protectedServices) {
+      assertNotNull(service);
+    }
   }
 
 }

@@ -14,6 +14,10 @@ create table ss_actions (
   primary key (id)
 );
 
+INSERT INTO ss_actions (id, jiraKey, institutionId, userId, userName, actionType, actionStatus, body, idp, sp, requestDate) VALUES (1, 'TEST-100', 'SURFNET', 'urn:collab:person:surfnet.nl:jdoe', 'John Doe', 'LINKREQUEST', 'OPEN', 'Test data link request', 'http://mock-idp', 'http://mock-sp', '2012-10-18 13:42:11');
+INSERT INTO ss_actions (id, jiraKey, institutionId, userId, userName, actionType, actionStatus, body, idp, sp, requestDate) VALUES (2, 'TEST-101', 'SURFNET', 'urn:collab:person:surfnet.nl:jdoe', 'John Doe', 'UNLINKREQUEST', 'OPEN', 'Test data unlink request', 'http://mock-idp', 'http://mock-sp', '2012-10-18 13:42:11');
+INSERT INTO ss_actions (id, jiraKey, institutionId, userId, userName, actionType, actionStatus, body, idp, sp, requestDate) VALUES (3, 'TEST-102', 'SURFNET', 'urn:collab:person:surfnet.nl:jdoe', 'John Doe', 'QUESTION', 'CLOSED', 'Test data question', 'http://mock-idp', 'http://mock-sp', '2012-10-18 13:42:11');
+
 drop table if exists oauth_entry;
 create table oauth_entry (
   token varchar(255) NOT NULL,

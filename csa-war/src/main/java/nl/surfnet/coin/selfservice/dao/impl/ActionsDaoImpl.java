@@ -91,6 +91,10 @@ public class ActionsDaoImpl implements ActionsDao {
     }
   }
 
+  public long findHighestId() {
+    return jdbcTemplate.queryForLong("select max(id) from ss_actions");
+  }
+
   @Override
   public void close(final String jiraKey) {
     jdbcTemplate.update("UPDATE ss_actions SET actionStatus = 'CLOSED' WHERE jiraKey = ?", jiraKey);
