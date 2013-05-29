@@ -23,6 +23,8 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import nl.surfnet.coin.selfservice.domain.CoinUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import nl.surfnet.coin.selfservice.dao.impl.ActionsDaoImpl;
@@ -34,6 +36,8 @@ import nl.surfnet.coin.selfservice.service.ServiceProviderService;
 
 @Service(value = "actionsService")
 public class ActionsServiceImpl implements ActionsService {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ActionsServiceImpl.class);
 
   @Resource(name="actionsDao")
   private ActionsDaoImpl actionsDao;
@@ -47,6 +51,12 @@ public class ActionsServiceImpl implements ActionsService {
 
   @Override
   public List<Action> getActions(String identityProvider) {
+    try {
+      synchronizeWithJira(identityProvider);
+    } catch (IOException e) {
+      //tough luck
+      LOG.warn("Could not synchronize with JIRA", e);
+    }
     return actionsDao.findActionsByIdP(identityProvider);
   }
 
@@ -82,8 +92,7 @@ public class ActionsServiceImpl implements ActionsService {
     return coinUser;
   }
 
-  @Override
-  public void synchronizeWithJira(String identityProvider) throws IOException {
+  private void synchronizeWithJira(String identityProvider) throws IOException {
     List<String> openTasks = actionsDao.getKeys(identityProvider);
     final List<JiraTask> tasks = jiraService.getTasks(openTasks);
     for (JiraTask task : tasks) {

@@ -41,12 +41,4 @@ public interface ActionsService {
    * @param action the original action
    */
   Action registerJiraIssueCreation(Action action);
-
-  /**
-   * Close local actions that are closed in Jira for a given identity provider.
-   *
-   * @param identityProvider the identity provider
-   * @throws IOException
-   */
-  void synchronizeWithJira(String identityProvider) throws IOException;
 }

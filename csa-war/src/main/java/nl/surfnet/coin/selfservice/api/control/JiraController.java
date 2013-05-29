@@ -51,9 +51,6 @@ public class JiraController extends BaseApiController {
   @Resource(name = "actionsService")
   private ActionsService actionsService;
 
-//  @Resource(name = "jiraService")
-//  private JiraService jiraService;
-
   @Resource(name = "emailService")
   private EmailService emailService;
 
@@ -74,7 +71,6 @@ public class JiraController extends BaseApiController {
   List<Action> listActions(HttpServletRequest request) throws IOException {
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_JIRA);
     String idp = getIdpEntityIdFromToken(request);
-    actionsService.synchronizeWithJira(idp);
     return actionsService.getActions(idp);
   }
 

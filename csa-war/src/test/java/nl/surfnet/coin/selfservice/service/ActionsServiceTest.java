@@ -63,7 +63,6 @@ public class ActionsServiceTest {
     assertEquals(JiraTask.Status.OPEN, before.get(0).getStatus());
 
     jiraService.doAction(action.getJiraKey(), JiraTask.Action.CLOSE);
-    actionsService.synchronizeWithJira(idp);
 
     final List<Action> after = actionsService.getActions(idp);
 
