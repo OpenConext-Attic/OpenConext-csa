@@ -22,9 +22,18 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 public class CategoryValue implements Comparable<CategoryValue>{
 
   private int count;
+
   private String value;
 
+  //we need no-argument constructor for json parsing
+  public CategoryValue() {
+  }
+
   public CategoryValue(String value) {
+    this.value = value;
+  }
+
+  public void setValue(String value) {
     this.value = value;
   }
 

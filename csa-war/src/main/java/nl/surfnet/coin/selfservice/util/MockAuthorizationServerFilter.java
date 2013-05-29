@@ -19,12 +19,14 @@
 package nl.surfnet.coin.selfservice.util;
 
 import nl.surfnet.coin.selfservice.interceptor.AuthorityScopeInterceptor;
+import org.springframework.http.HttpStatus;
 import org.surfnet.oaaas.auth.AuthorizationServerFilter;
 import org.surfnet.oaaas.auth.principal.AuthenticatedPrincipal;
 import org.surfnet.oaaas.conext.SAMLAuthenticatedPrincipal;
 import org.surfnet.oaaas.model.VerifyTokenResponse;
 
 import javax.servlet.*;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;

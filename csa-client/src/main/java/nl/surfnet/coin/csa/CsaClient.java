@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -77,16 +79,23 @@ public class CsaClient implements Csa {
     this.csaClientKey = csaClientKey;
     this.csaClientSecret = csaClientSecret;
     this.accessToken = getAccessToken();
+    // we handle invalid access_token ourselves
+    restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
+      protected boolean hasError(HttpStatus statusCode) {
+        return super.hasError(statusCode) && statusCode != HttpStatus.FORBIDDEN;
+      }
+
+    });
   }
 
   @Override
   public List<Service> getPublicServices() {
-    return getFromCsa("/api/public/services.json", null, Service[].class);
+    return getFromCsa("/api/public/services.json", Service[].class);
   }
 
   @Override
   public List<Service> getProtectedServices() {
-    return getFromCsa("/api/protected/services.json", null, Service[].class);
+    return getFromCsa("/api/protected/services.json", Service[].class);
   }
 
   @Override
@@ -105,12 +114,12 @@ public class CsaClient implements Csa {
 
   @Override
   public Taxonomy getTaxonomy() {
-    return getFromCsa("/api/public/taxonomy.json", null, Taxonomy.class);
+    return getFromCsa("/api/public/taxonomy.json", Taxonomy.class);
   }
 
   @Override
   public List<Action> getJiraActions() {
-    return getFromCsa("/api/protected/actions.json", null, Action[].class);
+    return getFromCsa("/api/protected/actions.json", Action[].class);
   }
 
   @Override
@@ -132,7 +141,7 @@ public class CsaClient implements Csa {
   }
 
   private <T> T getFromCsa(String url, Class clazz) {
-    return getFromCsa(url, null, null, clazz);
+    return getFromCsa(url, null, clazz);
   }
 
   private <T> T getFromCsa(String url, Object bodyJson, Class clazz) {
@@ -204,16 +213,21 @@ public class CsaClient implements Csa {
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
     HttpEntity<String> requestEntity = new HttpEntity<String>("grant_type=client_credentials", headers);
-    ResponseEntity<Map> response = restTemplate.exchange(URI.create(csaOAuth2AuthorizationUrl),
-            HttpMethod.POST,
-            requestEntity,
-            Map.class);
-    if (response.getStatusCode() != HttpStatus.OK) {
-      LOG.error("Received HttpStatus {} when trying to obtain AccessToken", response.getStatusCode());
+    try {
+      ResponseEntity<Map> response = restTemplate.exchange(URI.create(csaOAuth2AuthorizationUrl),
+              HttpMethod.POST,
+              requestEntity,
+              Map.class);
+      if (response.getStatusCode() != HttpStatus.OK) {
+        LOG.error("Received HttpStatus {} when trying to obtain AccessToken", response.getStatusCode());
+        return null;
+      } else {
+        Map map = response.getBody();
+        return (String) map.get("access_token");
+      }
+    } catch (RestClientException e) {
+      LOG.error("Error trying to obtain AccessToken", e);
       return null;
-    } else {
-      Map map = response.getBody();
-      return (String) map.get("access_token");
     }
 
   }

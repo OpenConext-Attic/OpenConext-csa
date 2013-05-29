@@ -23,6 +23,7 @@ import nl.surfnet.coin.csa.model.Action;
 import nl.surfnet.coin.csa.model.JiraTask;
 import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.model.Taxonomy;
+import nl.surfnet.coin.selfservice.util.MockAuthorizationServerFilter;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -53,7 +54,6 @@ public class CsaClientTestIntegration {
   private static LocalTestServer oauth2AuthServer;
 
   private static CsaClient csaClient;
-
 
   @BeforeClass
   public static void beforeClass() throws Exception {
