@@ -1,0 +1,16 @@
+service-name-en=SURFconext csa
+service-name-nl=SURFconext csa
+service-description-en=SURFconext csa
+service-description-nl=SURFconext csa
+
+contact-person-administrative-given-name=SURFconext
+contact-person-administrative-sur-name=SURFconext
+contact-person-administrative-email=info@surfconext.nl
+
+contact-person-technical-given-name=SURFconext
+contact-person-technical-sur-name=SURFConext
+contact-person-technical-email=beheer@surfconext.nl
+
+contact-person-support-given-name=SURFConext
+contact-person-support-sur-name=SURFConext
+contact-person-support-email=beheer@surfconext.nl

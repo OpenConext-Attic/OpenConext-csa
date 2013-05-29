@@ -24,8 +24,7 @@
       <property name="ignoreResourceNotFound" value="true"/>
       <property name="locations">
           <list>
-              <value>classpath:showroom.properties</value>
-              <value>classpath:dashboard.properties</value>
+              <value>classpath:csa.properties</value>
           </list>
       </property>
   </bean>
@@ -37,7 +36,7 @@
     <property name="SAMLMessageHandler" ref="samlMessageHandler" />
     <property name="entityID" value="${ISSUING_ENTITY_ID}"/>
     <property name="credentialResolver" ref="samlKeyStoreCredentialResolverDelegate" />
-    <property name="metaDataProperties" value ="metadata.selfservice.properties"/>
+    <property name="metaDataProperties" value ="metadata.csa.properties"/>
   </bean>
 
 </beans>

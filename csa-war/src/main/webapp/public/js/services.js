@@ -20,9 +20,9 @@ var services = function() {
 		if (window.location['host'] == 'localhost:8280') {			
 			url = 'http://';
 			url += window.location['host'];
-			url += '/selfservice';
+			url += '/csa';
 		} else {
-			url = 'https://showroom.test.showroom.surfconext.nl';
+			url = 'https://csa.test.csa.surfconext.nl';
 		}
 		return url;
 	};
@@ -48,7 +48,7 @@ var services = function() {
 		  scope:"read",
 		  clientId:"cdk_example_gadget_app",
 		  redirectUri:baseUrl,
-		  authorizationEndpoint:"https://apis.test.showroom.surfconext.nl/oauth2/authorize"
+		  authorizationEndpoint:"https://apis.test.csa.surfconext.nl/oauth2/authorize"
 	});
 	
 

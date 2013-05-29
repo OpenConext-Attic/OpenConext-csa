@@ -1,4 +1,4 @@
-# SURFconext SelfService
+# SURFconext CSA
 
 ## About OpenConext
 
@@ -30,9 +30,9 @@ To build:
 
 To run locally:
 
-    cd coin-selfservice-war
+    cd coin-csa-war
     mvn jetty:run
 
 ## Disclaimer
 
-SelfService uses Highcharts JavaScript for rendering statistics. Highcharts is a Highsoft sotware product which is free for non-commercial use, but it is not free for commercial use. See [this page](http://shop.highsoft.com/highcharts.html#redist) for more details.
+CSA uses Highcharts JavaScript for rendering statistics. Highcharts is a Highsoft sotware product which is free for non-commercial use, but it is not free for commercial use. See [this page](http://shop.highsoft.com/highcharts.html#redist) for more details.

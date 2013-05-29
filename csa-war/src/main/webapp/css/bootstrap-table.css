@@ -179,8 +179,6 @@ th.sortable.headerSortUp:hover i:before {
     content: "\f078";
 }
 
-/* table with teams on user dashboard */
-
 .table-striped tbody tr.existing.odd td {
     background-color: #FFFFFF;
 }

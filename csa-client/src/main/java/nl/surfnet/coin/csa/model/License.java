@@ -27,7 +27,7 @@ import java.util.List;
 public class License implements Serializable {
 
   /*
-  FIXME: blatantly copied from selfservice.model.
+  FIXME: blatantly copied from csa.model.
   It is used in the CSA interface, so we need it here. But could the original be removed therefore?
   Or is it a slightly different view on the same data?
    */

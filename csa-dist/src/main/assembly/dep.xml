@@ -61,7 +61,7 @@
             <outputDirectory>/tomcat/webapps</outputDirectory>
             <unpack>false</unpack>
             <scope>runtime</scope>
-             <outputFileNameMapping>showroom-war-${project.version}.war</outputFileNameMapping>
+             <outputFileNameMapping>csa-war-${project.version}.war</outputFileNameMapping>
         </dependencySet>
     </dependencySets>
 </assembly>

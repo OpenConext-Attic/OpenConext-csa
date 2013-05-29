@@ -2036,12 +2036,12 @@
             "en":"SURFconext | Self service | SURFnet",
             "nl":"SURFconext | Self service | SURFnet"
         },
-        "oauthConsumerKey":"dev-selfservice",
+        "oauthConsumerKey":"dev-csa",
         "oauthConsumerSecret":"Urban Cookie Collective",
         "appTitle":"SURFconext | Self service | SURFnet",
-        "appDescription":"Selfservice portal to manage connections to services",
+        "appDescription":"Csa portal to manage connections to services",
         "appThumbNail":"https://static.surfconext.nl/media/surfconext.png",
-        "appEntityId":"https://selfservice.dev.surfconext.nl",
+        "appEntityId":"https://csa.dev.surfconext.nl",
         "twoLeggedOauthAllowed":false,
         "consentNotRequired":true,
         "appLogoUrl":"https://static.surfconext.nl/media/surfconext.png",
@@ -2051,8 +2051,8 @@
         },
         "eula":"http://www.surfnet.nl/en/pages/disclaimer.aspx",
         "descriptions":{
-            "en":"Selfservice portal to manage connections to services",
-            "nl":"Selfservice portaal om toegang tot diensten te regelen"
+            "en":"Csa portal to manage connections to services",
+            "nl":"Csa portaal om toegang tot diensten te regelen"
         },
         "urls":{
             "en":"http://www.surfnet.nl/en/Thema/coin/Pages/default.aspx",
@@ -2082,7 +2082,7 @@
             }
         ],
         "name":"SURFconext | Self service | SURFnet",
-        "description":"Selfservice portal to manage connections to services",
+        "description":"Csa portal to manage connections to services",
         "idpVisibleOnly":false,
         "appHomeUrl":"http://www.surfnet.nl"
     },
@@ -2143,11 +2143,11 @@
             "en":"",
             "nl":""
         },
-        "oauthConsumerKey":"http://local-selfservice/(.*)",
+        "oauthConsumerKey":"http://local-csa/(.*)",
         "appTitle":"",
         "appDescription":"",
         "appThumbNail":"https://.png",
-        "appEntityId":"http://local-selfservice",
+        "appEntityId":"http://local-csa",
         "twoLeggedOauthAllowed":false,
         "consentNotRequired":false,
         "appLogoUrl":"https://.png",
@@ -2160,8 +2160,8 @@
             "nl":""
         },
         "urls":{
-            "en":"http://localhost:8020/selfservice/?lang=en",
-            "nl":"http://localhost:8020/selfservice/?lang=nl"
+            "en":"http://localhost:8020/csa/?lang=en",
+            "nl":"http://localhost:8020/csa/?lang=nl"
         },
         "workflowState":"prodaccepted",
         "contacts":[
@@ -2512,7 +2512,7 @@
         "appEntityId":"https://exampleService",
         "twoLeggedOauthAllowed":false,
         "consentNotRequired":false,
-        "appLogoUrl":"http://localhost:8280/selfservice/images/logo.png",
+        "appLogoUrl":"http://localhost:8280/csa/images/logo.png",
         "appHomeUrls": {        
           "en":"http://appHomeURL_EN/",
           "nl":"http://appHomeURL_NL/"

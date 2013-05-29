@@ -16,7 +16,7 @@
   limitations under the License.
   --%>
 
-<%--@elvariable id="sps" type="java.util.List<nl.surfnet.coin.selfservice.domain.ServiceProvider>"--%>
+<%--@elvariable id="sps" type="java.util.List<nl.surfnet.coin.csa.domain.ServiceProvider>"--%>
 <spring:message var="title" code="jsp.allsplmng.title"/>
 
 <jsp:include page="../head.jsp">
@@ -88,13 +88,13 @@
               </td>
               <td class="center">
                 <input type="hidden" name="tokencheck" value="<c:out value='${tokencheck}'/>"/>
-                <c:set var="checked" value="${binding.compoundServiceProvider.hideInPublicShowroom}"></c:set>
-                <input type="checkbox" name="hideInPublicShowroom" value="${checked}" data-compound-service-provider-id="${binding.compoundServiceProvider.id}" ${checked ? 'checked' : ''}>
+                <c:set var="checked" value="${binding.compoundServiceProvider.hideInPublicCsa}"></c:set>
+                <input type="checkbox" name="hideInPublicCsa" value="${checked}" data-compound-service-provider-id="${binding.compoundServiceProvider.id}" ${checked ? 'checked' : ''}>
               </td>
               <td class="center">
                 <input type="hidden" name="tokencheck" value="<c:out value='${tokencheck}'/>"/>
-                <c:set var="checked" value="${binding.compoundServiceProvider.hideInProtectedShowroom}"></c:set>
-                <input type="checkbox" name="hideInProtectedShowroom" value="${checked}" data-compound-service-provider-id="${binding.compoundServiceProvider.id}" ${checked ? 'checked' : ''}>
+                <c:set var="checked" value="${binding.compoundServiceProvider.hideInProtectedCsa}"></c:set>
+                <input type="checkbox" name="hideInProtectedCsa" value="${checked}" data-compound-service-provider-id="${binding.compoundServiceProvider.id}" ${checked ? 'checked' : ''}>
               </td>
               <td>
   			  <form:form id="form-${status.index}" method="post" action="save-splmng.shtml#row${status.index}" style="margin:0" cssClass="lmng-id-edit">

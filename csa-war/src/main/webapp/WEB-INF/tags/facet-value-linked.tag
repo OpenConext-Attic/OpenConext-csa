@@ -15,5 +15,5 @@
   ~ limitations under the License.
   --%>
 <%@attribute name="facetValue" type="nl.surfnet.coin.csa.model.FacetValue" required="true" %>
-<%@attribute name="csp" type="nl.surfnet.coin.selfservice.domain.CompoundServiceProvider" required="true" %>
+<%@attribute name="csp" type="nl.surfnet.coin.csa.domain.CompoundServiceProvider" required="true" %>
 <%= csp.getFacetValues().contains(facetValue) ? "btn-primary-alt unlink" : "btn-primary link" %>

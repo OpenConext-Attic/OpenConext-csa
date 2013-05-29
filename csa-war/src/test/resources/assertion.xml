@@ -49,12 +49,12 @@
     <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
       <saml:SubjectConfirmationData
           InResponseTo="2e53e4d3-fa7e-4b3e-b4ad-abf390071148"
-          NotOnOrAfter="2012-05-31T11:30:42Z" Recipient="http://localhost:8280/selfservice/AssertionConsumerService"/>
+          NotOnOrAfter="2012-05-31T11:30:42Z" Recipient="http://localhost:8280/csa/AssertionConsumerService"/>
     </saml:SubjectConfirmation>
   </saml:Subject>
   <saml:Conditions NotBefore="2012-05-31T11:25:42Z" NotOnOrAfter="2012-05-31T11:30:42Z">
     <saml:AudienceRestriction>
-      <saml:Audience>http://local-selfservice</saml:Audience>
+      <saml:Audience>http://local-csa</saml:Audience>
     </saml:AudienceRestriction>
   </saml:Conditions>
   <saml:AuthnStatement AuthnInstant="2012-05-31T11:25:42Z" SessionIndex="a7ffe0e12b8d5fcfe7c72daa2f806bc1">

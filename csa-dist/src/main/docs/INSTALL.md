@@ -16,7 +16,7 @@
 
 # RELEASE INFORMATION
 
-    Project:           Showrrom
+    Project:           CSA
     Date:              2013-03-18
 
     Content:
@@ -39,7 +39,7 @@ the application on. e.g. extract the tarball in /tmp
 
 This installation document only provides documentation for the Tomcat application server.
 
-If you already have deployed a previous version of the showroom application
+If you already have deployed a previous version of the csa application
 you must follow step 2.2a to undeploy the previous version.
 
 If you have not deployed a previous version yet, follow 2.2b instead.
@@ -51,17 +51,17 @@ Stop the tomcat application server
 ### 2.2a Undeploy a previous version (optional)
 Navigate to the `<<CATALINA_HOME>>/wars/`
 (e.g. /opt/tomcat/wars/)
-delete the `showroom-war-<<VERION>>.war` file.
-(e.g. showroom-war-2.6.0-SNAPSHOT.war)
+delete the `csa-war-<<VERION>>.war` file.
+(e.g. csa-war-2.6.0-SNAPSHOT.war)
 
-Navigate to `<<CATALINA_HOME>>/work/showroom.{dev,test,acc}.surfconext.nl/`
-Delete the entire selfservice directory listed there.
+Navigate to `<<CATALINA_HOME>>/work/csa.{dev,test,acc}.surfconext.nl/`
+Delete the entire csa directory listed there.
 
 ### 2.2b Prepare Tomcat for first time deployment
 Create a webapps holder directory:
-`<<CATALINA_HOME>>/webapps/showroom.{dev,test,acc}.surfconext.nl/`
+`<<CATALINA_HOME>>/webapps/csa.{dev,test,acc}.surfconext.nl/`
 and give ownership to tomcat:
-`chown tomcat:tomcat <<CATALINA_HOME>>/webapps/showroom.{dev,test,acc}.surfconext.nl/`
+`chown tomcat:tomcat <<CATALINA_HOME>>/webapps/csa.{dev,test,acc}.surfconext.nl/`
 
 
 ### 2.3 Copy / edit property files
@@ -69,8 +69,8 @@ and give ownership to tomcat:
 Out-of-the-box the tarball comes with a number of different property files.
 A number of property files are delivered:
 
-- showroom.properties.<<ENV>>
-- selfservice-ehcache.xml.<<ENV>>
+- csa.properties.<<ENV>>
+- csa-ehcache.xml.<<ENV>>
 
 
 For different environments different property files are delivered. Pick the
@@ -78,9 +78,9 @@ appropriate property file for your environment from the following directory:
 `<<EXTRACTED_TAR_BALL_PATH>>/tomcat/conf/classpath_properties`
 
 Copy the chosen property files to:
-`<<CATALINA_HOME>>/conf/classpath_properties/showroom.properties`
-`<<CATALINA_HOME>>/conf/classpath_properties/selfservice-ehcache.xml`
-`<<CATALINA_HOME>>/conf/classpath_properties/showroom-logback.xml`
+`<<CATALINA_HOME>>/conf/classpath_properties/csa.properties`
+`<<CATALINA_HOME>>/conf/classpath_properties/csa-ehcache.xml`
+`<<CATALINA_HOME>>/conf/classpath_properties/csa-logback.xml`
 
 Edit the values of the property files according to your environment.
 
@@ -90,8 +90,8 @@ Edit the values of the property files according to your environment.
 Copy the provided context descriptor from
 `<<EXTRACTED_TAR_BALL_PATH>>/tomcat/conf/context`
 to
-`<<CATALINA_HOME>>/conf/Catalina/<<SELFSERVICE-VIRTUAL-HOST-DIRECTORY>>`
-(e.g. /opt/tomcat/conf/Catalina/showroom.dev.surfconext.nl)
+`<<CATALINA_HOME>>/conf/Catalina/<<CSA-VIRTUAL-HOST-DIRECTORY>>`
+(e.g. /opt/tomcat/conf/Catalina/csa.dev.surfconext.nl)
 
 Now, copy the coin-portal war located at
 `<<EXTRACTED_TAR_BALL_PATH>>/tomcat/webapps`

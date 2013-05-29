@@ -1,7 +1,8 @@
 selfservice.txt
+csa.txt
 bin
 dependency.tree
-coin-selfservice.properties.local
+coin-csa.properties.local
 .sass-cache
 target
 *.iml
@@ -12,7 +13,7 @@ target
 *rebel.xml
 testfiles
 .DS_Store
-csa-war/src/test/resources/coin-selfservice.properties.backup
+csa-war/src/test/resources/coin-csa.properties.backup
 csa-war/src/main/webapp/css/screen.css
 ConvenientLocalTestJson.java
 style_dashboard_acc.css

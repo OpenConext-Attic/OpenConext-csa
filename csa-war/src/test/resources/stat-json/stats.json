@@ -325,7 +325,7 @@
   },
   {
     "name": "SURFconext | Self service | SURFnet",
-    "spEntityId": "https://selfservice.test.surfconext.nl",
+    "spEntityId": "https://csa.test.surfconext.nl",
     "idpEntityId": "http://mock-idp",
     "pointStart": 1353020400000,
     "pointInterval": 86400000,
@@ -451,7 +451,7 @@
   },
   {
     "name": "SURFconext | Self service | SURFnet",
-    "spEntityId": "https://selfservice.test.surfconext.nl",
+    "spEntityId": "https://csa.test.surfconext.nl",
     "idpEntityId": "SURFnet%20BV",
     "pointStart": 1339106400000,
     "pointInterval": 86400000,
@@ -460,7 +460,7 @@
   },
   {
     "name": "SURFconext | Self service | SURFnet",
-    "spEntityId": "https://selfservice.test.surfconext.nl",
+    "spEntityId": "https://csa.test.surfconext.nl",
     "idpEntityId": "SURFnetGuests",
     "pointStart": 1339452000000,
     "pointInterval": 86400000,
@@ -532,7 +532,7 @@
   },
   {
     "name": "SURFconext | Self service | SURFnet",
-    "spEntityId": "https://selfservice.test.surfconext.nl",
+    "spEntityId": "https://csa.test.surfconext.nl",
     "idpEntityId": "https://surfguest.nl",
     "pointStart": 1338501600000,
     "pointInterval": 86400000,
@@ -1054,7 +1054,7 @@
   },
   {
     "name": "SURFconext | Self service | SURFnet",
-    "spEntityId": "https://selfservice.test.surfconext.nl",
+    "spEntityId": "https://csa.test.surfconext.nl",
     "idpEntityId": "https://frkosp.wind.surfnet.nl/simplesamlphp/saml2/idp/metadata.php",
     "pointStart": 1346796000000,
     "pointInterval": 86400000,

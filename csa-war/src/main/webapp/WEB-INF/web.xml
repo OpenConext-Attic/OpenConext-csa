@@ -21,7 +21,7 @@
     metadata-complete="true"
     version="2.5">
 
-  <display-name>coin-selfservice</display-name>
+  <display-name>coin-csa</display-name>
 
   <listener>
     <listener-class>nl.iprofs.modules.contextlogging.InitParameterLogbackContextListener</listener-class>
@@ -69,13 +69,13 @@
     </init-param>
     <init-param>
       <param-name>apis.application.properties.file</param-name>
-      <param-value>showroom.properties</param-value>
+      <param-value>csa.properties</param-value>
     </init-param>
   </filter>
   
   <filter>
     <filter-name>CORSHeaderFilter</filter-name>
-    <filter-class>nl.surfnet.coin.selfservice.filter.CorsHeaderFilter</filter-class>
+    <filter-class>nl.surfnet.coin.csa.filter.CorsHeaderFilter</filter-class>
   </filter>
 
   <filter-mapping>
@@ -94,7 +94,7 @@
   </filter-mapping>
 
   <servlet>
-    <servlet-name>coin-selfservice</servlet-name>
+    <servlet-name>coin-csa</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <init-param>
       <!-- needed to handle CORS preflight requests -->
@@ -105,7 +105,7 @@
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>coin-selfservice</servlet-name>
+    <servlet-name>coin-csa</servlet-name>
     <url-pattern>*.shtml</url-pattern>
     <url-pattern>*.json</url-pattern>
     <url-pattern>*.img</url-pattern>
@@ -118,9 +118,9 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-      classpath:coin-selfservice-properties-context.xml,
-      classpath:coin-selfservice-context.xml,
-      WEB-INF/coin-selfservice-security.xml,
+      classpath:coin-csa-properties-context.xml,
+      classpath:coin-csa-context.xml,
+      WEB-INF/coin-csa-security.xml,
       classpath:coin-shared-context.xml
     </param-value>
   </context-param>

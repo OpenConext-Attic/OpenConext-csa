@@ -17,7 +17,7 @@
   limitations under the License.
   --%>
 
-<%--@elvariable id="compoundSp" type="nl.surfnet.coin.selfservice.domain.CompoundServiceProvider"--%>
+<%--@elvariable id="compoundSp" type="nl.surfnet.coin.csa.domain.CompoundServiceProvider"--%>
 
 
 <c:set var="title">
@@ -54,7 +54,7 @@
         <i class="inlinehelp icon-question-sign" data-title="${title}" data-placement="bottom" data-content="<spring:message htmlEscape="true" code="jsp.compoundsp_taxonomy_configuration.title.help" />"></i>
       </h1>
 
-      <h3>The showroom taxonomy with all available categorized labels</h3>
+      <h3>The csa taxonomy with all available categorized labels</h3>
         <c:forEach items="${facets}" var="facet">
           <div class="accordion-group" data-facet-id="${facet.id}">
             <div class="accordion-heading">

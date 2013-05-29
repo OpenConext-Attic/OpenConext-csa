@@ -815,13 +815,13 @@
     },
     {
         "names":{
-            "en":"https://mujina-idp.acc.showroom.surfconext.nl",
-            "nl":"https://mujina-idp.acc.showroom.surfconext.nl"
+            "en":"https://mujina-idp.acc.csa.surfconext.nl",
+            "nl":"https://mujina-idp.acc.csa.surfconext.nl"
         },
-        "appTitle":"mujina-idp.acc.showroom",
+        "appTitle":"mujina-idp.acc.csa",
         "appDescription":"mockidp",
         "appThumbNail":"https://static.surfconext.nl/media/surfnet_logo.gif",
-        "appEntityId":"https://mujina-idp.acc.showroom.surfconext.nl/",
+        "appEntityId":"https://mujina-idp.acc.csa.surfconext.nl/",
         "instutionId":"mock-institution-id",
         "twoLeggedOauthAllowed":false,
         "consentNotRequired":false,
@@ -831,8 +831,8 @@
             "nl":null
         },
         "descriptions":{
-            "en":"mujina mock idp from acc.showroom",
-            "nl":"mujina mock idp from acc showroom"
+            "en":"mujina mock idp from acc.csa",
+            "nl":"mujina mock idp from acc csa"
         },
         "urls":{
             "en":null,

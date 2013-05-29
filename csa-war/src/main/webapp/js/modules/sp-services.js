@@ -29,11 +29,11 @@ app.spServices = function () {
         });
     }
 
-    $('#sp_overview_table').find("input[type='checkbox'][name='hideInPublicShowroom']").click(function () {
+    $('#sp_overview_table').find("input[type='checkbox'][name='hideInPublicCsa']").click(function () {
       performAjaxUpdate(this, "public");
     });
 
-    $('#sp_overview_table').find("input[type='checkbox'][name='hideInProtectedShowroom']").click(function () {
+    $('#sp_overview_table').find("input[type='checkbox'][name='hideInProtectedCsa']").click(function () {
       performAjaxUpdate(this, "protected");
     });
 

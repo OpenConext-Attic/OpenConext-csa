@@ -10,7 +10,7 @@
   },
   {
     "name": "SURFconext | Self service | SURFnet",
-    "spEntityId": "https://selfservice.test.surfconext.nl",
+    "spEntityId": "https://csa.test.surfconext.nl",
     "idpEntityId": "http://mock-idp",
     "pointStart": 1351029600000,
     "pointInterval": 86400000,

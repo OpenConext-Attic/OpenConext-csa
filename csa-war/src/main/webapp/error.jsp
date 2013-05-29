@@ -24,7 +24,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SURFconext - Selfservice - An error occurred</title>
+    <title>SURFconext - Cloud Services - An error occurred</title>
 
     <link rel="stylesheet" href="<c:url value="/css/bootstrap-2.0.4.css"/>" />
     <link rel="stylesheet" href="<c:url value="/css/bootstrap-alert.css"/>" />
