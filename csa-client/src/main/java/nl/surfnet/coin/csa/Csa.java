@@ -68,4 +68,6 @@ public interface Csa {
   Taxonomy getTaxonomy() ;
 
   List<Action> getJiraActions();
+
+  Action createAction(Action action);
 }

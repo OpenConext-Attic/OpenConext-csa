@@ -41,16 +41,15 @@ public class MenuInterceptorTest {
     private MenuInterceptor menuInterceptor = new MenuInterceptor();
 
     @Test
-    public void test_menu_for_user_has_home() throws Exception {
-        Menu menu = executeTestAndReturnMenu("/app-overview.shtml", false, ROLE_USER);
-        assertEquals(0, menu.getMenuItems().size());
+    public void test_menu_for_role_distribution_admin() throws Exception {
+        Menu menu = executeTestAndReturnMenu("/app-overview.shtml", ROLE_DISTRIBUTION_CHANNEL_ADMIN);
+        assertEquals(4, menu.getMenuItems().size());
     }
 
-    private Menu executeTestAndReturnMenu(String requestUri, Boolean lmngActive, Authority... authorities) throws Exception {
+    private Menu executeTestAndReturnMenu(String requestUri, Authority... authorities) throws Exception {
         setUpAuthorities(authorities);
         ModelAndView modelAndView = new ModelAndView();
         MockHttpServletRequest request = new MockHttpServletRequest("GET", requestUri);
-        request.setAttribute("lmngActive", lmngActive);
         request.setAttribute("ebLinkActive", Boolean.TRUE);
         menuInterceptor.postHandle(request, null, null, modelAndView);
 

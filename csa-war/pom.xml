@@ -506,7 +506,6 @@
                     <jsSourceFile>modules/respond.js</jsSourceFile>
                     <jsSourceFile>modules/table.js</jsSourceFile>
                     <jsSourceFile>modules/compound-sp-edit.js</jsSourceFile>
-                    <jsSourceFile>modules/notifications.js</jsSourceFile>
                     <jsSourceFile>modules/app-detail.js</jsSourceFile>
                     <jsSourceFile>modules/shop-admin.js</jsSourceFile>
                     <jsSourceFile>modules/sp-services.js</jsSourceFile>

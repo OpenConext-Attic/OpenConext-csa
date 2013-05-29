@@ -42,27 +42,11 @@ public class OpenConextOAuthClientMock implements OpenConextOAuthClient, Initial
 
   public enum Users {
     /*
-     * ROLE_IDP_SURFCONEXT_ADMIN=IdP Account Administrator
-     */
-    ADMIN_IDP_SURFCONEXT("adminidpsc"), // admin from institution for dashboard
-    /*
-     * ROLE_IDP_LICENSE_ADMIN=IdP License Administrator
-     */
-    ADMIN_IDP_LICENSE("adminidpli"), // admin from institution for showroom
-    /*
      * ROLE_DISTRIBUTION_CHANNEL_ADMIN=Distribution Channel Administrator
      */
     ADMIN_DISTRIBUTIE_CHANNEL("admindk"), // admin from surfmarket for showroom
-    /*
-     * ROLE_USER=Distribution Channel User
-     */
-    USER("user"),  //mere moratal end-user
-    /*
-     * Both IdP admins
-     */
-    ADMIN_IDP_ADMIN("adminidp"),
 
-    ALL("NA");
+    NOT_PERMITTED("NA");
 
     private String user;
 
@@ -81,12 +65,10 @@ public class OpenConextOAuthClientMock implements OpenConextOAuthClient, Initial
           return user;
         }
       }
-      return ALL;
+      return NOT_PERMITTED;
     }
   }
 
-  private String adminLicentieIdPTeam;
-  private String adminSurfConextIdPTeam;
   private String adminDistributionTeam;
 
   @Override
@@ -140,16 +122,6 @@ public class OpenConextOAuthClientMock implements OpenConextOAuthClient, Initial
     switch (user) {
     case ADMIN_DISTRIBUTIE_CHANNEL:
       return asList(createGroup20(adminDistributionTeam));
-    case ADMIN_IDP_LICENSE:
-      return asList(createGroup20(adminLicentieIdPTeam));
-    case ADMIN_IDP_SURFCONEXT:
-      return asList(createGroup20(adminSurfConextIdPTeam));
-    case ADMIN_IDP_ADMIN:
-      return asList(createGroup20(adminLicentieIdPTeam), createGroup20(adminSurfConextIdPTeam));
-    case USER:
-      return new ArrayList<Group20>();
-    case ALL:
-      return asList(createGroup20(adminLicentieIdPTeam), createGroup20(adminSurfConextIdPTeam), createGroup20(adminDistributionTeam));
     default:
       throw new RuntimeException("Unknown");
     }
@@ -190,8 +162,6 @@ public class OpenConextOAuthClientMock implements OpenConextOAuthClient, Initial
   public void afterPropertiesSet() throws Exception {
     Properties prop = new Properties();
     prop.load(new ClassPathResource("showroom.properties").getInputStream());
-    adminLicentieIdPTeam = prop.getProperty("admin.licentie.idp.teamname");
-    adminSurfConextIdPTeam = prop.getProperty("admin.surfconext.idp.teamname");
     adminDistributionTeam = prop.getProperty("admin.distribution.channel.teamname");
   }
 

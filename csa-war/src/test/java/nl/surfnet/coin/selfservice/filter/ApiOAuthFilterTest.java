@@ -43,9 +43,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import static nl.surfnet.coin.selfservice.domain.CoinAuthority.Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN;
-import static nl.surfnet.coin.selfservice.domain.CoinAuthority.Authority.ROLE_IDP_LICENSE_ADMIN;
-import static nl.surfnet.coin.selfservice.domain.CoinAuthority.Authority.ROLE_IDP_SURFCONEXT_ADMIN;
-import static nl.surfnet.coin.selfservice.domain.CoinAuthority.Authority.ROLE_USER;
 import static nl.surfnet.coin.selfservice.filter.SpringSecurityUtil.assertNoRoleIsGranted;
 import static nl.surfnet.coin.selfservice.filter.SpringSecurityUtil.assertRoleIsGranted;
 import static org.junit.Assert.assertThat;
@@ -76,7 +73,6 @@ public class ApiOAuthFilterTest {
   @Before
   public void setUp() throws Exception {
     filter = new ApiOAuthFilter();
-    filter.setLmngActive(true);
     MockitoAnnotations.initMocks(this);
 
     request = new MockHttpServletRequest("GET", "/anyUrl");
@@ -137,7 +133,6 @@ public class ApiOAuthFilterTest {
 
   @Test
   public void filterAndUsePrefetchedAccessTokenButNoAdmin() throws Exception {
-    filter.setLmngActive(false);
     when(apiClient.isAccessTokenGranted(anyString())).thenReturn(true);
 
     setAuthentication();
@@ -151,22 +146,6 @@ public class ApiOAuthFilterTest {
   }
 
 
-  @Test
-  public void elevateUserNoAdminButHasSomeGroups() throws Exception {
-    // This tests whether a user gets the role 'user' when he is member of some random groups, but not any admin group.
-
-    filter.setLmngActive(true);
-    when(apiClient.isAccessTokenGranted(anyString())).thenReturn(true);
-
-    setAuthentication();
-
-    filter.setAdminDistributionTeam("a-team");
-    when(apiClient.getGroups20(THE_USERS_UID, THE_USERS_UID)).thenReturn(Arrays.asList(new Group20("id1"), new Group20("id2")));
-
-    filter.doFilter(request, response, chain);
-    assertThat((String) request.getSession().getAttribute(ApiOAuthFilter.PROCESSED), Is.is("true"));
-    assertRoleIsGranted(ROLE_USER);
-  }
 
   @Test
   public void filterAndUsePrefetchedAccessTokenAndIsAdmin() throws Exception {
@@ -188,48 +167,15 @@ public class ApiOAuthFilterTest {
 
   @Test
   public void test_elevate_user_results_in_only_one_selfservice_admin() throws IOException, ServletException {
-    setUpForAuthoritiesCheck(ROLE_DISTRIBUTION_CHANNEL_ADMIN, ROLE_IDP_LICENSE_ADMIN, ROLE_IDP_SURFCONEXT_ADMIN);
+    setUpForAuthoritiesCheck(ROLE_DISTRIBUTION_CHANNEL_ADMIN);
     assertRoleIsGranted(ROLE_DISTRIBUTION_CHANNEL_ADMIN);
   }
 
-  @Test
-  public void test_elevate_user_results_in_two_admins() throws IOException, ServletException {
-    setUpForAuthoritiesCheck( ROLE_IDP_LICENSE_ADMIN, ROLE_IDP_SURFCONEXT_ADMIN);
-    assertRoleIsGranted(ROLE_IDP_LICENSE_ADMIN, ROLE_IDP_SURFCONEXT_ADMIN);
-  }
-
-  @Test
-  public void test_elevate_user_one_idp_admin() throws IOException, ServletException {
-    setUpForAuthoritiesCheck( ROLE_IDP_LICENSE_ADMIN);
-    assertRoleIsGranted(ROLE_IDP_LICENSE_ADMIN);
-  }
-
-
-  @Test
-  public void test_elevate_user_results_in_one_admin_when_lmng_is_disabled() throws IOException, ServletException {
-    filter.setLmngActive(false);
-    setUpForAuthoritiesCheck( ROLE_IDP_LICENSE_ADMIN, ROLE_IDP_SURFCONEXT_ADMIN);
-    assertRoleIsGranted(ROLE_IDP_SURFCONEXT_ADMIN);
-  }
-
-  @Test
-  public void test_elevate_user_idp_license_admin_gets_no_role_when_lmng_is_disabled() throws IOException, ServletException {
-    filter.setLmngActive(false);
-    setUpForAuthoritiesCheck( ROLE_IDP_LICENSE_ADMIN);
-    assertNoRoleIsGranted();
-  }
 
   @Test
   public void test_elevate_user_results_in_no_authorities_in_lmng_disactive_modus() throws IOException, ServletException {
-    filter.setLmngActive(false);
     setUpForAuthoritiesCheck(new Authority[]{});
     assertNoRoleIsGranted();
-  }
-
-  @Test
-  public void test_elevate_user_results_in_user_authorities() throws IOException, ServletException {
-    setUpForAuthoritiesCheck( new Authority[]{});
-    assertRoleIsGranted(ROLE_USER);
   }
 
   private void setUpForAuthoritiesCheck(Authority... groupMemberShips) throws IOException, ServletException {
@@ -250,14 +196,6 @@ public class ApiOAuthFilterTest {
       switch (authority) {
       case ROLE_DISTRIBUTION_CHANNEL_ADMIN:
         filter.setAdminDistributionTeam(authority.name());
-        groups.add(new Group20(authority.name()));
-        break;
-      case ROLE_IDP_LICENSE_ADMIN:
-        filter.setAdminLicentieIdPTeam(authority.name());
-        groups.add(new Group20(authority.name()));
-        break;
-      case ROLE_IDP_SURFCONEXT_ADMIN:
-        filter.setAdminSurfConextIdPTeam(authority.name());
         groups.add(new Group20(authority.name()));
         break;
       default:

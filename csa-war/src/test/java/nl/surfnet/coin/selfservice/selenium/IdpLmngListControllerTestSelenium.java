@@ -35,48 +35,12 @@ public class IdpLmngListControllerTestSelenium extends SeleniumSupport {
     WebDriver driver = getRestartedWebDriver();
     
     driver.get(getSelfserviceBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ALL); // login
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login
     driver.get(getSelfserviceBaseUrl()+bindingAdminUrl); // get lmng sp admin page
     WebElement element = driver.findElement(By.id("form-14"));
     Assert.assertNotNull("Element form-14 should exist (expected 15 visable or invisable rows/forms)", element);
   }
-  
-  @Test
-  public void getLmngIdForIdpAccessDeniedUser() {
-    WebDriver driver = getRestartedWebDriver();
 
-    driver.get(getSelfserviceBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.USER); // login as normal user
-    driver.get(getSelfserviceBaseUrl()+bindingAdminUrl); // get lmng sp admin page
-    
-    WebElement element = driver.findElement(xpath("//*[contains(.,'Access denied')]"));
-    Assert.assertNotNull("Expected 'access denied' text", element);
-  }
-  
-  @Test
-  public void getLmngIdForIdpAccessDeniedAdminIdpLicense() {
-    WebDriver driver = getRestartedWebDriver();
-
-    driver.get(getSelfserviceBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_IDP_LICENSE); // login as normal user
-    driver.get(getSelfserviceBaseUrl()+bindingAdminUrl); // get lmng sp admin page
-    
-    WebElement element = driver.findElement(xpath("//*[contains(.,'Access denied')]"));
-    Assert.assertNotNull("Expected 'access denied' text", element);
-  }
-  
-  @Test
-  public void getLmngIdForIdpAccessDeniedAdminIdpSurfconext() {
-    WebDriver driver = getRestartedWebDriver();
-
-    driver.get(getSelfserviceBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_IDP_SURFCONEXT); // login as normal user
-    driver.get(getSelfserviceBaseUrl()+bindingAdminUrl); // get lmng sp admin page
-    
-    WebElement element = driver.findElement(xpath("//*[contains(.,'Access denied')]"));
-    Assert.assertNotNull("Expected 'access denied' text", element);
-  }
-  
   @Test
   public void getLmngIdForIdpAccessGrantedAdminDist() {
     WebDriver driver = getRestartedWebDriver();
@@ -96,7 +60,7 @@ public class IdpLmngListControllerTestSelenium extends SeleniumSupport {
     String newLmngValue = "{AF1F54D8-1B10-DC11-A6C7-0019B9DE3AA4}";
 
     driver.get(getSelfserviceBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ALL); // login as normal user
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login as normal user
     driver.get(getSelfserviceBaseUrl()+bindingAdminUrl); // get lmng sp admin page
 
     WebElement form = driver.findElement(xpath("//form[@class='lmng-id-edit'][1]"));
@@ -131,7 +95,7 @@ public class IdpLmngListControllerTestSelenium extends SeleniumSupport {
     String newLmngValue = "illegal string value";
 
     driver.get(getSelfserviceBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ALL); // login as normal user
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login as normal user
     driver.get(getSelfserviceBaseUrl()+bindingAdminUrl); // get lmng sp admin page
 
     WebElement form = driver.findElement(xpath("//form[@class='lmng-id-edit'][1]"));

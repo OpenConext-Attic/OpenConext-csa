@@ -36,34 +36,10 @@ public class SpLmngListControllerTestSelenium extends SeleniumSupport {
     WebDriver driver = getRestartedWebDriver();
     
     driver.get(getSelfserviceBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ALL); // login
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login
     driver.get(getSelfserviceBaseUrl()+bindingAdminUrl); // get lmng sp admin page
     List<WebElement> element = driver.findElements(By.id("form-40"));
     Assert.assertNotNull("Element form-40 should exist (expected > 40 rows/forms)", element.get(0));
-  }
-  
-  @Test
-  public void getLmngIdForSpAccessDeniedUser() {
-    WebDriver driver = getRestartedWebDriver();
-
-    driver.get(getSelfserviceBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.USER); // login as normal user
-    driver.get(getSelfserviceBaseUrl()+bindingAdminUrl); // get lmng sp admin page
-    
-    WebElement element = driver.findElement(By.xpath("//*[contains(.,'Access denied')]")); 
-    Assert.assertNotNull("Expected 'access denied' text", element);
-  }
-  
-  @Test
-  public void getLmngIdForSpAccessDeniedAdminIdpLicense() {
-    WebDriver driver = getRestartedWebDriver();
-
-    driver.get(getSelfserviceBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_IDP_LICENSE); // login as normal user
-    driver.get(getSelfserviceBaseUrl()+bindingAdminUrl); // get lmng sp admin page
-    
-    WebElement element = driver.findElement(By.xpath("//*[contains(.,'Access denied')]")); 
-    Assert.assertNotNull("Expected 'access denied' text", element);
   }
   
   @Test
@@ -85,7 +61,7 @@ public class SpLmngListControllerTestSelenium extends SeleniumSupport {
     String newLmngValue = "{41D136D1-3819-E211-B687-005056950050}";
 
     driver.get(getSelfserviceBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ALL); // login as normal user
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login as normal user
     driver.get(getSelfserviceBaseUrl()+bindingAdminUrl); // get lmng sp admin page
 
     WebElement inputLmng = driver.findElement(By.id("lmngId-0"));
@@ -114,7 +90,7 @@ public class SpLmngListControllerTestSelenium extends SeleniumSupport {
     String newLmngValue = "illegal string value";
 
     driver.get(getSelfserviceBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ALL); // login as normal user
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login as normal user
     driver.get(getSelfserviceBaseUrl()+bindingAdminUrl); // get lmng sp admin page
 
     WebElement inputLmng = driver.findElement(By.id("lmngId-0"));

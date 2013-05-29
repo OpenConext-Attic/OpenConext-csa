@@ -64,9 +64,7 @@ public class MenuInterceptor extends HandlerInterceptorAdapter {
         case ROLE_DISTRIBUTION_CHANNEL_ADMIN:
           menu.addMenuItem(new MenuItem("jsp.allsplmng.title", "/shopadmin/all-spslmng.shtml"));
           menu.addMenuItem(new MenuItem("jsp.allidplmng.title", "/shopadmin/all-idpslmng.shtml"));
-          menu.addMenuItem(new MenuItem("jsp.cspstatus.title", "/shopadmin/csp-status-overview.shtml"));
           menu.addMenuItem(new MenuItem("jsp.taxonomy.title", "/shopadmin/taxonomy-overview.shtml"));
-          menu.addMenuItem(new MenuItem("jsp.allsplmng.title", "/shopadmin/all-spsconfig.shtml"));
           menu.addMenuItem(new MenuItem("jsp.cspstatus.title", "/shopadmin/csp-status-overview.shtml"));
           break;
         default:

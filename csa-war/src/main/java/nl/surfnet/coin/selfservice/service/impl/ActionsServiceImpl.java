@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import nl.surfnet.coin.selfservice.domain.CoinUser;
 import org.springframework.stereotype.Service;
 
 import nl.surfnet.coin.selfservice.dao.impl.ActionsDaoImpl;
@@ -46,16 +47,39 @@ public class ActionsServiceImpl implements ActionsService {
 
   @Override
   public List<Action> getActions(String identityProvider) {
-    final List<Action> actions = actionsDao.findActionsByIdP(identityProvider);
-    return actions;
+    return actionsDao.findActionsByIdP(identityProvider);
   }
 
   @Override
-  public void registerJiraIssueCreation(String issueKey, JiraTask task, String userId, String userName) {
-    Action a = new Action(issueKey, userId, userName, Action.Type.byJiraIssueType(task.getIssueType()),
-        Action.Status.byJiraIssueStatus(task.getStatus()), task.getBody(),
-        task.getIdentityProvider(), task.getServiceProvider(), task.getInstitution(), new Date());
-    actionsDao.saveAction(a);
+  public Action registerJiraIssueCreation(Action action) {
+    JiraTask task = new JiraTask.Builder()
+            .body(action.getUserEmail() + ("\n\n" + action.getBody()))
+            .identityProvider(action.getIdpId()).serviceProvider(action.getSpId())
+            .institution(action.getInstitutionId()).issueType(action.getType())
+            .status(JiraTask.Status.OPEN).build();
+    String issueKey = getJiraKey(action, task);
+    action.setJiraKey(issueKey);
+    action.setStatus(JiraTask.Status.OPEN);
+    actionsDao.saveAction(action);
+    return action;
+  }
+
+  private String getJiraKey(Action action, JiraTask task) {
+    String issueKey;
+    try {
+      issueKey = jiraService.create(task, createUser(action));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    return issueKey;
+  }
+
+  private CoinUser createUser(Action action) {
+    CoinUser coinUser = new CoinUser();
+    coinUser.setDisplayName(action.getUserName());
+    coinUser.setEmail(action.getUserEmail());
+    coinUser.setUid(action.getUserId());
+    return coinUser;
   }
 
   @Override

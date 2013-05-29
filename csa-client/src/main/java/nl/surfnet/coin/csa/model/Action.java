@@ -16,66 +16,50 @@
 
 package nl.surfnet.coin.csa.model;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+
 import java.util.Comparator;
 import java.util.Date;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
-import org.codehaus.jackson.annotate.JsonIgnore;
-
-
 
 public class Action {
-
-  public enum Type {
-    QUESTION, LINKREQUEST, UNLINKREQUEST;
-
-    public static Type byJiraIssueType(JiraTask.Type type) {
-      switch (type) {
-        case QUESTION:
-          return QUESTION;
-        case LINKREQUEST:
-          return LINKREQUEST;
-        case UNLINKREQUEST:
-          return UNLINKREQUEST;
-        default:
-          throw new IllegalStateException("Unknown jira issue type: " + type);
-      }
-    }
-  }
-
-  public enum Status {
-    OPEN, CLOSED;
-
-    public static Status byJiraIssueStatus(JiraTask.Status status) {
-      switch (status) {
-        case OPEN:
-          return OPEN;
-        case CLOSED:
-          return CLOSED;
-        default:
-          throw new IllegalStateException("Unknown jira issue status: " + status);
-      }
-    }
-  }
 
   private long id;
   private String jiraKey;
   private String userId;
   private String userName;
+  private String userEmail;
   private String body;
+
   private String idpId;
   private String spId;
   private Date requestDate;
-  private Type type;
-  private Status status;
+  private JiraTask.Type type;
+  private JiraTask.Status status;
   private String institutionId;
 
-  public Action() {}
-  public Action(String jiraKey, String userId, String userName, Type type, Status status, String body, String idpId,
+  public Action() {
+  }
+
+  public Action(String userId, String userEmail, String userName, JiraTask.Type type, String body, String idpId,
+                String spId, String institutionId) {
+    this.userId = userId;
+    this.userName = userName;
+    this.userEmail = userEmail;
+    this.body = body;
+    this.idpId = idpId;
+    this.spId = spId;
+    this.type = type;
+    this.institutionId = institutionId;
+    this.requestDate = new Date();
+  }
+
+  public Action(String jiraKey, String userId, String userName, String userEmail, JiraTask.Type type, JiraTask.Status status, String body, String idpId,
                 String spId, String institutionId, Date requestDate) {
     this.userId = userId;
     this.jiraKey = jiraKey;
     this.userName = userName;
+    this.userEmail = userEmail;
     this.body = body;
     this.idpId = idpId;
     this.spId = spId;
@@ -113,11 +97,11 @@ public class Action {
     return requestDate;
   }
 
-  public Type getType() {
+  public JiraTask.Type getType() {
     return type;
   }
 
-  public Status getStatus() {
+  public JiraTask.Status getStatus() {
     return status;
   }
 
@@ -128,13 +112,62 @@ public class Action {
   public void setId(long id) {
     this.id = id;
   }
+
   public String getInstitutionId() {
     return institutionId;
   }
 
+  public void setJiraKey(String jiraKey) {
+    this.jiraKey = jiraKey;
+  }
+
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
+
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
+
+  public void setBody(String body) {
+    this.body = body;
+  }
+
+  public void setIdpId(String idpId) {
+    this.idpId = idpId;
+  }
+
+  public void setSpId(String spId) {
+    this.spId = spId;
+  }
+
+  public void setRequestDate(Date requestDate) {
+    this.requestDate = requestDate;
+  }
+
+  public void setType(JiraTask.Type type) {
+    this.type = type;
+  }
+
+  public void setStatus(JiraTask.Status status) {
+    this.status = status;
+  }
+
+  public void setInstitutionId(String institutionId) {
+    this.institutionId = institutionId;
+  }
+
+  public String getUserEmail() {
+    return userEmail;
+  }
+
+  public void setUserEmail(String userEmail) {
+    this.userEmail = userEmail;
+  }
 
   /**
    * get a Comparator that sorts by date ascending: newest first
+   *
    * @return
    */
   public static Comparator<? super Action> sortByDateAsc() {
@@ -142,11 +175,10 @@ public class Action {
       @Override
       public int compare(Action a1, Action a2) {
         return new CompareToBuilder()
-            .append(a1.getRequestDate(), a2.getRequestDate())
-            .toComparison();
+                .append(a1.getRequestDate(), a2.getRequestDate())
+                .toComparison();
       }
     };
   }
-
 
 }

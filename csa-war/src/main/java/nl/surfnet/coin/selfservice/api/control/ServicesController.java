@@ -27,13 +27,8 @@ import nl.surfnet.coin.selfservice.service.LmngService;
 import nl.surfnet.coin.selfservice.service.impl.CompoundSPService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.surfnet.oaaas.auth.AuthorizationServerFilter;
-import org.surfnet.oaaas.auth.principal.AuthenticatedPrincipal;
-import org.surfnet.oaaas.conext.SAMLAuthenticatedPrincipal;
-import org.surfnet.oaaas.model.VerifyTokenResponse;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -115,7 +110,7 @@ public class ServicesController extends BaseApiController{
   @ResponseBody
   List<Service> getProtectedServicesByIdp(@RequestParam(value = "lang", defaultValue = "en") String language, @RequestParam(value = "idpEntityId") String idpEntityId,
                                           final HttpServletRequest request) {
-    verifyScope(request, AuthorityScopeInterceptor.DASHBOARD_OAUTH_CLIENT_SCOPE);
+    verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_JIRA);
     return doGetServicesForIdP(language, idpEntityId);
   }
 

@@ -17,7 +17,6 @@
 package nl.surfnet.coin.selfservice.interceptor;
 
 import ch.lambdaj.function.matcher.HasArgumentWithValue;
-import nl.surfnet.coin.selfservice.domain.AttributeScopeConstraints;
 import nl.surfnet.coin.selfservice.domain.CoinAuthority.Authority;
 import nl.surfnet.coin.selfservice.domain.CompoundServiceProvider;
 import nl.surfnet.coin.selfservice.util.SpringSecurity;
@@ -55,7 +54,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  */
 public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
 
-  public static final String DASHBOARD_OAUTH_CLIENT_SCOPE = "dashboard";
+  public static final String OAUTH_CLIENT_SCOPE_JIRA = "dashboard";
 
   private static final Logger LOG = LoggerFactory.getLogger(AuthorityScopeInterceptor.class);
 
@@ -65,7 +64,9 @@ public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-    if (TOKEN_CHECK_METHODS.contains(request.getMethod().toUpperCase())) {
+    //we don't want to token check csa api calls
+    if (TOKEN_CHECK_METHODS.contains(request.getMethod().toUpperCase()) &&
+            !request.getRequestURI().toLowerCase().contains("api/protected")) {
       String token = request.getParameter(TOKEN_CHECK);
       String sessionToken = (String) request.getSession().getAttribute(TOKEN_CHECK);
       if (StringUtils.isBlank(token) || !token.equals(sessionToken)) {
@@ -84,19 +85,7 @@ public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
 
       List<Authority> authorities = SpringSecurity.getCurrentUser().getAuthorityEnums();
 
-      final ModelMap map = modelAndView.getModelMap();
-      CompoundServiceProvider sp = (CompoundServiceProvider) map.get(COMPOUND_SP);
-      if (sp != null) {
-        scopeCompoundServiceProvider(map, sp, authorities);
-      }
-      Collection<CompoundServiceProvider> sps = (Collection<CompoundServiceProvider>) map.get(COMPOUND_SPS);
-      if (!CollectionUtils.isEmpty(sps)) {
-        sps = scopeListOfCompoundServiceProviders(sps, authorities);
-        for (CompoundServiceProvider compoundServiceProvider : sps) {
-          scopeCompoundServiceProvider(map, compoundServiceProvider, authorities);
-        }
-        map.put(COMPOUND_SPS, sps);
-      }
+      ModelMap map = modelAndView.getModelMap();
 
       scopeGeneralAuthCons(map, authorities, request);
 
@@ -105,63 +94,13 @@ public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
   }
 
   protected void scopeGeneralAuthCons(ModelMap map, List<Authority> authorities, final HttpServletRequest request) {
-    boolean isAdmin = containsRole(authorities, ROLE_DISTRIBUTION_CHANNEL_ADMIN, ROLE_IDP_LICENSE_ADMIN, ROLE_IDP_SURFCONEXT_ADMIN);
-    map.put(SERVICE_CONNECTION_VISIBLE, containsRole(authorities, ROLE_IDP_SURFCONEXT_ADMIN, ROLE_DISTRIBUTION_CHANNEL_ADMIN));
+    boolean isAdmin = containsRole(authorities, ROLE_DISTRIBUTION_CHANNEL_ADMIN);
+    map.put(SERVICE_CONNECTION_VISIBLE, isAdmin);
     map.put(FACET_CONNECTION_VISIBLE, isAdmin);
-    map.put(DEEPLINK_TO_SURFMARKET_ALLOWED, containsRole(authorities, ROLE_IDP_LICENSE_ADMIN, ROLE_DISTRIBUTION_CHANNEL_ADMIN));
-    map.put(IS_GOD, true);
+    map.put(DEEPLINK_TO_SURFMARKET_ALLOWED, isAdmin);
+    map.put(IS_GOD, isAdmin);
   }
   
-  /**
-   * Reduce list based on whether the SP 'is linked' to the current IdP.
-   * 
-   * @return a reduced list, or the same, if no changes.
-   */
-  protected Collection<CompoundServiceProvider> scopeListOfCompoundServiceProviders(Collection<CompoundServiceProvider> cps,
-      List<Authority> authorities) {
-    HasArgumentWithValue<Object, Boolean> linkedSpsMatcher = having(on(CompoundServiceProvider.class).getServiceProvider().isLinked());
-    if (isRoleUser(authorities)) {
-      cps = with(cps).retain(having(on(CompoundServiceProvider.class).getServiceProvider().isLinked()));
-      LOG.debug("Reduced the list of CSPs to only linked CSPs, because user '{}' is an enduser.", SpringSecurity.getCurrentUser().getUid());
-    } else if (isRoleIdPLicenseAdmin(authorities)) {
-      HasArgumentWithValue<Object, Boolean> articleAvailableMatcher = having(on(CompoundServiceProvider.class).isArticleAvailable());
-
-      cps = with(cps).retain(linkedSpsMatcher.or(articleAvailableMatcher));
-
-      LOG.debug("Reduced the list of CSPs to only linked CSPs, because user '{}' is an license IdP user", SpringSecurity.getCurrentUser()
-          .getUid());
-    }
-    return cps;
-  }
-
-  /*
-   * Based on https://wiki.surfnetlabs.nl/display/services/App-omschrijving we
-   * tell the Service to limit scope access based on the authority
-   */
-  protected void scopeCompoundServiceProvider(ModelMap map, CompoundServiceProvider sp, List<Authority> authorities) {
-
-    // Do not allow normal users to view 'unlinked' services, even if requested
-    // explicitly.
-    if (isRoleUser(authorities) && !sp.getServiceProvider().isLinked()) {
-      LOG.info(
-          "user requested CSP details of CSP with id {} although this SP is not 'linked'. Will throw AccessDeniedException('Access denied').",
-          sp.getId());
-      throw new AccessDeniedException("Access denied");
-    }
-
-    AttributeScopeConstraints constraints = AttributeScopeConstraints.builder(authorities);
-    sp.setConstraints(constraints);
-  }
-
-  protected boolean isRoleUser(List<Authority> authorities) {
-    return CollectionUtils.isEmpty(authorities) || ((authorities.size() == 1 && authorities.get(0).equals(Authority.ROLE_USER)));
-  }
-
-  protected boolean isRoleIdPLicenseAdmin(List<Authority> authorities) {
-    return containsRole(authorities, ROLE_IDP_LICENSE_ADMIN)
-        && !containsRole(authorities, ROLE_IDP_SURFCONEXT_ADMIN, ROLE_DISTRIBUTION_CHANNEL_ADMIN);
-  }
-
   protected static boolean containsRole(List<Authority> authorities, Authority... authority) {
     for (Authority auth : authority) {
       if (authorities.contains(auth)) {

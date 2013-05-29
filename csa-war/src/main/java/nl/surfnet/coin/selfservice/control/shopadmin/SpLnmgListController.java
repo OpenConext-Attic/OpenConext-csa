@@ -82,16 +82,6 @@ public class SpLnmgListController extends BaseController {
     return new ModelAndView("shopadmin/sp-overview", model);
   }
 
-  @RequestMapping(value = "/all-spsconfig")
-  public ModelAndView listAllSps(Map<String, Object> model) {
-    if (model == null) {
-      model = new HashMap<String, Object>();
-    }
-    List<ServiceProvider> allSps = providerService.getAllServiceProviders(false);
-    model.put("sps", allSps);
-    return new ModelAndView("shopadmin/sp-only-overview", model);
-  }
-
   @RequestMapping(value = "/save-splmng", method = RequestMethod.POST)
   public ModelAndView saveLmngServices(HttpServletRequest req) {
     Map<String, Object> model = new HashMap<String, Object>();

@@ -40,26 +40,17 @@
               </form:form>
             </div>
   
-            <c:choose>
-              <c:when test="${lmngActive}">
-                <c:set var="tableIdentifier" value="csp-statusses"></c:set>
-              </c:when>
-              <c:otherwise>
-                <c:set var="tableIdentifier" value="csp-statusses-short"></c:set>
-              </c:otherwise>
-            </c:choose>
-  
+            <c:set var="tableIdentifier" value="csp-statusses"></c:set>
+
             <c:set var="searchPlaceholder"><spring:message code="jsp.search.placeholder.sp" /></c:set>
                 <table class="table table-bordered table-striped table-above-pagination table-with-statuses table-sortable" id="${tableIdentifier}" data-search-placeholder="${searchPlaceholder}">
                   <thead>
                     <tr>
                       <th class="html sorting_asc"><spring:message code="jsp.cspstatus.csp.name"/></th>
-                      <c:if test="${lmngActive}">
 	                      <th><spring:message code="jsp.cspstatus.csp.lmnglink"/></th>
 	                      <th><spring:message code="jsp.cspstatus.csp.haslicense"/></th>
 	                      <th><spring:message code="jsp.cspstatus.csp.grouplicense"/></th>
 	                      <th><spring:message code="jsp.cspstatus.csp.license.expire"/></th>
-                      </c:if>
 		                  <th><spring:message code="jsp.cspstatus.csp.islinked"/></th>
                     </tr>
                   </thead>
@@ -75,7 +66,6 @@
                         <td title="${serviceDescription} - ${compoundSp.sp.id}">
                           <a href="${detailUrl}"><tags:providername provider="${compoundSp.sp}" /></a>
                         </td>
-                        <c:if test="${lmngActive}">
 	                        <td>
 	                          <c:choose>
 	                            <c:when test="${compoundSp.articleAvailable}">
@@ -113,8 +103,7 @@
                                <fmt:formatDate pattern="dd-MM-yyyy" value="${compoundSp.license.endDate}"/>
                              </c:if>
                            </td>
-	                      </c:if>
-                          
+
                         <td>
                           <c:choose>
                             <c:when test="${compoundSp.sp.linked}">

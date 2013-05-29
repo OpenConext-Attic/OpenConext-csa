@@ -35,13 +35,6 @@
   </div>
 </footer>
 
-<c:if test="${not empty notificationMessage.arguments and empty notificationPopupClosed}">
-  <div class="notifications-popup hide" data-href="<spring:url value="/notifications.shtml" htmlEscape="true" />">
-    <spring:message code="jsp.notifications.popupmessage" arguments="${fn:length(notificationMessage.arguments)}" />
-    <a class="close-notifications" href="<spring:url value="/closeNotificationPopup.shtml" htmlEscape="true" />" title="Close">×</a>
-  </div>
-</c:if>
-
 <c:choose>
   <c:when test="${dev eq true}">
     <script src="<c:url value="/js/jquery/jquery-1.8.3.min.js"/>"></script>
@@ -69,7 +62,6 @@
     <script src="<c:url value="/js/modules/table.js"/>"></script>
     <script src="<c:url value="/js/modules/graphs.js"/>"></script>
     <script src="<c:url value="/js/modules/idp-status.js"/>"></script>
-    <script src="<c:url value="/js/modules/notifications.js"/>"></script>
     <script src="<c:url value="/js/modules/app-detail.js"/>"></script>
     <script src="<c:url value="/js/modules/shop-admin.js"/>"></script>
     <script src="<c:url value="/js/modules/sp-services.js"/>"></script>

@@ -16,21 +16,23 @@
 
 package nl.surfnet.coin.selfservice.dao.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.sql.DataSource;
-
+import nl.surfnet.coin.csa.model.Action;
+import nl.surfnet.coin.csa.model.JiraTask;
+import nl.surfnet.coin.selfservice.dao.ActionsDao;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import nl.surfnet.coin.selfservice.dao.ActionsDao;
-import nl.surfnet.coin.csa.model.Action;
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of the ActionsDao, using a RDBMS for persistence
@@ -39,26 +41,37 @@ import nl.surfnet.coin.csa.model.Action;
 public class ActionsDaoImpl implements ActionsDao {
 
   private JdbcOperations jdbcTemplate;
+  private SimpleJdbcInsert insertAction;
 
   @Resource(name = "selfserviceDataSource")
   public void setDataSource(DataSource dataSource) {
     jdbcTemplate = new JdbcTemplate(dataSource);
+    this.insertAction =
+            new SimpleJdbcInsert(dataSource)
+                    .withTableName("ss_actions")
+                    .usingGeneratedKeyColumns("id");
   }
 
   private static class ActionRowMapper implements RowMapper<Action> {
     @Override
     public Action mapRow(final ResultSet resultSet, final int i) throws SQLException {
+      /*
+        public Action(String jiraKey, String userId, String userName, String userEmail, JiraTask.Type type, JiraTask.Status status, String body, String idpId,
+                String spId, String institutionId, Date requestDate) {
+
+       */
       final Action action = new Action(
-          resultSet.getString("jiraKey"),
-          resultSet.getString("userId"),
-          resultSet.getString("userName"),
-          Action.Type.valueOf(resultSet.getString("actionType")),
-          Action.Status.valueOf(resultSet.getString("actionStatus")),
-          resultSet.getString("body"),
-          resultSet.getString("idp"),
-          resultSet.getString("sp"),
-          resultSet.getString("institutionId"),
-          resultSet.getTimestamp("requestDate"));
+              resultSet.getString("jiraKey"),
+              resultSet.getString("userId"),
+              resultSet.getString("userName"),
+              null,//we don't store the email of the originator
+              JiraTask.Type.valueOf(resultSet.getString("actionType")),
+              JiraTask.Status.valueOf(resultSet.getString("actionStatus")),
+              resultSet.getString("body"),
+              resultSet.getString("idp"),
+              resultSet.getString("sp"),
+              resultSet.getString("institutionId"),
+              resultSet.getTimestamp("requestDate"));
       action.setId(resultSet.getLong("id"));
       return action;
     }
@@ -67,19 +80,23 @@ public class ActionsDaoImpl implements ActionsDao {
   @Override
   public List<Action> findActionsByIdP(String identityProvider) {
     return jdbcTemplate.query("SELECT id, jiraKey, userId, userName, actionType, actionStatus, body, idp, " +
-        "sp, institutionId, requestDate FROM ss_actions WHERE idp = ?", new ActionRowMapper(),
+            "sp, institutionId, requestDate FROM ss_actions WHERE idp = ? ORDER BY id", new ActionRowMapper(),
             identityProvider);
   }
 
   @Override
-  public void saveAction(Action action) {
-    jdbcTemplate.update(
-        "INSERT INTO ss_actions (jiraKey, userId, userName, idp, sp, institutionId, actionType, actionStatus, body, " +
-            "requestDate) VALUES(" +
-            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        action.getJiraKey(), action.getUserId(), action.getUserName(), action.getIdpId(),
-        action.getSpId(), action.getInstitutionId(), action.getType().name(), action.getStatus().name(), action.getBody(),
-        action.getRequestDate());
+  public Long saveAction(final Action action) {
+    Map<String, Object> params = new HashMap<String, Object>();
+    String[] columns = new String[]{"jiraKey", "userId", "userName", "idp", "sp", "institutionId", "actionType", "actionStatus", "body", "requestDate"};
+    Object[] values = new Object[]{action.getJiraKey(), action.getUserId(), action.getUserName(), action.getIdpId(),
+            action.getSpId(), action.getInstitutionId(), action.getType().name(), action.getStatus().name(), action.getBody(),
+            action.getRequestDate()};
+    for (int i = 0; i < columns.length; i++) {
+      params.put(columns[i], values[i]);
+    }
+    Number newId = insertAction.executeAndReturnKey(params);
+    action.setId(newId.longValue());
+    return action.getId();
   }
 
   @Override
@@ -89,10 +106,6 @@ public class ActionsDaoImpl implements ActionsDao {
     } catch (EmptyResultDataAccessException e) {
       return null;
     }
-  }
-
-  public long findHighestId() {
-    return jdbcTemplate.queryForLong("select max(id) from ss_actions");
   }
 
   @Override

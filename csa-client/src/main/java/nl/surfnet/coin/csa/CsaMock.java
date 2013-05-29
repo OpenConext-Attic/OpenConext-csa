@@ -83,4 +83,9 @@ public class CsaMock implements Csa {
   public List<Action> getJiraActions() {
     return null;
   }
+
+  @Override
+  public Action createAction(Action action) {
+    return null;
+  }
 }

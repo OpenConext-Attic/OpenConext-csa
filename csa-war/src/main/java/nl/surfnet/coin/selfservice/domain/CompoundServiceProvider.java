@@ -85,9 +85,6 @@ public class CompoundServiceProvider extends DomainObject {
   @Column
   private boolean hideInProtectedShowroom;
 
-  @Transient
-  private AttributeScopeConstraints constraints;
-
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "compoundServiceProvider")
   @Sort(type = SortType.NATURAL)
   private SortedSet<FieldString> fields = new TreeSet<FieldString>();
@@ -288,10 +285,6 @@ public class CompoundServiceProvider extends DomainObject {
    * explicitly retrieve values.
    */
   private Object getFieldValue(Field.Key key) {
-    if (this.constraints != null && !this.constraints.isAllowed(key)) {
-      return null;
-    }
-
     Assert.notNull(key);
     for (FieldString f : this.fields) {
       if (key.equals(f.getKey())) {
@@ -582,10 +575,6 @@ public class CompoundServiceProvider extends DomainObject {
   private static String getMail(ServiceProvider serviceProvider, ContactPersonType type) {
     ContactPerson helpCP = serviceProvider.getContactPerson(type);
     return (helpCP == null ? null : helpCP.getEmailAddress());
-  }
-
-  public void setConstraints(AttributeScopeConstraints constraints) {
-    this.constraints = constraints;
   }
 
   public static boolean isAllowedCombination(Key key, Source source) {

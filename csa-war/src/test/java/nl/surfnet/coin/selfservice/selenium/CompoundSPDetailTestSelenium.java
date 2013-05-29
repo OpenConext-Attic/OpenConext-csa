@@ -22,7 +22,7 @@ public class CompoundSPDetailTestSelenium extends SeleniumSupport {
     WebDriver driver = getRestartedWebDriver();
 
     driver.get(getSelfserviceBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ALL); // login
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login
     driver.get(getSelfserviceBaseUrl() + bindingAdminUrl); // get lmng sp admin page
     clickOnPartialLink("Configure sources");
     clickOnPartialLink("URL of the app");

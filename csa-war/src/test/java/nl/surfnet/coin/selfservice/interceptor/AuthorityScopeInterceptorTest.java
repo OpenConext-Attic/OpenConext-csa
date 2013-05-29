@@ -15,35 +15,10 @@
  */
 package nl.surfnet.coin.selfservice.interceptor;
 
-import static nl.surfnet.coin.selfservice.control.BaseController.SERVICE_APPLY_ALLOWED;
-import static nl.surfnet.coin.selfservice.control.BaseController.SERVICE_QUESTION_ALLOWED;
-import static nl.surfnet.coin.selfservice.control.BaseController.TOKEN_CHECK;
-import static nl.surfnet.coin.selfservice.domain.CoinAuthority.Authority.ROLE_IDP_LICENSE_ADMIN;
-import static nl.surfnet.coin.selfservice.domain.CoinAuthority.Authority.ROLE_IDP_SURFCONEXT_ADMIN;
-import static nl.surfnet.coin.selfservice.domain.CoinAuthority.Authority.ROLE_USER;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-
 import nl.surfnet.coin.selfservice.control.BaseController;
-import nl.surfnet.coin.selfservice.domain.Article;
-import nl.surfnet.coin.selfservice.domain.CoinAuthority;
+import nl.surfnet.coin.selfservice.domain.*;
 import nl.surfnet.coin.selfservice.domain.CoinAuthority.Authority;
-import nl.surfnet.coin.selfservice.domain.CoinUser;
-import nl.surfnet.coin.selfservice.domain.CompoundServiceProvider;
-import nl.surfnet.coin.selfservice.domain.ContactPerson;
-import nl.surfnet.coin.selfservice.domain.ContactPersonType;
-import nl.surfnet.coin.selfservice.domain.License;
-import nl.surfnet.coin.selfservice.domain.ServiceProvider;
 import nl.surfnet.spring.security.opensaml.SAMLAuthenticationToken;
-
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.access.AccessDeniedException;
@@ -51,119 +26,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import static nl.surfnet.coin.selfservice.control.BaseController.TOKEN_CHECK;
+import static org.junit.Assert.*;
+
 /**
  * AuthorityScopeInterceptorTest.java
- * 
  */
 public class AuthorityScopeInterceptorTest {
 
   private AuthorityScopeInterceptor interceptor = new AuthorityScopeInterceptor();
 
-  /**
-   * Test method for
-   * {@link nl.surfnet.coin.selfservice.interceptor.AuthorityScopeInterceptor#postHandle(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.web.servlet.ModelAndView)}
-   * .
-   * 
-   * @throws Exception
-   */
-  @Test
-  public void test_regular_user_may_not_see_technical_mail_address() throws Exception {
-    ModelAndView modelAndView = new ModelAndView();
-
-    CoinUser user = coinUser(ROLE_USER);
-    SecurityContextHolder.getContext().setAuthentication(new SAMLAuthenticationToken(user, "", user.getAuthorities()));
-    CompoundServiceProvider sp = buildCompoundSeriveProvider();
-    sp.getServiceProvider().setLinked(true);
-    modelAndView.addObject(BaseController.COMPOUND_SP, sp);
-
-    String technicalSupportMail = sp.getTechnicalSupportMail();
-    // we have not intercepted yet, so everything is accessible
-    assertNotNull(technicalSupportMail);
-
-    interceptor.postHandle(new MockHttpServletRequest(), null, null, modelAndView);
-
-    technicalSupportMail = sp.getTechnicalSupportMail();
-    // intercepted...
-    assertNull(technicalSupportMail);
-
-  }
-
-  @Test(expected = AccessDeniedException.class)
-  public void user_cannot_view_unlinked_services() throws Exception {
-    ModelAndView mav = new ModelAndView();
-
-    CoinUser user = coinUser(ROLE_USER);
-
-    SecurityContextHolder.getContext().setAuthentication(new SAMLAuthenticationToken(user, "", user.getAuthorities()));
-    CompoundServiceProvider sp = buildCompoundSeriveProvider();
-    sp.getServiceProvider().setLinked(false);
-    mav.addObject(BaseController.COMPOUND_SP, sp);
-
-    interceptor.postHandle(null, null, null, mav);
-
-    fail("an AccessDeniedException should be thrown by now");
-  }
-
-  /**
-   * Test method for
-   * {@link nl.surfnet.coin.selfservice.interceptor.AuthorityScopeInterceptor#postHandle(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.web.servlet.ModelAndView)}
-   * .
-   * 
-   * @throws Exception
-   */
-  @Test
-  public void test_power_user_may_see_technical_mail_address() throws Exception {
-    ModelAndView modelAndView = new ModelAndView();
-
-    CoinUser user = coinUser(ROLE_IDP_SURFCONEXT_ADMIN);
-    SecurityContextHolder.getContext().setAuthentication(new SAMLAuthenticationToken(user, "", user.getAuthorities()));
-    CompoundServiceProvider sp = buildCompoundSeriveProvider();
-    modelAndView.addObject(BaseController.COMPOUND_SP, sp);
-
-    interceptor.postHandle(new MockHttpServletRequest(), null, null, modelAndView);
-
-    String technicalSupportMail = sp.getTechnicalSupportMail();
-    assertNotNull(technicalSupportMail);
-
-  }
-
-  @Test
-  @SuppressWarnings("unchecked")
-  public void idp_license_admin_may_only_see_licensed_services() throws Exception {
-    ModelAndView modelAndView = new ModelAndView();
-
-    CoinUser user = coinUser(ROLE_IDP_LICENSE_ADMIN);
-    SecurityContextHolder.getContext().setAuthentication(new SAMLAuthenticationToken(user, "", user.getAuthorities()));
-    CompoundServiceProvider sp = buildCompoundSeriveProvider();
-    modelAndView.addObject(BaseController.COMPOUND_SPS, Arrays.asList(sp));
-
-    interceptor.postHandle(new MockHttpServletRequest(), null, null, modelAndView);
-    Collection<CompoundServiceProvider> sps = (Collection<CompoundServiceProvider>) modelAndView.getModelMap().get(
-        BaseController.COMPOUND_SPS);
-    assertEquals(0, sps.size());
-
-    CompoundServiceProvider sp1 = buildCompoundSeriveProvider();
-    sp1.setLicenses(Arrays.asList(new License()));
-    sp1.setArticle(new Article("test1"));
-    modelAndView.addObject(BaseController.COMPOUND_SPS, Arrays.asList(sp, sp1));
-
-    interceptor.postHandle(new MockHttpServletRequest(), null, null, modelAndView);
-    sps = (Collection<CompoundServiceProvider>) modelAndView.getModelMap().get(BaseController.COMPOUND_SPS);
-    assertEquals(1, sps.size());
-
-    CompoundServiceProvider sp2 = buildCompoundSeriveProvider();
-    sp2.getServiceProvider().setLinked(true);
-    modelAndView.addObject(BaseController.COMPOUND_SPS, Arrays.asList(sp, sp1, sp2));
-
-    interceptor.postHandle(new MockHttpServletRequest(), null, null, modelAndView);
-    sps = (Collection<CompoundServiceProvider>) modelAndView.getModelMap().get(BaseController.COMPOUND_SPS);
-    assertEquals(2, sps.size());
-  }
 
   @Test
   public void token_session_does_not_equal_request_param_token() throws Exception {
     ModelAndView modelAndView = new ModelAndView();
-    CoinUser user = coinUser(ROLE_IDP_LICENSE_ADMIN);
+    CoinUser user = coinUser(Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN);
     SecurityContextHolder.getContext().setAuthentication(new SAMLAuthenticationToken(user, "", user.getAuthorities()));
 
     MockHttpServletRequest request = new MockHttpServletRequest();

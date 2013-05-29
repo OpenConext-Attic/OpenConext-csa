@@ -45,9 +45,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
 
 import static nl.surfnet.coin.selfservice.domain.CoinAuthority.Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN;
-import static nl.surfnet.coin.selfservice.domain.CoinAuthority.Authority.ROLE_IDP_LICENSE_ADMIN;
-import static nl.surfnet.coin.selfservice.domain.CoinAuthority.Authority.ROLE_IDP_SURFCONEXT_ADMIN;
-import static nl.surfnet.coin.selfservice.domain.CoinAuthority.Authority.ROLE_USER;
 
 /**
  * Servlet filter that performs Oauth 2.0 (authorization code) against
@@ -64,11 +61,8 @@ public class ApiOAuthFilter implements Filter {
 
   protected static final String PROCESSED = "nl.surfnet.coin.selfservice.filter.ApiOAuthFilter.PROCESSED";
   protected static final String ORIGINAL_REQUEST_URL = "nl.surfnet.coin.selfservice.filter.ApiOAuthFilter" + ".ORIGINAL_REQUEST_URL";
-  private String adminLicentieIdPTeam;
-  private String adminSurfConextIdPTeam;
   private String adminDistributionTeam;
   private String callbackFlagParameter = "oauthCallback";
-  private boolean lmngActive;
 
   /**
    * No initialization needed.
@@ -168,27 +162,10 @@ public class ApiOAuthFilter implements Filter {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Memberships of adminTeams '{}' for user '{}'", new Object[] { groups, coinUser.getUid() });
     }
-    /*
-     * We want to end up with only one role, the one exception is that an user
-     * has two roles: ROLE_IDP_LICENSE_ADMIN, ROLE_IDP_SURFCONEXT_ADMIN
-     */
     if (groupsContains(adminDistributionTeam, groups)) {
       coinUser.setAuthorities(new ArrayList<CoinAuthority>());
       coinUser.addAuthority(new CoinAuthority(ROLE_DISTRIBUTION_CHANNEL_ADMIN));
-    } else {
-      coinUser.setAuthorities(new ArrayList<CoinAuthority>());
-      if (groupsContains(adminLicentieIdPTeam, groups) && this.lmngActive) {
-        coinUser.addAuthority(new CoinAuthority(ROLE_IDP_LICENSE_ADMIN));
-      }
-      if (groupsContains(adminSurfConextIdPTeam, groups)) {
-        coinUser.addAuthority(new CoinAuthority(ROLE_IDP_SURFCONEXT_ADMIN));
-      }
-      // No default role for 'users' in non-lmng active modus: this will be handled by another filter.
-      if (this.lmngActive && CollectionUtils.isEmpty(coinUser.getAuthorities())) {
-        coinUser.addAuthority(new CoinAuthority(ROLE_USER));
-      }
     }
-
     SecurityContextHolder.getContext().setAuthentication(new SAMLAuthenticationToken(coinUser, "", coinUser.getAuthorities()));
   }
 
@@ -216,19 +193,8 @@ public class ApiOAuthFilter implements Filter {
     this.callbackFlagParameter = callbackFlagParameter;
   }
 
-  public void setAdminLicentieIdPTeam(String adminLicentieIdPTeam) {
-    this.adminLicentieIdPTeam = adminLicentieIdPTeam;
-  }
-
-  public void setAdminSurfConextIdPTeam(String adminSurfConextIdPTeam) {
-    this.adminSurfConextIdPTeam = adminSurfConextIdPTeam;
-  }
-
   public void setAdminDistributionTeam(String adminDistributionTeam) {
     this.adminDistributionTeam = adminDistributionTeam;
   }
   
-  public void setLmngActive(boolean lmngActive) {
-    this.lmngActive = lmngActive;
-  }
 }

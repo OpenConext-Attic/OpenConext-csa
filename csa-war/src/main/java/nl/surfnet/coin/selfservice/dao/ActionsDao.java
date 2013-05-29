@@ -36,7 +36,7 @@ public interface ActionsDao {
    * persist the given action
    * @param action the Action object
    */
-  void saveAction(Action action);
+  Long saveAction(Action action);
 
   /**
    * Find a unique Action by its id

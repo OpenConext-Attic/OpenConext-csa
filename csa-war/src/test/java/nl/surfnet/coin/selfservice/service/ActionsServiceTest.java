@@ -17,6 +17,7 @@
 package nl.surfnet.coin.selfservice.service;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -32,8 +33,8 @@ import nl.surfnet.coin.csa.model.Action;
 import nl.surfnet.coin.selfservice.domain.CoinUser;
 import nl.surfnet.coin.csa.model.JiraTask;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static junit.framework.Assert.assertEquals;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -53,32 +54,22 @@ public class ActionsServiceTest {
 
     final String idp = "https://mock-idp";
 
-    JiraTask task = new JiraTask.Builder()
-            .serviceProvider("https://mock-sp")
-            .identityProvider(idp)
-            .institution("institution-123")
-            .issueType(JiraTask.Type.LINKREQUEST)
-            .build();
-
-    CoinUser user = new CoinUser();
-
-    final String key = jiraService.create(task, user);
-
-    actionsService.registerJiraIssueCreation(key, task, "foo", "bar");
+    Action action = new Action(null, "userid", "username", "john.doe@nl", JiraTask.Type.QUESTION, JiraTask.Status.OPEN, "body", idp, "sp", "institute-123", new Date());
+    action = actionsService.registerJiraIssueCreation(action);
 
     final List<Action> before = actionsService.getActions(idp);
 
-    assertThat(before.size(), is(1));
-    assertThat(before.get(0).getStatus(), is(Action.Status.OPEN));
+    assertEquals(1, before.size());
+    assertEquals(JiraTask.Status.OPEN, before.get(0).getStatus());
 
-    jiraService.doAction(key, JiraTask.Action.CLOSE);
+    jiraService.doAction(action.getJiraKey(), JiraTask.Action.CLOSE);
     actionsService.synchronizeWithJira(idp);
 
     final List<Action> after = actionsService.getActions(idp);
 
-    assertThat(after.size(), is(1));
-    assertThat(after.get(0).getStatus(), is(Action.Status.CLOSED));
-    assertThat(after.get(0).getUserName(), IsEqual.equalTo("bar"));
+    assertEquals(1, after.size());
+    assertEquals(JiraTask.Status.CLOSED, after.get(0).getStatus());
+    assertEquals("username", after.get(0).getUserName());
   }
 
 }

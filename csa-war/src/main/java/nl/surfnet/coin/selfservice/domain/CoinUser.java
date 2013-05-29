@@ -148,15 +148,6 @@ public class CoinUser implements UserDetails {
     this.grantedAuthorities.add(grantedAuthority);
   }
 
-  public void removeUserAuthority() {
-    for (Iterator<CoinAuthority> iterator = this.grantedAuthorities.iterator(); iterator.hasNext();) {
-      CoinAuthority auth = iterator.next();
-      if (auth.getEnumAuthority().equals(Authority.ROLE_USER)) {
-        iterator.remove();
-      }
-    }
-  }
-
   /**
    * List of {@link IdentityProvider}'s of the institution for this users.
    * Usually contains only the IdP the user logs in with.

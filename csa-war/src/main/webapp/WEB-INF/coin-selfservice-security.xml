@@ -33,20 +33,13 @@
   </bean>
 
   <bean id="apiOauthFilter" class="nl.surfnet.coin.selfservice.filter.ApiOAuthFilter">
-    <property name="adminLicentieIdPTeam" value="${admin.licentie.idp.teamname}" />
-    <property name="adminSurfConextIdPTeam" value="${admin.surfconext.idp.teamname}" />
     <property name="adminDistributionTeam" value="${admin.distribution.channel.teamname}" />
     <property name="apiClient" ref="openConextApiClient" />
     <property name="callbackFlagParameter" value="apiOauthCallback" />
-    <property name="lmngActive" value="${coin-lmng-active-mode}"/>
   </bean>
 
   <bean id="sabEntitlementsFilter" class="nl.surfnet.coin.selfservice.filter.SabEntitlementsFilter">
     <property name="adminDistributionRole" value="${admin.distribution.channel.sabRole}" />
-    <property name="adminLicentieIdPRole" value="${admin.licentie.idp.sabRole}" />
-    <property name="adminSurfConextIdPRole" value="${admin.surfconext.idp.sabRole}" />
-    <property name="viewerSurfConextIdPRole" value="${viewer.surfconext.idp.sabRole}" />
-    <property name="lmngActive" value="${coin-lmng-active-mode}" />
   </bean>
 
   <!-- this will be either the real SabClient or a Mock -->
@@ -97,7 +90,6 @@
     <security:intercept-url pattern="/shopadmin/**" access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN')"/>
     <security:intercept-url pattern="/stats/**" access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN')"/>
     <security:intercept-url pattern="/requests/**" access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN')"/>
-    <security:intercept-url pattern="/notifications/**" access="hasAnyRole('ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN')"/>
     <security:intercept-url pattern="/**" access="hasAnyRole('ROLE_USER','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN', 'ROLE_DISTRIBUTION_CHANNEL_ADMIN')"/>
 
     <security:form-login login-page="/OpenSAML.sso/Login?target=${wayf.url.sso}" default-target-url="/" />

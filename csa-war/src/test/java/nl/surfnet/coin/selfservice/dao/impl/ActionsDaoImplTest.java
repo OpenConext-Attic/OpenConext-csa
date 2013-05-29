@@ -19,6 +19,7 @@ package nl.surfnet.coin.selfservice.dao.impl;
 import java.util.Date;
 import java.util.List;
 
+import nl.surfnet.coin.csa.model.JiraTask;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,24 +49,23 @@ public class ActionsDaoImplTest extends AbstractInMemoryDatabaseTest {
 
   @Test
   public void saveAndFind() {
-    Action a = new Action("key", "userid", "username", Action.Type.QUESTION, Action.Status.OPEN, "body", "idp", "sp",
+    Action a = new Action("key", "userid", "username" , "john.doe@nl" , JiraTask.Type.QUESTION, JiraTask.Status.OPEN, "body", "idp", "sp",
         "institute", new Date());
-    actionsDao.saveAction(a);
-    long id = actionsDao.findHighestId();
+    long id = actionsDao.saveAction(a);
     Action savedA = actionsDao.findAction(id);
     assertNotNull(savedA);
     assertThat(savedA.getBody(), is("body"));
     assertThat(savedA.getJiraKey(), is("key"));
     assertThat(savedA.getUserName(), is("username"));
     assertThat(savedA.getSpId(), is("sp"));
-    assertThat(savedA.getStatus(), is(Action.Status.OPEN));
-    assertThat(savedA.getType(), is(Action.Type.QUESTION));
+    assertThat(savedA.getStatus(), is(JiraTask.Status.OPEN));
+    assertThat(savedA.getType(), is(JiraTask.Type.QUESTION));
   }
 
   @Test
   public void findByIdP() {
     for (int i = 0; i < 3; i++) {
-      Action a = new Action("key"+i, "userid", "username", Action.Type.QUESTION, Action.Status.OPEN, "body", "idp",
+      Action a = new Action("key"+i, "userid", "username" , "john.doe@nl" , JiraTask.Type.QUESTION, JiraTask.Status.OPEN, "body", "idp",
           "sp", "foobar", new Date());
       actionsDao.saveAction(a);
     }
@@ -81,7 +81,7 @@ public class ActionsDaoImplTest extends AbstractInMemoryDatabaseTest {
     final String idp = "idp123";
     String[] keys = {"TEST-1", "TEST-2", "TEST-3", "TEST-4"};
     for (String key : keys) {
-      actionsDao.saveAction(new Action(key, "userid", "username", Action.Type.QUESTION, Action.Status.OPEN, "body", idp, "sp", "institute-123", new Date()));
+      actionsDao.saveAction(new Action(key, "userid", "username" , "john.doe@nl" , JiraTask.Type.QUESTION, JiraTask.Status.OPEN, "body", idp, "sp", "institute-123", new Date()));
     }
     final List<String> fetchedKeys = actionsDao.getKeys(idp);
     assertThat(fetchedKeys, hasItems(keys));
@@ -90,18 +90,17 @@ public class ActionsDaoImplTest extends AbstractInMemoryDatabaseTest {
   @Test
   public void close() {
     final String jiraKey = "TEST-1346";
-    Action a = new Action(jiraKey, "userid", "username", Action.Type.QUESTION, Action.Status.OPEN, "body", "idp", "sp",
+    Action a = new Action(jiraKey, "userid", "username","john.doe@nl", JiraTask.Type.QUESTION, JiraTask.Status.OPEN, "body", "idp", "sp",
             "institute", new Date());
-    actionsDao.saveAction(a);
-    long id = actionsDao.findHighestId();
+    long id = actionsDao.saveAction(a);
 
     final Action before = actionsDao.findAction(id);
-    assertThat(before.getStatus(), is(Action.Status.OPEN));
+    assertThat(before.getStatus(), is(JiraTask.Status.OPEN));
 
     actionsDao.close(jiraKey);
 
     final Action after = actionsDao.findAction(id);
-    assertThat(after.getStatus(), is(Action.Status.CLOSED));
+    assertThat(after.getStatus(), is(JiraTask.Status.CLOSED));
   }
 
 

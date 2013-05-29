@@ -35,12 +35,6 @@ public class SeleniumSupport {
 
   private static WebDriver driver;
 
-  /*
-   * Can be used to REST inject values
-   */
-  private String jsessionId;
-  private String tokenCheck;
-
   protected String getSelfserviceBaseUrl() {
     return System.getProperty("selenium.test.url", "http://localhost:8280/selfservice/");
   }
@@ -115,16 +109,6 @@ public class SeleniumSupport {
     getWebDriver().findElement(By.name("j_password")).sendKeys("secret");
     getWebDriver().findElement(By.name("login")).submit();
 
-    this.jsessionId = driver.manage().getCookieNamed("JSESSIONID").getValue();
-    this.tokenCheck = driver.manage().getCookieNamed(BaseController.TOKEN_CHECK).getValue();
-  }
-
-  public String getJsessionId() {
-    return jsessionId;
-  }
-
-  public String getTokenCheck() {
-    return tokenCheck;
   }
 
 
