@@ -71,7 +71,6 @@ public class LmngServiceImpl implements LmngService {
 
   private boolean debug;
   private String endpoint;
-  private boolean activeMode;
 
   private DefaultHttpClient httpclient;
 
@@ -79,7 +78,6 @@ public class LmngServiceImpl implements LmngService {
   public List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier, Date validOn)
           throws LmngException {
     List<License> result = new ArrayList<License>();
-    invariant();
     try {
       String lmngInstitutionId = IdentityProvider.NONE.equals(identityProvider) ? null : getLmngIdentityId(identityProvider);
 
@@ -113,7 +111,6 @@ public class LmngServiceImpl implements LmngService {
   public List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers, Date validOn)
           throws LmngException {
     List<License> result = new ArrayList<License>();
-    invariant();
     try {
       String lmngInstitutionId = IdentityProvider.NONE.equals(identityProvider) ? null : getLmngIdentityId(identityProvider);
 
@@ -139,7 +136,6 @@ public class LmngServiceImpl implements LmngService {
   @Override
   public List<Article> getArticlesForServiceProviders(List<String> serviceProvidersEntityIds) throws LmngException {
     List<Article> result = new ArrayList<Article>();
-    invariant();
     try {
       Map<String, String> serviceIds = getLmngServiceIds(serviceProvidersEntityIds);
 
@@ -180,7 +176,6 @@ public class LmngServiceImpl implements LmngService {
   
   @Override
   public Article getService(final String guid) {
-    invariant();
     Article result = null;
     try {
       // get the file with the soap request
@@ -205,7 +200,6 @@ public class LmngServiceImpl implements LmngService {
 
   @Override
   public List<Account> getAccounts(boolean isInstitution) {
-    invariant();
     List<Account> accounts = new ArrayList<Account>();
     try {
       // get the file with the soap request
@@ -226,7 +220,6 @@ public class LmngServiceImpl implements LmngService {
 
   @Override
   public String getInstitutionName(String guid) {
-    invariant();
     String result = null;
     try {
       ClassPathResource queryResource = new ClassPathResource(PATH_FETCH_QUERY_GET_INSTITUTION);
@@ -352,12 +345,6 @@ public class LmngServiceImpl implements LmngService {
     return result;
   }
 
-  private void invariant() {
-    if (!activeMode) {
-      throw new RuntimeException(this.getClass().getSimpleName() + " is not active. No calls may be made.");
-    }
-  }
-
   /*
    * Send a mail
    */
@@ -436,14 +423,6 @@ public class LmngServiceImpl implements LmngService {
 
   public void setLmngIdentifierDao(LmngIdentifierDao lmngIdentifierDao) {
     this.lmngIdentifierDao = lmngIdentifierDao;
-  }
-
-  public void setActiveMode(boolean activeMode) {
-    this.activeMode = activeMode;
-  }
-
-  public boolean isActiveMode() {
-    return activeMode;
   }
 
   @Override

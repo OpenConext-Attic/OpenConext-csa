@@ -163,7 +163,6 @@ public class CompoundSPServiceTest {
     csps.add(csp1);
     csps.add(csp2);
 
-    when(licensingService.isActiveMode()).thenReturn(true);
     when(licensingService.getArticlesForServiceProviders(any(List.class))).thenReturn(articles);
     when(serviceProviderService.getServiceProvider("spId2")).thenReturn(sp2);
     when(compoundServiceProviderDao.findAll()).thenReturn(csps);

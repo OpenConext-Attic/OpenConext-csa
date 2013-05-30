@@ -36,10 +36,6 @@ coin-eb-db-url=jdbc:mysql://db.acc.surfconext.nl:3306/eb
 coin-eb-db-username=ebrw
 coin-eb-db-password=??
 
-# Whether to try to fetch license information from LMNG.
-# Set to false to go to the surfconext version without licenses
-coin-lmng-active-mode=true
-
 # SOAP service endpoint for LMNG.
 # This is a complete URL to which requests will be posted.
 # Example: https://lmng01.dev.coin.surf.net:8444/CrmService.svc
@@ -91,10 +87,6 @@ jiraProjectKey=TEST
 # Location of the json file that contains the labels for the ARP attributes
 personAttributesLabels.location=classpath\:person_attributes.json
 
-# Team id that is used as definition of who is a 'license contact person'.
-admin.licentie.idp.teamname=urn\:collab\:group\:dev.surfteams.nl\:nl\:surfnet\:diensten\:csa_license_admin
-# Team id that is used as definition of who is a 'conext contact person'.
-admin.surfconext.idp.teamname=urn\:collab\:group\:dev.surfteams.nl\:nl\:surfnet\:diensten\:csa_surfconext_admin
 # Team id that is used as definition of who is a 'shop manager/shop admin'.
 admin.distribution.channel.teamname=urn\:collab\:group\:dev.surfteams.nl\:nl\:surfnet\:diensten\:csa_shopmanager
 
@@ -102,17 +94,6 @@ api-baseurl=https\://api.acc.surfconext.nl/v1/
 api-consumerkey=https\://csa.acc.surfconext.nl
 api-consumersecret=??
 api-callbackuri=https\://csa.acc.surfconext.nl/apiOauthCallback?apiOauthCallback\=true
-
-# SAB connection details
-sab.endpoint=https://sab.surfnet.nl/simplesaml/module.php/attributes/server.php
-sab.username=??
-sab.password=??
-
-# SAB roles
-admin.licentie.idp.sabRole=
-admin.surfconext.idp.sabRole=SURFconextverantwoordelijke
-viewer.surfconext.idp.sabRole=SURFconextbeheerder
-admin.distribution.channel.sabRole=
 
 # Info for communication with the APIS Authorization Server
 adminService.tokenVerificationUrl=https://apis.acc.csa.surfconext.nl/v1/tokeninfo
@@ -158,7 +139,6 @@ lmngServiceClass=nl.surfnet.coin.csa.service.impl.LmngServiceImpl
 keyStoreClass=nl.surfnet.coin.csa.service.impl.ssl.KeyStore
 jiraServiceClass=nl.surfnet.coin.csa.service.impl.JiraServiceImpl
 cacheManagerClass=org.springframework.cache.ehcache.EhCacheCacheManager
-sabClientClass=nl.surfnet.sab.SabClient
 authorizationServerFilterClass=nl.surfnet.coin.csa.filter.AuthorizationServerFilter
 
 coin-csa.jdbc.driver=com.mysql.jdbc.Driver
@@ -180,11 +160,6 @@ lmngDeepLinkBaseUrl=https://www.surfmarket.nl/instelling/dlc/paginas/productomsc
 
 lmngArticleCacheSeconds=21600
 lmngLicenseCacheSeconds=1800
-
-statisticsDaoClass=nl.surfnet.coin.csa.dao.impl.StatisticDaoImpl
-
-#the maximum of number mails to be send for recommendation
-maxRecommendationEmails=30
 
 # LMNG article that should be part of external API without reference in SR
 public.api.lmng.guids=

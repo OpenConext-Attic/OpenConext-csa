@@ -87,15 +87,6 @@ public interface LmngService {
   List<Account> getAccounts(boolean isInstitution);
 
   /**
-   * Is the LMNG service active? If not then no calls should be made and the
-   * entire distribution channel runs without license / article information from
-   * LMNG.
-   * 
-   * @return whether the LicensingService is active
-   */
-  boolean isActiveMode();
-
-  /**
    * Convenience method to run various queries
    * @param rawQuery the fetch string
    * @return the raw response

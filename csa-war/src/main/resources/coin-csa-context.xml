@@ -130,8 +130,6 @@
     <property name="secret" value="${janus.secret}" />
   </bean>
 
-  <bean id="statisticDao" class="${statisticsDaoClass}"/>
-
   <bean id="cacheManager" class="${cacheManagerClass}">
     <property name="cacheManager" ref="ehcache" />
   </bean>
@@ -159,7 +157,6 @@
   <bean id="licensingService" class="${lmngServiceClass}">
     <property name="endpoint" value="${coin-lmng-endpoint}" />
     <property name="debug" value="${coin-lmng-debug}" />
-    <property name="activeMode" value="${coin-lmng-active-mode}"/>
   </bean>
 
   <bean id="personAttributeLabelService"
@@ -254,7 +251,4 @@
   <bean id="authorizationServerFilter" class="${authorizationServerFilterClass}">
   </bean>
 
-  <bean id="csa" class="${csaClass}">
-    <property name="csaBaseLocation" value="${csaBaseLocation}" />
-  </bean>
 </beans>

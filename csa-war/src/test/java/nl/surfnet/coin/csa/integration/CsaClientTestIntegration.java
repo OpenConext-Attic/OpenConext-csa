@@ -142,16 +142,5 @@ public class CsaClientTestIntegration {
     }
   }
 
-  //stupid Java...
-  private Action getLast(List<Action> jiraActions) {
-    Action result = null;
-    for (Action jiraAction : jiraActions) {
-      if (jiraAction.getId() > (result != null ? result.getId() : 0)) {
-        result = jiraAction;
-      }
-    }
-    return result;
-  }
-
 
 }
