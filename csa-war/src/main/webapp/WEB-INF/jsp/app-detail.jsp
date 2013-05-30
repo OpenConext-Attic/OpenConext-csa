@@ -83,16 +83,6 @@
           </a>
         </li>
       </c:if>
-      <c:if test="${isAdminUser && ebLinkActive}">
-        <spring:url var="statsLink" value="/stats/stats.shtml" htmlEscape="true">
-          <spring:param name="spEntityId" value="${compoundSp.sp.id}" />
-        </spring:url>
-        <c:set var="tooltipStats"><spring:message code="jsp.sp_detail.statslink"/></c:set>
-        <li>
-          <a class="service-stats" rel="tooltip" data-type="info" data-original-title="${tooltipStats}"
-              href="${statsLink}"></a>
-        </li>
-      </c:if>
       </ul>
       <c:if test="${not empty compoundSp.supportMail}">
         <ul class="action-list email-addresses">

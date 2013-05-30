@@ -32,7 +32,7 @@ import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.domain.License;
 import nl.surfnet.coin.csa.domain.ServiceProvider;
-import nl.surfnet.coin.csa.service.LmngService;
+import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.ServiceProviderService;
 
 import org.hibernate.HibernateException;
@@ -80,7 +80,7 @@ public class CompoundSPService {
   private ServiceProviderService serviceProviderService;
 
   @Resource
-  private LmngService licensingService;
+  private CrmService licensingService;
 
   public List<CompoundServiceProvider> getAllPublicCSPs() {
     List<ServiceProvider> allServiceProviders = serviceProviderService.getAllServiceProviders(false);

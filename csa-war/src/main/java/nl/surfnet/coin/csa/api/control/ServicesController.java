@@ -22,8 +22,8 @@ import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.domain.Provider.Language;
 import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
+import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
-import nl.surfnet.coin.csa.service.LmngService;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -58,7 +58,7 @@ public class ServicesController extends BaseApiController{
   private CompoundSPService compoundSPService;
 
   @Resource
-  private LmngService lmngService;
+  private CrmService lmngService;
 
   @Resource
   private IdentityProviderService idpService;

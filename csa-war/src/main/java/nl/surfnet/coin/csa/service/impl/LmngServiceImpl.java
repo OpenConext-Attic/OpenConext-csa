@@ -21,7 +21,7 @@ import nl.surfnet.coin.csa.domain.Account;
 import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.domain.License;
-import nl.surfnet.coin.csa.service.LmngService;
+import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.shared.domain.ErrorMail;
 import nl.surfnet.coin.shared.service.ErrorMessageMailer;
 import org.apache.commons.io.IOUtils;
@@ -57,7 +57,7 @@ import java.util.*;
  * Implementation of a licensing service that get's it information from a
  * webservice interface on LMNG
  */
-public class LmngServiceImpl implements LmngService {
+public class LmngServiceImpl implements CrmService {
 
   private static final Logger log = LoggerFactory.getLogger(LmngServiceImpl.class);
 
@@ -210,7 +210,7 @@ public class LmngServiceImpl implements LmngService {
       // call the webservice
       String webserviceResult = getWebServiceResult(soapRequest);
       // read/parse the XML response to Account objects
-      accounts = LmngUtil.parseAccountsResult(webserviceResult,debug);
+      accounts = LmngUtil.parseAccountsResult(webserviceResult, debug);
     } catch (Exception e) {
       log.error("Exception while retrieving article/license", e);
       sendErrorMail("n/a", e.getMessage(), "getAccounts");

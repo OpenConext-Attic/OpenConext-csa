@@ -19,7 +19,7 @@ import nl.surfnet.coin.csa.domain.Account;
 import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.domain.License;
-import nl.surfnet.coin.csa.service.LmngService;
+import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.impl.ssl.KeyStore;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -35,14 +35,10 @@ import java.util.List;
  * LicensingServiceMock.java
  */
 @SuppressWarnings("unused")
-public class LmngServiceMock implements LmngService {
+public class LmngServiceMock implements CrmService {
 
   private boolean debug;
   private String endpoint;
-  private KeyStore keyStore;
-  private KeyStore trustStore;
-  private String keystorePassword;
-  private boolean activeMode;
 
   private ObjectMapper objectMapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
           .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
@@ -85,37 +81,12 @@ public class LmngServiceMock implements LmngService {
     this.endpoint = endpoint;
   }
 
-  public void setKeyStore(KeyStore keyStore) {
-    this.keyStore = keyStore;
-  }
-
-  public void setTrustStore(KeyStore trustStore) {
-    this.trustStore = trustStore;
-  }
-
-  public void setKeystorePassword(String keystorePassword) {
-    this.keystorePassword = keystorePassword;
-  }
-
-  public void setActiveMode(boolean activeMode) {
-    this.activeMode = activeMode;
-  }
-
-  public boolean isActiveMode() {
-    return activeMode;
-  }
 
   @Override
   public String performQuery(String rawQuery) {
     throw new RuntimeException("performQuery not implemented by " + getClass().getName());
   }
 
-  private void invariant() {
-    if (!activeMode) {
-      throw new RuntimeException(this.getClass().getSimpleName() + " is not active. No calls can be made");
-    }
-
-  }
 
   @Override
   public String getInstitutionName(String guid) {

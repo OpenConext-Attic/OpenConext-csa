@@ -28,7 +28,7 @@ import nl.surfnet.coin.csa.domain.Account;
 import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.domain.License;
-import nl.surfnet.coin.csa.service.LmngService;
+import nl.surfnet.coin.csa.service.CrmService;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -58,7 +58,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class LmngServiceImplIT {
 
   @Autowired
-  private LmngService licensingService;
+  private CrmService licensingService;
 
   @Before
   public void init() throws FileNotFoundException, IOException {

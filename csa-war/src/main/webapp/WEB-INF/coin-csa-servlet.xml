@@ -88,8 +88,6 @@
 
     <bean id="featureInterceptor" class="nl.surfnet.coin.csa.interceptor.FeatureInterceptor">
         <property name="dev" value="${mode.dev}"/>
-        <property name="showOauthTokens" value="${mode.showOauthTokens}"/>
-        <property name="ebLinkActive" value="${mode.ebLinkActive}" />
     </bean>
 
     <bean id="messageAdapter"

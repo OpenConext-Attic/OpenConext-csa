@@ -42,66 +42,6 @@
     <constructor-arg ref="csaDataSource" />
   </bean>
 
-  <!-- The api database for oauth keys -->
-  <bean id="apiDataSource" class="com.jolbox.bonecp.BoneCPDataSource"
-    destroy-method="close">
-    <property name="driverClass" value="${coin-api.jdbc.driver}" />
-    <property name="jdbcUrl" value="${coin-api.jdbc.url}" />
-    <property name="username" value="${coin-api.jdbc.user}" />
-    <property name="password" value="${coin-api.jdbc.password}" />
-    <property name="idleConnectionTestPeriodInSeconds" value="${coin-csa.database.idleConnectionTestPeriod}" />
-    <property name="idleMaxAgeInSeconds" value="${coin-csa.database.maxIdleTime}" />
-    <property name="maxConnectionsPerPartition" value="5" />
-    <property name="minConnectionsPerPartition" value="1" />
-    <property name="partitionCount" value="1" />
-    <property name="statementsCacheSize" value="100" />
-  </bean>
-
-  <!-- API and csa share the same datasource -->
-  <bean id="apiJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-    <constructor-arg ref="apiDataSource" />
-  </bean>
-
-  <!-- We go to EB for statistics and consent checks -->
-  <bean id="ebDataSource" class="com.jolbox.bonecp.BoneCPDataSource"
-    destroy-method="close">
-    <property name="driverClass" value="${coin-eb-db-driver}" />
-    <property name="jdbcUrl" value="${coin-eb-db-url}" />
-    <property name="username" value="${coin-eb-db-username}" />
-    <property name="password" value="${coin-eb-db-password}" />
-    <property name="idleConnectionTestPeriodInSeconds"
-      value="${coin-csa.database.idleConnectionTestPeriod}" />
-    <property name="idleMaxAgeInSeconds" value="${coin-csa.database.maxIdleTime}" />
-    <property name="maxConnectionsPerPartition" value="5" />
-    <property name="minConnectionsPerPartition" value="1" />
-    <property name="partitionCount" value="1" />
-    <property name="statementsCacheSize" value="100" />
-  </bean>
-
-  <bean id="ebJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-    <constructor-arg ref="ebDataSource" />
-  </bean>
-
-  <!-- shindigDataStore is to fetch OAuth keys for SPs that use os.surfconext.nl -->
-  <bean id="shindigDataSource" class="com.jolbox.bonecp.BoneCPDataSource"
-    destroy-method="close">
-    <property name="driverClass" value="${coin-shindig-db-driver}" />
-    <property name="jdbcUrl" value="${coin-shindig-db-url}" />
-    <property name="username" value="${coin-shindig-db-username}" />
-    <property name="password" value="${coin-shindig-db-password}" />
-    <property name="idleConnectionTestPeriodInSeconds"
-      value="${coin-csa.database.idleConnectionTestPeriod}" />
-    <property name="idleMaxAgeInSeconds" value="${coin-csa.database.maxIdleTime}" />
-    <property name="maxConnectionsPerPartition" value="5" />
-    <property name="minConnectionsPerPartition" value="1" />
-    <property name="partitionCount" value="1" />
-    <property name="statementsCacheSize" value="100" />
-  </bean>
-
-  <bean id="shindigJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-    <constructor-arg ref="shindigDataSource" />
-  </bean>
-
   <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
     <property name="defaultLocale" value="en"/>
   </bean>
@@ -154,35 +94,15 @@
     <property name="administrativeEmail" value="${coin-administrative-email}" />
   </bean>
 
-  <bean id="licensingService" class="${lmngServiceClass}">
-    <property name="endpoint" value="${coin-lmng-endpoint}" />
-    <property name="debug" value="${coin-lmng-debug}" />
+  <bean id="licensingService" class="${crmServiceClass}">
+    <property name="endpoint" value="${crmServiceClassEndpoint}" />
+    <property name="debug" value="${crmServiceClassDebug}" />
   </bean>
 
   <bean id="personAttributeLabelService"
     class="nl.surfnet.coin.csa.service.impl.PersonAttributeLabelServiceJsonImpl">
     <constructor-arg name="attributeJsonFile"
       value="${personAttributesLabels.location}" />
-  </bean>
-
-  <bean id="oAuthTokenService"
-    class="nl.surfnet.coin.csa.service.impl.OAuthTokenServiceImpl">
-    <property name="oAuthTokenDaos">
-      <list>
-        <bean
-          class="nl.surfnet.coin.csa.dao.impl.OAuthTokenDaoShindigImpl">
-          <constructor-arg ref="shindigJdbcTemplate" />
-        </bean>
-        <bean
-          class="nl.surfnet.coin.csa.dao.impl.OAuthTokenDaoAPIv10aImpl">
-          <constructor-arg ref="apiJdbcTemplate" />
-        </bean>
-        <bean
-          class="nl.surfnet.coin.csa.dao.impl.OAuthTokenDaoAPIv2Impl">
-          <constructor-arg ref="apiJdbcTemplate" />
-        </bean>
-      </list>
-    </property>
   </bean>
 
   <bean id="csaSessionFactory"

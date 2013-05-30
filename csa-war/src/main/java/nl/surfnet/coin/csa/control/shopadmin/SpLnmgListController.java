@@ -22,7 +22,7 @@ import nl.surfnet.coin.csa.dao.CompoundServiceProviderDao;
 import nl.surfnet.coin.csa.dao.LmngIdentifierDao;
 import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.csa.domain.ServiceProvider;
-import nl.surfnet.coin.csa.service.LmngService;
+import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.ServiceProviderService;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
 import nl.surfnet.coin.csa.service.impl.LmngUtil;
@@ -54,7 +54,7 @@ public class SpLnmgListController extends BaseController {
   private ServiceProviderService providerService;
 
   @Resource
-  private LmngService licensingService;
+  private CrmService licensingService;
 
   @Autowired
   private LmngIdentifierDao lmngIdentifierDao;

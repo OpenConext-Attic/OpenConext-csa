@@ -29,7 +29,7 @@ import nl.surfnet.coin.csa.service.impl.LmngException;
  * Interface of services that return Licensing and article information from LMNG
  * (Licentie Modellen Next Generation)
  */
-public interface LmngService {
+public interface CrmService {
 
   /**
    * Gets a list with Licenses for the given

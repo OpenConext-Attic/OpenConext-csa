@@ -30,14 +30,10 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  */
 public class FeatureInterceptor extends HandlerInterceptorAdapter {
   private boolean dev;
-  private boolean showOauthTokens;
-  private boolean ebLinkActive;
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
     request.setAttribute("dev", dev); // for use on error page
-    request.setAttribute("showOauthTokens", showOauthTokens);
-    request.setAttribute("ebLinkActive", ebLinkActive);
     return true;
   }
 
@@ -48,8 +44,6 @@ public class FeatureInterceptor extends HandlerInterceptorAdapter {
     if (modelAndView != null) {
       final ModelMap map = modelAndView.getModelMap();
       map.addAttribute("dev", dev);
-      map.addAttribute("showOauthTokens", showOauthTokens);
-      map.addAttribute("ebLinkActive", ebLinkActive);
       map.addAttribute("roles", SpringSecurity.getCurrentUser().getAuthorities());
     }
   }
@@ -58,32 +52,4 @@ public class FeatureInterceptor extends HandlerInterceptorAdapter {
     this.dev = dev;
   }
 
-  /**
-   * @return the showOauthTokens
-   */
-  public boolean isShowOauthTokens() {
-    return showOauthTokens;
-  }
-
-  /**
-   * @param showOauthTokens the showOauthTokens to set
-   */
-  public void setShowOauthTokens(boolean showOauthTokens) {
-    this.showOauthTokens = showOauthTokens;
-  }
-
-  /**
-   * @return the ebLinkActive
-   */
-  public boolean isEbLinkActive() {
-    return ebLinkActive;
-  }
-
-  /**
-   * @param ebLinkActive the ebLinkActive to set
-   */
-  public void setEbLinkActive(boolean ebLinkActive) {
-    this.ebLinkActive = ebLinkActive;
-  }
-  
 }

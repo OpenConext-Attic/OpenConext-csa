@@ -50,7 +50,6 @@ public class MenuInterceptorTest {
         setUpAuthorities(authorities);
         ModelAndView modelAndView = new ModelAndView();
         MockHttpServletRequest request = new MockHttpServletRequest("GET", requestUri);
-        request.setAttribute("ebLinkActive", Boolean.TRUE);
         menuInterceptor.postHandle(request, null, null, modelAndView);
 
         ModelMap modelMap = modelAndView.getModelMap();
