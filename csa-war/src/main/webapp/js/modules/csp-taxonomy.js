@@ -23,9 +23,25 @@ app.taxonomy = function () {
       });
   }
 
+  var doLink = function(facetValueId, cspId, isLink) {
+    var tokencheck = $('#csp-taxonomy-overview').data('token-check');
+    $.ajax("facet-value-csp/" + facetValueId + "/" + cspId + ".shtml?tokencheck=" + tokencheck,
+      {
+        type: "POST",
+        data: { value: isLink }
+      })
+      .done(function (data) {
+        //nice transition??
+      })
+      .fail(function (data) {
+        var $mess = $("<span>" + app.message.i18n('failed.save') + "</span>");
+        alert($mess);
+      });
+  }
+
   var init = function () {
 
-    if ($("#taxonomy_sp_configuration").length === 0) {
+    if ($("#taxonomy_sp_configuration").length === 0 && $("#csp-taxonomy-overview").length ===0) {
       return;
     }
 
@@ -62,6 +78,13 @@ app.taxonomy = function () {
       var $li = $("#fieldaccordion").find("li[data-facet-value-id='" + facetValueId + "']");
       $li.parents(".accordion-body").collapse('show');
       $li.find("i.icon-arrow-right").fadeIn().delay(250).fadeOut();
+    });
+
+    $(".facet-value-csp-checkbox").click(function(elem){
+      var $elem = $(this);
+      var facetValueId = $elem.data("facet-value-id");
+      var cspId = $elem.data("csp-id");
+      doLink(facetValueId, cspId, $elem.is(':checked')) ;
     });
 
   };

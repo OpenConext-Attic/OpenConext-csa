@@ -82,7 +82,7 @@ a.local-link
 .taxonomy-translations
   .accordion-body
     clear: both
-  
+
 .taxonomy-sp-configuration
 
   .accordion
@@ -94,3 +94,61 @@ a.local-link
   .ajax-loader
     background: url(../images/ajax-loader.gif) no-repeat 50% 1em
     min-height: 150px
+
+.csp-taxonomy-overview
+  overflow: auto
+  height: 480px
+
+  table
+    thead
+      position: fixed
+      background-color: #4FB3CF
+
+      th
+        text-align: left
+        color: white
+
+        &.skew
+          height: 90px
+          width: 41px
+          position: relative
+          vertical-align: bottom
+          padding-left: 1px
+          padding-right: 1px
+          border-top: 1px solid #CCCCCC
+          color: white
+
+          span
+            @include skew(45deg, 0deg)
+            @include rotate(315deg)
+            position: absolute
+            bottom: 15px
+            left: 1px
+            display: inline-block
+            width: 100%
+            text-align: left
+
+            &.facet-value
+              font-size: 12px
+
+        &.service
+          width: 430px
+          padding: 5px
+
+    tbody
+      margin-top: 92px
+      display: block
+
+    td
+      text-align: center
+      vertical-align: middle
+      border-top: 1px solid #CCCCCC
+      width: 40px
+
+      &.csp-name
+        text-align: left
+        max-width: 422px
+        overflow: hidden
+        padding: 5px
+
+

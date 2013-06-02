@@ -66,6 +66,13 @@ public class TaxonomyController extends BaseController {
     return "shopadmin/taxonomy-translations";
   }
 
+  @RequestMapping("taxonomy-services-overview.shtml")
+  public String getServicesFacetsOverview(ModelMap model) {
+    model.addAttribute("facets", facetDao.findAll());
+    model.addAttribute("csps", compoundSPService.getAllCSPs());
+    return "shopadmin/csp-taxonomy-overview";
+  }
+
   @RequestMapping(value = "/facet/{facetId}", method = RequestMethod.PUT)
   public
   @ResponseBody
@@ -133,7 +140,9 @@ public class TaxonomyController extends BaseController {
   @RequestMapping(value = "/facet-value-csp/{facetValueId}/{compoundServiceProviderId}", method = RequestMethod.POST)
   public
   @ResponseBody
-  String linkFacetValueCompoundServiceProvider(@PathVariable("facetValueId") Long facetValueId, @PathVariable("compoundServiceProviderId") Long compoundServiceProviderId, @ModelAttribute IsLinkRequest isLinkRequest) {
+  String linkFacetValueCompoundServiceProvider(@PathVariable("facetValueId") Long facetValueId,
+                                               @PathVariable("compoundServiceProviderId") Long compoundServiceProviderId,
+                                               @ModelAttribute IsLinkRequest isLinkRequest) {
     if (isLinkRequest.getValue()) {
       facetValueDao.linkCspToFacetValue(compoundServiceProviderId, facetValueId);
     } else {

@@ -65,6 +65,8 @@
   </div>
   <nav class="nav-divider">
     <a class="btn btn-primary-alt btn-modest" href="taxonomy-translations.shtml" ><span> Go to the taxonomy translations </span><i class="icon-angle-right icon-white"></i></a>
+    <p>
+    <a class="btn btn-primary-alt btn-modest" href="taxonomy-services-overview.shtml" ><span> Go to the taxonomy - services overview </span><i class="icon-angle-right icon-white"></i></a>
   </nav>
   </section>
 </div>
