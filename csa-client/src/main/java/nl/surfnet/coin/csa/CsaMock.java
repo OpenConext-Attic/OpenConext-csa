@@ -59,6 +59,13 @@ public class CsaMock implements Csa {
     service.setArp(new ARP());
     return service;
   }
+  
+  @Override
+  public Service getServiceForIdp(String id, String spEntityId) {
+    Service service = new Service(66L, "service " + 66L, "http://123", "http://123231", false, "http://mock-sp", null);
+    service.setArp(new ARP());
+    return service;
+  }
 
   @Override
   public void setCsaBaseLocation(String location) {

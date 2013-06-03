@@ -51,6 +51,14 @@ public interface Csa {
    * @return
    */
   Service getServiceForIdp(String idpEntityId, long serviceId);
+  
+  /**
+   * Get a service's details, scoped by the given IDP entity ID and SP entity ID
+   * @param idpEntityId idp entity ID
+   * @param spEntityId sp entity ID
+   * @return
+   */
+  Service getServiceForIdp(String idpEntityId, String spEntityId);
 
   /**
    * Setter for base location of CSA

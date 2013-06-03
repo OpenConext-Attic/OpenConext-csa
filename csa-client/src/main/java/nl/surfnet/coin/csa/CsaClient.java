@@ -114,6 +114,15 @@ public class CsaClient implements Csa {
       variables.put("idpEntityId", idpEntityId);
       return (Service) getFromCsa(location, variables, Service.class);
   }
+  
+  @Override
+  public Service getServiceForIdp(String idpEntityId, String spEntityId) {
+    String url = "/api/protected/idp/service.json?idpEntityId={idpEntityId}&spEntityId={spEntityId}";
+    Map variables = new HashMap<String, String>();
+    variables.put("idpEntityId", idpEntityId);
+    variables.put("spEntityId", spEntityId);
+    return (Service) getFromCsa(url, variables, Service[].class);
+  }
 
   @Override
   public Taxonomy getTaxonomy() {
