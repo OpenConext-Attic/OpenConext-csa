@@ -76,7 +76,7 @@ public class ServiceDetailControllerTest {
     IdentityProvider idp = new IdentityProvider();
     idp.setId("mockIdP");
     CompoundServiceProvider csp = new CompoundServiceProvider();
-    when(compoundSPService.getCSPById("serviceProviderEntityId")).thenReturn(csp);
+    when(compoundSPService.getCSPByServiceProviderEntityId("serviceProviderEntityId")).thenReturn(csp);
 
     OAuthTokenInfo info = new OAuthTokenInfo("cafebabe-cafe-babe-cafe-babe-cafebabe", "mockDao");
     info.setUserId(coinUser.getUid());

@@ -25,10 +25,10 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import nl.surfnet.coin.janus.Janus;
+import nl.surfnet.coin.janus.domain.ARP;
 import nl.surfnet.coin.janus.domain.Contact;
 import nl.surfnet.coin.janus.domain.EntityMetadata;
 import nl.surfnet.coin.janus.domain.JanusEntity;
-import nl.surfnet.coin.csa.domain.ARP;
 import nl.surfnet.coin.csa.domain.ContactPerson;
 import nl.surfnet.coin.csa.domain.ContactPersonType;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
@@ -163,10 +163,8 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
       final ServiceProvider serviceProvider = buildServiceProviderByMetadata(metadata);
 
       // Get the ARP (if there is any)
-      final ARP arp = getArp(spEntityId);
-      if (arp != null) {
-        serviceProvider.addArp(arp);
-      }
+      final ARP arp = janusClient.getArp(spEntityId);
+      serviceProvider.setArp(arp);
 
       // Check if the IdP can connect to this service
       if (idpEntityId != null) {
@@ -252,20 +250,6 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
       idp.addContactPerson(p);
     }
     return idp;
-  }
-
-  /**
-   * Gets the {@link nl.surfnet.coin.janus.domain.ARP} from the Janus client and
-   * returns {@link ARP}
-   * 
-   * @param spEntityId
-   *          identifier of the Service Provider
-   * @return {@link ARP} or {@literal null} if Janus did not return
-   *         {@link nl.surfnet.coin.janus.domain.ARP}
-   */
-  private ARP getArp(String spEntityId) {
-    final nl.surfnet.coin.janus.domain.ARP janusClientArp = janusClient.getArp(spEntityId);
-    return janusClientArp == null ? null : new ARP(janusClientArp);
   }
 
   /**

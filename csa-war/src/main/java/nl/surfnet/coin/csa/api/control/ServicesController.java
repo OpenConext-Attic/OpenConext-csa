@@ -16,12 +16,13 @@
 
 package nl.surfnet.coin.csa.api.control;
 
-import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
+import nl.surfnet.coin.csa.domain.Provider;
 import nl.surfnet.coin.csa.domain.Provider.Language;
 import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
+import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
@@ -33,13 +34,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Collections.sort;
 
 @Controller
 @RequestMapping
-public class ServicesController extends BaseApiController{
+public class ServicesController extends BaseApiController {
 
   private
   @Value("${WEB_APPLICATION_CHANNEL}")
@@ -78,7 +80,7 @@ public class ServicesController extends BaseApiController{
       Article currentArticle = lmngService.getService(guid);
       //TODO: here we use id 0 as there is no CSP. How to handle this in the public API? We probably do not want to expose the ID at all there.
       Service currentPS = new Service(0L, currentArticle.getServiceDescriptionNl(), currentArticle.getDetailLogo(),
-          null, true, lmngDeepLinkBaseUrl + guid);
+              null, true, lmngDeepLinkBaseUrl + guid, null);
       result.add(currentPS);
     }
     sort(result);
@@ -114,6 +116,16 @@ public class ServicesController extends BaseApiController{
     return doGetServicesForIdP(language, idpEntityId);
   }
 
+  @RequestMapping(method = RequestMethod.GET, value = "/api/protected/services/{serviceId}.json")
+  public
+  @ResponseBody
+  Service getServiceForIdp(@PathVariable("serviceId") long serviceId, @RequestParam(value = "lang", defaultValue = "en") String language, @RequestParam(value = "idpEntityId") String idpEntityId) {
+    IdentityProvider identityProvider = idpService.getIdentityProvider(idpEntityId);
+    CompoundServiceProvider csp = compoundSPService.getCSPById(identityProvider, serviceId, false);
+    List<Service> services = buildApiServices(Arrays.asList(csp), language);
+    return services.get(0);
+  }
+
   private List<Service> doGetServicesForIdP(String language, String ipdEntityId) {
     IdentityProvider identityProvider = idpService.getIdentityProvider(ipdEntityId);
     List<CompoundServiceProvider> csPs = compoundSPService.getCSPsByIdp(identityProvider);
@@ -145,8 +157,10 @@ public class ServicesController extends BaseApiController{
     boolean isEn = language.equalsIgnoreCase("en");
     for (CompoundServiceProvider csP : services) {
       String crmLink = csP.isArticleAvailable() ? (lmngDeepLinkBaseUrl + csP.getLmngId()) : null;
-      result.add(new Service(csP.getId(), isEn ? csP.getSp().getName(Language.EN) : csP.getSp().getName(Language.NL),
-          getServiceLogo(csP), csP.getServiceUrl(), csP.isArticleAvailable(), crmLink));
+      Service service = new Service(csP.getId(), isEn ? csP.getSp().getName(Language.EN) : csP.getSp().getName(Language.NL),
+              getServiceLogo(csP), csP.getServiceUrl(), csP.isArticleAvailable(), crmLink, csP.getSp().getId());
+      service.setArp(csP.getSp().getArp());
+      result.add(service);
     }
     return result;
   }

@@ -47,7 +47,6 @@ public class JanusRestClientMock implements Janus {
   private final static String SP_TYPE = "saml20-sp";
   private final static String IDP_TYPE = "saml20-idp";
 
-  private final ARP EMPTY_ARP = null;
   private final ARP NON_EMPTY_ARP;
 
   @SuppressWarnings("unchecked")
@@ -172,9 +171,6 @@ public class JanusRestClientMock implements Janus {
    */
   @Override
   public ARP getArp(String entityId) {
-    if (entityId != null && entityId.contains("surf")) {
-      return EMPTY_ARP;
-    }
     return NON_EMPTY_ARP;
   }
 

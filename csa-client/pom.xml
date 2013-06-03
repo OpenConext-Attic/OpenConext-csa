@@ -18,7 +18,7 @@
     <jackson.version>1.9.5</jackson.version>
     <coin-shared.version>3.1.0</coin-shared.version>
     <apis.version>1.2.3-SNAPSHOT</apis.version>
-
+    <coin-api.version>3.2.0-SNAPSHOT</coin-api.version>
   </properties>
 
   <dependencies>
@@ -33,6 +33,12 @@
           <artifactId>xml-apis</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.surfnet.coin</groupId>
+      <artifactId>coin-api-serviceregistry-client</artifactId>
+      <version>${coin-api.version}</version>
     </dependency>
 
     <dependency>

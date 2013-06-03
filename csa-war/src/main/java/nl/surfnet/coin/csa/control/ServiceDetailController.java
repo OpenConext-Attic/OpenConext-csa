@@ -57,7 +57,7 @@ public class ServiceDetailController extends BaseController {
   public ModelAndView serviceDetail(@RequestParam(value = "serviceProviderEntityId") String serviceProviderEntityId,
       HttpServletRequest request) {
     Map<String, Object> m = new HashMap<String, Object>();
-    CompoundServiceProvider compoundServiceProvider = compoundSPService.getCSPById(serviceProviderEntityId);
+    CompoundServiceProvider compoundServiceProvider = compoundSPService.getCSPByServiceProviderEntityId(serviceProviderEntityId);
     m.put(COMPOUND_SP, compoundServiceProvider);
     m.put("lmngDeepLinkUrl", lmngDeepLinkBaseUrl);
     return new ModelAndView("app-detail", m);

@@ -132,7 +132,7 @@ public class TaxonomyController extends BaseController {
   @RequestMapping(value = "/service-taxonomy-configuration", method = RequestMethod.GET)
   public String facetConfiguraton(@RequestParam("spEntityId") String entityId, ModelMap modelMap) {
     modelMap.addAttribute("facets", facetDao.findAll());
-    CompoundServiceProvider compoundSp = compoundSPService.getCSPById(entityId);
+    CompoundServiceProvider compoundSp = compoundSPService.getCSPByServiceProviderEntityId(entityId);
     modelMap.addAttribute("compoundSp", compoundSp);
     return "shopadmin/service-taxonomy-configuration";
   }

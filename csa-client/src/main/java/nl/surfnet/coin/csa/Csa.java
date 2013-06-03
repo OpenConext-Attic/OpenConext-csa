@@ -50,14 +50,7 @@ public interface Csa {
    * @param serviceId
    * @return
    */
-  Service getServiceForIdp(String id, long serviceId);
-
-
-  /**
-   * Get a service by its CSA ID
-   * @param id the ID
-   */
-  Service getService(long id);
+  Service getServiceForIdp(String idpEntityId, long serviceId);
 
   /**
    * Setter for base location of CSA

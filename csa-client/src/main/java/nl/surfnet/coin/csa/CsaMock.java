@@ -16,17 +16,13 @@
 
 package nl.surfnet.coin.csa;
 
-import java.util.Collections;
+import nl.surfnet.coin.csa.model.*;
+import nl.surfnet.coin.janus.domain.ARP;
+
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-
-import nl.surfnet.coin.csa.model.Category;
-import nl.surfnet.coin.csa.model.Action;
-import nl.surfnet.coin.csa.model.LicenseInformation;
-import nl.surfnet.coin.csa.model.Service;
-import nl.surfnet.coin.csa.model.Taxonomy;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Mock implementation of CSA. To be filled with lots of data for local development. Perhaps JSON-local-file-backed.
@@ -35,12 +31,13 @@ public class CsaMock implements Csa {
 
   private List<Service> someServices() {
     return Arrays.asList(
-      new Service(1L, "service 1", "http://logo-url", "http://website-url", false, null),
-      new Service(2L, "service 2", "http://logo-url", "http://website-url", true, "foobar-crmlink"),
-      new Service(3L, "service 3", "http://logo-url", "http://website-url", false, null),
-      new Service(4L, "service 4", "http://logo-url", "http://website-url", false, null)
+            new Service(1L, "service 1", "http://logo-url", "http://website-url", false, "http://mock-sp", null),
+            new Service(2L, "service 2", "http://logo-url", "http://website-url", true, "http://mock-sp", "foobar-crmlink"),
+            new Service(3L, "service 3", "http://logo-url", "http://website-url", false, "http://mock-sp", null),
+            new Service(4L, "service 4", "http://logo-url", "http://website-url", false, "http://mock-sp", null)
     );
   }
+
   @Override
   public List<Service> getPublicServices() {
     return someServices();
@@ -58,12 +55,9 @@ public class CsaMock implements Csa {
 
   @Override
   public Service getServiceForIdp(String id, long serviceId) {
-    return new Service(serviceId, "service " + serviceId, "http://123", "http://123231", false, null);
-  }
-
-  @Override
-  public Service getService(long id) {
-    return new Service(id, "service " + id, "http://123", "http://123231", false, null);
+    Service service = new Service(serviceId, "service " + serviceId, "http://123", "http://123231", false, "http://mock-sp", null);
+    service.setArp(new ARP());
+    return service;
   }
 
   @Override
@@ -73,19 +67,23 @@ public class CsaMock implements Csa {
   @Override
   public Taxonomy getTaxonomy() {
     return new Taxonomy(Arrays.asList(
-      new Category("cat1"),
-      new Category("cat2"),
-      new Category("cat3")
+            new Category("cat1"),
+            new Category("cat2"),
+            new Category("cat3")
     ));
   }
 
   @Override
   public List<Action> getJiraActions() {
-    return null;
+    Action action = new Action("TEST-123", "pietje.puk", "Pietje Puk", "pietje@puk.nl", JiraTask.Type.LINKREQUEST, JiraTask.Status.OPEN, "Body", "http://mock-idp",
+            "http://mock-sp", "institutionId", new Date());
+    return Arrays.asList(action);
   }
 
   @Override
   public Action createAction(Action action) {
-    return null;
+    action.setJiraKey("TEST-" + System.currentTimeMillis());
+    action.setStatus(JiraTask.Status.OPEN);
+    return action;
   }
 }

@@ -23,6 +23,7 @@ import nl.surfnet.coin.csa.model.Action;
 import nl.surfnet.coin.csa.model.JiraTask;
 import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.model.Taxonomy;
+import nl.surfnet.coin.janus.domain.ARP;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -119,6 +120,13 @@ public class CsaClientTestIntegration {
     assertEquals("John Doe", action.getUserName());
 
 
+  }
+
+  @Test
+  public void serviceForIdp() throws IOException {
+    Service service = csaClient.getServiceForIdp("http://mock-idp", 1);
+    ARP arp = service.getArp();
+    assertNotNull(arp);
   }
 
   @Test

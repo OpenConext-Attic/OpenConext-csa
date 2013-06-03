@@ -16,25 +16,10 @@
 
 package nl.surfnet.coin.csa.service.impl;
 
-import java.util.AbstractMap;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
 import nl.surfnet.coin.csa.dao.CompoundServiceProviderDao;
-import nl.surfnet.coin.csa.domain.Article;
-import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
-import nl.surfnet.coin.csa.domain.IdentityProvider;
-import nl.surfnet.coin.csa.domain.License;
-import nl.surfnet.coin.csa.domain.ServiceProvider;
+import nl.surfnet.coin.csa.domain.*;
 import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.ServiceProviderService;
-
 import org.hibernate.HibernateException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -43,6 +28,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+
+import javax.annotation.Resource;
+import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
 
 /**
  * Abstraction for the Compound Service Providers. This deals with persistence
@@ -143,9 +132,8 @@ public class CompoundSPService {
 
   /**
    * Create a CSP for the given SP.
-   * 
-   * @param sp
-   *          the SP
+   *
+   * @param sp the SP
    * @return the created (and persisted) CSP
    */
   private CompoundServiceProvider createCompoundServiceProvider(IdentityProvider idp, ServiceProvider sp) {
@@ -181,11 +169,9 @@ public class CompoundSPService {
 
   /**
    * Get a CSP by its ID, for the given IDP.
-   * 
-   * @param idp
-   *          the IDP
-   * @param compoundSpId
-   *          long
+   *
+   * @param idp          the IDP
+   * @param compoundSpId long
    * @return
    */
   public CompoundServiceProvider getCSPById(IdentityProvider idp, long compoundSpId, boolean refreshCache) {
@@ -193,7 +179,7 @@ public class CompoundSPService {
     ServiceProvider sp = serviceProviderService.getServiceProvider(csp.getServiceProviderEntityId(), idp.getId());
     if (sp == null) {
       LOG.info("Cannot get serviceProvider by known entity id: {}, cannot enrich CSP with SP information.",
-          csp.getServiceProviderEntityId());
+              csp.getServiceProviderEntityId());
       return csp;
     }
     csp.setServiceProvider(sp);
@@ -205,12 +191,11 @@ public class CompoundSPService {
 
   /**
    * Get a CSP by its ServiceProvider
-   * 
-   * @param serviceProviderEntityId
-   *          the ServiceProvider
+   *
+   * @param serviceProviderEntityId the ServiceProvider
    * @return
    */
-  public CompoundServiceProvider getCSPById(String serviceProviderEntityId) {
+  public CompoundServiceProvider getCSPByServiceProviderEntityId(String serviceProviderEntityId) {
 
     ServiceProvider serviceProvider = serviceProviderService.getServiceProvider(serviceProviderEntityId);
     Assert.notNull(serviceProvider, "No such SP with entityId: " + serviceProviderEntityId);
@@ -235,12 +220,10 @@ public class CompoundSPService {
    * articles for all SP's will be retrieved from LMNG and placed in the cache
    * with an expiration date based upon the lmngArticleCacheExpireSeconds
    * variable.
-   * 
-   * @param sp
-   *          the SP to get the article for
-   * @param refreshCache
-   *          if true the cache will be forced to refresh (expirationdate
-   *          independent)
+   *
+   * @param sp           the SP to get the article for
+   * @param refreshCache if true the cache will be forced to refresh (expirationdate
+   *                     independent)
    * @return the (possibly cached) article
    */
   private Article getCachedArticle(ServiceProvider sp, boolean refreshCache) {
@@ -291,11 +274,9 @@ public class CompoundSPService {
    * cache with an expiration date based upon the lmngArticleCacheExpireSeconds
    * variable. Cache items are based on a key of the combination 'IDP and
    * article'.
-   * 
-   * @param idp
-   *          the IDP to get the license for
-   * @param article
-   *          the article to get the license for
+   *
+   * @param idp     the IDP to get the license for
+   * @param article the article to get the license for
    * @return the (possibly cached) list of licenses (in general there will be
    *         just 1 active license per IDP/article)
    */

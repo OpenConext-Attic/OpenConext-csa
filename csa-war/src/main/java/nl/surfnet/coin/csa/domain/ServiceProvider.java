@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import nl.surfnet.coin.janus.domain.ARP;
 import org.springframework.util.CollectionUtils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -31,22 +32,11 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * Service Provider
  */
 
-@XStreamAlias("SP")
 public class ServiceProvider extends Provider implements Serializable {
 
-  private static final long serialVersionUID = -5860975443072010741L;
-
-  @XStreamAlias("id")
-  @XStreamAsAttribute
   private String id;
 
-
-  @XStreamAlias("ARP")
-  @XStreamImplicit
-  private List<ARP> arps = new ArrayList<ARP>();
-
-  @XStreamAlias("ACL")
-  private ACL acl;
+  private ARP arp;
 
   private String eulaURL;
 
@@ -54,7 +44,6 @@ public class ServiceProvider extends Provider implements Serializable {
 
   private String gadgetBaseUrl;
 
-  @XStreamAsAttribute
   private boolean display;
 
   private String applicationUrl;
@@ -77,26 +66,6 @@ public class ServiceProvider extends Provider implements Serializable {
 
   public void setId(String id) {
     this.id = id;
-  }
-
-  public ACL getAcl() {
-    return acl;
-  }
-
-  public void setAcl(ACL acl) {
-    this.acl = acl;
-  }
-
-  public List<ARP> getArps() {
-    return arps;
-  }
-
-  public void setArps(List<ARP> arps) {
-    this.arps = arps;
-  }
-
-  public void addArp(ARP arp) {
-    this.arps.add(arp);
   }
 
   public boolean isIdpVisibleOnly() {
@@ -135,6 +104,14 @@ public class ServiceProvider extends Provider implements Serializable {
     this.gadgetBaseUrl = gadgetBaseUrl;
   }
 
+  public ARP getArp() {
+    return arp;
+  }
+
+  public void setArp(ARP arp) {
+    this.arp = arp;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -162,8 +139,9 @@ public class ServiceProvider extends Provider implements Serializable {
     final StringBuffer sb = new StringBuffer();
     sb.append("ServiceProvider");
     sb.append("{id='").append(id).append('\'');
-    sb.append(", arps=").append(arps);
-    sb.append(", acl=").append(acl);
+    if (arp != null) {
+      sb.append(", arp=").append(arp);
+    }
     sb.append(", eulaUrl='").append(eulaURL).append('\'');
     sb.append(", gadgetBaseUrl='").append(gadgetBaseUrl).append('\'');
     sb.append(", idpVisibleOnly=").append(isIdpVisibleOnly());

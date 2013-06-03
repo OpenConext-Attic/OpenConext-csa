@@ -107,9 +107,12 @@ public class CsaClient implements Csa {
   }
 
   @Override
-  public Service getServiceForIdp(String id, long serviceId) {
-    // FIXME
-    return null;
+  public Service getServiceForIdp(String idpEntityId, long serviceId) {
+      String location = "/api/protected/services/{serviceId}.json?idpEntityId={idpEntityId}";
+      Map variables = new HashMap<String, String>();
+      variables.put("serviceId", serviceId);
+      variables.put("idpEntityId", idpEntityId);
+      return (Service) getFromCsa(location, variables, Service.class);
   }
 
   @Override
@@ -125,14 +128,6 @@ public class CsaClient implements Csa {
   @Override
   public Action createAction(Action action) {
     return getFromCsa("/api/protected/action.json", action, Action.class);
-  }
-
-  @Override
-  public Service getService(long id) {
-    String location = "/api/protected/services/{id}.json";
-    Map variables = new HashMap<String, String>();
-    variables.put("id", id);
-    return (Service) getFromCsa(location, variables, Service.class);
   }
 
   @Override

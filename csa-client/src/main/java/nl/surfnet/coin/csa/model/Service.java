@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import nl.surfnet.coin.janus.domain.ARP;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -82,18 +83,19 @@ public class Service implements Comparable<Service> {
 
   private String spEntityId;
 
-  private Map<String, List<String>> arp;
+  private ARP arp;
 
   public Service() {
   }
 
-  public Service(long id, String name, String logoUrl, String websiteUrl, boolean hasCrmLink, String crmUrl) {
+  public Service(long id, String name, String logoUrl, String websiteUrl, boolean hasCrmLink, String crmUrl, String spEntityId) {
     this.id = id;
     this.name = name;
     this.logoUrl = logoUrl;
     this.websiteUrl = websiteUrl;
     this.hasCrmLink = hasCrmLink;
     this.crmUrl = crmUrl;
+    this.spEntityId = spEntityId;
   }
 
   public String getName() {
@@ -295,11 +297,12 @@ public class Service implements Comparable<Service> {
     this.institutionDescription = institutionDescription;
   }
 
-  public Map<String, List<String>> getArp() {
+  public ARP getArp() {
     return arp;
   }
 
-  public void setArp(Map<String, List<String>> arp) {
+  public void setArp(ARP arp) {
     this.arp = arp;
   }
+
 }
