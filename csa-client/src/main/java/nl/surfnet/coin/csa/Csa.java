@@ -46,7 +46,7 @@ public interface Csa {
 
   /**
    * Get a service's details, scoped by the given IDP entity ID
-   * @param id
+   * @param idpEntityId
    * @param serviceId
    * @return
    */

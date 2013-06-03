@@ -19,10 +19,7 @@ package nl.surfnet.coin.csa;
 import nl.surfnet.coin.csa.model.*;
 import nl.surfnet.coin.janus.domain.ARP;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Mock implementation of CSA. To be filled with lots of data for local development. Perhaps JSON-local-file-backed.
@@ -56,7 +53,7 @@ public class CsaMock implements Csa {
   @Override
   public Service getServiceForIdp(String id, long serviceId) {
     Service service = new Service(serviceId, "service " + serviceId, "http://123", "http://123231", false, "http://mock-sp", null);
-    service.setArp(new ARP());
+    service.setArp(getArp());
     return service;
   }
   
@@ -65,6 +62,23 @@ public class CsaMock implements Csa {
     Service service = new Service(66L, "service " + 66L, "http://123", "http://123231", false, "http://mock-sp", null);
     service.setArp(new ARP());
     return service;
+  }
+
+  private ARP getArp() {
+    ARP arp = new ARP();
+    arp.setDescription("My ARP");
+    arp.setName("My ARP");
+    Map<String,List<Object>> attributes = new HashMap<String, List<Object>>();
+    attributes.put("urn:mace:dir:attribute-def:uid", Collections.<Object>singletonList("*"));
+    attributes.put("urn:mace:dir:attribute-def:displayName", Collections.<Object>singletonList("*"));
+    attributes.put("urn:mace:dir:attribute-def:cn", Collections.<Object>singletonList("*"));
+    attributes.put("urn:mace:dir:attribute-def:givenName", Collections.<Object>singletonList("*"));
+    attributes.put("urn:mace:dir:attribute-def:sn", Collections.<Object>singletonList("*"));
+    attributes.put("urn:mace:dir:attribute-def:mail", Collections.<Object>singletonList("*"));
+    attributes.put("urn:mace:dir:attribute-def:schacHomeOrganization", Collections.<Object>singletonList("*"));
+    attributes.put("urn:mace:dir:attribute-def:schacHomeOrganizationType", Collections.<Object>singletonList("*"));
+    arp.setAttributes(attributes);
+    return arp;
   }
 
   @Override
