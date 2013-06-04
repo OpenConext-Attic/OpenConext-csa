@@ -62,7 +62,7 @@ public class CsaMock implements Csa {
 
   private Service getService() {
     Service service = new Service(66L, "service " + 66L, "http://123", "http://123231", false, "http://crmUrl", "http://mock-sp");
-    service.setArp(new ARP());
+    service.setArp(getArp());
     return service;
   }
 
