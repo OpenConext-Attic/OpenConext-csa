@@ -78,6 +78,8 @@ public class JiraController extends BaseApiController {
 
     ServiceProvider serviceProvider = serviceProviderService.getServiceProvider(action.getSpId());
     IdentityProvider identityProvider = identityProviderService.getIdentityProvider(action.getIdpId());
+    action.setSpName(serviceProvider.getName());
+    action.setIdpName(identityProvider.getName());
     String issueKey = null;
     if (createAdministrationJiraTicket) {
         action = actionsService.registerJiraIssueCreation(action);

@@ -34,7 +34,7 @@ public class CSPInitializationTest {
 
   @Test
   public void test() {
-    List<Integer> results = new ConcurrentRunnerContext<Integer>(20).run(new ConcurrentRunner() {
+    List<Integer> results = new ConcurrentRunnerContext<Integer>(10).run(new ConcurrentRunner() {
       @Override
       public Integer run() {
         List<CompoundServiceProvider> csps = cspSvc.getCSPsByIdp(new IdentityProvider("id", "institutionId", "name"));

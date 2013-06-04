@@ -73,23 +73,25 @@ public class ActionsDaoImpl implements ActionsDao {
               resultSet.getString("institutionId"),
               resultSet.getTimestamp("requestDate"));
       action.setId(resultSet.getLong("id"));
+      action.setIdpName(resultSet.getString("idp_name"));
+      action.setSpName(resultSet.getString("sp_name"));
       return action;
     }
   }
 
   @Override
   public List<Action> findActionsByIdP(String identityProvider) {
-    return jdbcTemplate.query("SELECT id, jiraKey, userId, userName, actionType, actionStatus, body, idp, " +
-            "sp, institutionId, requestDate FROM ss_actions WHERE idp = ? ORDER BY id", new ActionRowMapper(),
+    return jdbcTemplate.query("SELECT id, jiraKey, userId, userName, actionType, actionStatus, body, idp, sp, idp_name, sp_name, " +
+            " institutionId, requestDate FROM ss_actions WHERE idp = ? ORDER BY id", new ActionRowMapper(),
             identityProvider);
   }
 
   @Override
   public Long saveAction(final Action action) {
     Map<String, Object> params = new HashMap<String, Object>();
-    String[] columns = new String[]{"jiraKey", "userId", "userName", "idp", "sp", "institutionId", "actionType", "actionStatus", "body", "requestDate"};
+    String[] columns = new String[]{"jiraKey", "userId", "userName", "idp", "sp", "idp_name", "sp_name", "institutionId", "actionType", "actionStatus", "body", "requestDate"};
     Object[] values = new Object[]{action.getJiraKey(), action.getUserId(), action.getUserName(), action.getIdpId(),
-            action.getSpId(), action.getInstitutionId(), action.getType().name(), action.getStatus().name(), action.getBody(),
+            action.getSpId(), action.getIdpName(), action.getSpName(), action.getInstitutionId(), action.getType().name(), action.getStatus().name(), action.getBody(),
             action.getRequestDate()};
     for (int i = 0; i < columns.length; i++) {
       params.put(columns[i], values[i]);

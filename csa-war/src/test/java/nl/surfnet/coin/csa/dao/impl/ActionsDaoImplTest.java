@@ -40,7 +40,6 @@ import static org.junit.matchers.JUnitMatchers.hasItems;
         "classpath:coin-shared-context.xml"})
 @TransactionConfiguration(transactionManager = "csaTransactionManager", defaultRollback = true)
 @Transactional
-
 public class ActionsDaoImplTest {
 
   @Autowired
@@ -55,6 +54,8 @@ public class ActionsDaoImplTest {
   public void saveAndFind() {
     Action a = new Action("key", "userid", "username", "john.doe@nl", JiraTask.Type.QUESTION, JiraTask.Status.OPEN, "body", "idp", "sp",
             "institute", new Date());
+    a.setIdpName("idpName");
+    a.setSpName("spName");
     long id = actionsDao.saveAction(a);
     Action savedA = actionsDao.findAction(id);
     assertNotNull(savedA);
@@ -64,6 +65,8 @@ public class ActionsDaoImplTest {
     assertThat(savedA.getSpId(), is("sp"));
     assertThat(savedA.getStatus(), is(JiraTask.Status.OPEN));
     assertThat(savedA.getType(), is(JiraTask.Type.QUESTION));
+    assertEquals("idpName",savedA.getIdpName());
+    assertEquals("spName",savedA.getSpName());
   }
 
   @Test

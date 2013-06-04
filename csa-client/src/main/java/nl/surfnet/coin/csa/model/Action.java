@@ -33,10 +33,15 @@ public class Action {
 
   private String idpId;
   private String spId;
+  private String idpName;
+  private String spName;
+
   private Date requestDate;
   private JiraTask.Type type;
   private JiraTask.Status status;
   private String institutionId;
+
+  private String subject;
 
   public Action() {
   }
@@ -164,6 +169,32 @@ public class Action {
   public void setUserEmail(String userEmail) {
     this.userEmail = userEmail;
   }
+
+  public String getSubject() {
+    return subject;
+  }
+
+  public void setSubject(String subject) {
+    this.subject = subject;
+  }
+
+  public String getIdpName() {
+    return idpName;
+  }
+
+  public void setIdpName(String idpName) {
+    this.idpName = idpName;
+  }
+
+  public String getSpName() {
+    return spName;
+  }
+
+  public void setSpName(String spName) {
+    this.spName = spName;
+  }
+
+
 
   /**
    * get a Comparator that sorts by date ascending: newest first
