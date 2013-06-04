@@ -35,7 +35,7 @@ public class CsaMock implements Csa {
 
 
   private ObjectMapper objectMapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-    .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+          .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
   @Override
   public List<Service> getPublicServices() {
