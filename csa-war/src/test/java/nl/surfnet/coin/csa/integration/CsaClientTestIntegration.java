@@ -22,10 +22,7 @@ import java.io.IOException;
 import java.util.List;
 
 import nl.surfnet.coin.csa.CsaClient;
-import nl.surfnet.coin.csa.model.Action;
-import nl.surfnet.coin.csa.model.JiraTask;
-import nl.surfnet.coin.csa.model.Service;
-import nl.surfnet.coin.csa.model.Taxonomy;
+import nl.surfnet.coin.csa.model.*;
 import nl.surfnet.coin.janus.domain.ARP;
 
 import org.apache.http.HttpException;
@@ -119,8 +116,15 @@ public class CsaClientTestIntegration {
     action = jiraActions.get(jiraActions.size() - 1);
 
     assertEquals("John Doe", action.getUserName());
+  }
 
-
+  @Test
+  public void institutionsIdentityProviders() {
+    List<InstitutionIdentityProvider> providers = csaClient.getInstitutionIdentityProviders("http://mock-idp");
+    assertEquals(3, providers.size());
+    for (InstitutionIdentityProvider provider : providers) {
+      assertEquals("mock-institution-id", provider.getInstitutionId());
+    }
   }
 
   @Test

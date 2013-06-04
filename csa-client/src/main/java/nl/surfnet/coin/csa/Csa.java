@@ -71,4 +71,6 @@ public interface Csa {
   List<Action> getJiraActions(String idpEntityId);
 
   Action createAction(Action action);
+
+  List<InstitutionIdentityProvider> getInstitutionIdentityProviders(String identityProviderId);
 }

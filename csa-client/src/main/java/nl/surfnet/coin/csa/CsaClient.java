@@ -16,15 +16,11 @@
 
 package nl.surfnet.coin.csa;
 
-import nl.surfnet.coin.csa.model.Action;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import nl.surfnet.coin.csa.model.*;
+
+import java.util.*;
 
 import nl.surfnet.coin.csa.model.Action;
-import nl.surfnet.coin.csa.model.Service;
-import nl.surfnet.coin.csa.model.Taxonomy;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,6 +140,13 @@ public class CsaClient implements Csa {
 
   public Action createAction(Action action) {
     return (Action) getFromCsa("/api/protected/action.json", action, Action.class);
+  }
+
+  @Override
+  public List<InstitutionIdentityProvider> getInstitutionIdentityProviders(String identityProviderId) {
+    return (List<InstitutionIdentityProvider>) getFromCsa("/api/protected/identityproviders.json?identityProviderId={identityProviderId}",
+            Collections.singletonMap("identityProviderId", identityProviderId),
+            InstitutionIdentityProvider[].class);
   }
 
   @Override
