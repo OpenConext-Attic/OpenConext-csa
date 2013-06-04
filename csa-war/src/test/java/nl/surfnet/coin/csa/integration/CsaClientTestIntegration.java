@@ -91,7 +91,7 @@ public class CsaClientTestIntegration {
 
   @Test
   public void actions() throws IOException {
-    List<Action> jiraActions = csaClient.getJiraActions();
+    List<Action> jiraActions = csaClient.getJiraActions("http://mock-idp");
     assertTrue(jiraActions.size() >= 3);
     for (Action action : jiraActions) {
       assertNotNull(action.getUserId());
@@ -114,7 +114,7 @@ public class CsaClientTestIntegration {
     assertEquals(JiraTask.Status.OPEN, action.getStatus());
     assertEquals(JiraTask.Type.LINKREQUEST, action.getType());
 
-    List<Action> jiraActions = csaClient.getJiraActions();
+    List<Action> jiraActions = csaClient.getJiraActions("http://mock-idp");
     action = jiraActions.get(jiraActions.size() - 1);
 
     assertEquals("John Doe", action.getUserName());

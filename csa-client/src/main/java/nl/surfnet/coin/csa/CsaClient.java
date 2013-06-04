@@ -121,22 +121,24 @@ public class CsaClient implements Csa {
     Map variables = new HashMap<String, String>();
     variables.put("idpEntityId", idpEntityId);
     variables.put("spEntityId", spEntityId);
-    return (Service) getFromCsa(url, variables, Service[].class);
+    return (Service) getFromCsa(url, variables, Service.class);
   }
 
   @Override
   public Taxonomy getTaxonomy() {
-    return getFromCsa("/api/public/taxonomy.json", Taxonomy.class);
+    return (Taxonomy) getFromCsa("/api/public/taxonomy.json", Taxonomy.class);
   }
 
   @Override
-  public List<Action> getJiraActions() {
-    return getFromCsa("/api/protected/actions.json", Action[].class);
+  public List<Action> getJiraActions(String idpEntityId) {
+    Map variables = new HashMap<String, String>();
+    variables.put("idpEntityId", idpEntityId);
+    return (List<Action>) getFromCsa("/api/protected/actions.json?idpEntityId={idpEntityId}", variables, Action[].class);
   }
 
   @Override
   public Action createAction(Action action) {
-    return getFromCsa("/api/protected/action.json", action, Action.class);
+    return (Action) getFromCsa("/api/protected/action.json", action, Action.class);
   }
 
   @Override

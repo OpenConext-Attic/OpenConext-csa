@@ -95,7 +95,7 @@ public class CsaMock implements Csa {
   }
 
   @Override
-  public List<Action> getJiraActions() {
+  public List<Action> getJiraActions(String idpEntityId) {
     Action action = new Action("TEST-123", "pietje.puk", "Pietje Puk", "pietje@puk.nl", JiraTask.Type.LINKREQUEST, JiraTask.Status.OPEN, "Body", "http://mock-idp",
             "http://mock-sp", "institutionId", new Date());
     return Arrays.asList(action);
