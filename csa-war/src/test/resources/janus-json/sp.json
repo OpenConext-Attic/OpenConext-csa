@@ -2512,7 +2512,7 @@
         "appEntityId":"https://exampleService",
         "twoLeggedOauthAllowed":false,
         "consentNotRequired":false,
-        "appLogoUrl":"http://localhost:8280/csa/images/logo.png",
+        "appLogoUrl":"http://localhost:8282/csa/images/logo.png",
         "appHomeUrls": {        
           "en":"http://appHomeURL_EN/",
           "nl":"http://appHomeURL_NL/"

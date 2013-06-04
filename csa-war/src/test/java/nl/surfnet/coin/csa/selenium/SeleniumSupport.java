@@ -16,14 +16,15 @@
 
 package nl.surfnet.coin.csa.selenium;
 
+import java.util.concurrent.TimeUnit;
+
 import nl.surfnet.coin.csa.util.OpenConextOAuthClientMock;
+
 import org.junit.Before;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -34,7 +35,7 @@ public class SeleniumSupport {
   private static WebDriver driver;
 
   protected String getCsaBaseUrl() {
-    return System.getProperty("selenium.test.url", "http://localhost:8280/csa/");
+    return System.getProperty("selenium.test.url", "http://localhost:8282/csa/");
   }
 
   @Before

@@ -17,7 +17,7 @@ var services = function() {
 	
 	function getUrlBase() {
 		var url = "";
-		if (window.location['host'] == 'localhost:8280') {			
+		if (window.location['host'] == 'localhost:8282') {
 			url = 'http://';
 			url += window.location['host'];
 			url += '/csa';

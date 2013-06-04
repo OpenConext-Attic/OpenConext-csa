@@ -50,8 +50,8 @@
     <selenium.version>2.32.0</selenium.version>
     <freemarker.version>[2.3.19,2.4)</freemarker.version>
     <api-secure.version>1.1.1-SNAPSHOT</api-secure.version>
-    <selenium.test.url>http://localhost:8280/csa/</selenium.test.url>
-    <jetty.port>8280</jetty.port>
+    <selenium.test.url>http://localhost:8282/csa/</selenium.test.url>
+    <jetty.port>8282</jetty.port>
 
 
     
@@ -390,12 +390,12 @@
           <contextXml>${basedir}/src/test/resources/jetty-context.xml</contextXml>
           <connectors>
             <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-              <port>8280</port>
+              <port>${jetty.port}</port>
               <host>0.0.0.0</host>
             </connector>
           </connectors>
           <stopKey>stopcsa</stopKey>
-          <stopPort>9280</stopPort>
+          <stopPort>9282</stopPort>
           <reload>manual</reload>
           <useTestClasspath>true</useTestClasspath>
         </configuration>
@@ -585,7 +585,7 @@
               <daemon>true</daemon>
               <scanIntervalSeconds>0</scanIntervalSeconds>
               <stopKey>stopcsa</stopKey>
-              <stopPort>9280</stopPort>
+              <stopPort>9282</stopPort>
               <useTestClasspath>true</useTestClasspath>
             </configuration>
             <executions>

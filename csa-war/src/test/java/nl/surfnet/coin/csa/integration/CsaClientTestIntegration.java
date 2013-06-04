@@ -18,12 +18,16 @@
  */
 package nl.surfnet.coin.csa.integration;
 
+import java.io.IOException;
+import java.util.List;
+
 import nl.surfnet.coin.csa.CsaClient;
 import nl.surfnet.coin.csa.model.Action;
 import nl.surfnet.coin.csa.model.JiraTask;
 import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.model.Taxonomy;
 import nl.surfnet.coin.janus.domain.ARP;
+
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -35,16 +39,13 @@ import org.apache.http.protocol.HttpRequestHandler;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.List;
-
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 public class CsaClientTestIntegration {
 
-  private static String endpoint = "http://localhost:8280/csa";
+  private static String endpoint = "http://localhost:8282/csa";
 
   private static String answer = "{\"scope\":\"something\",\"access_token\":\"3fc6a956-a414-4f4b-a280-65cfbeb9ba2a\",\"token_type\":\"bearer\",\"expires_in\":0}";
 
