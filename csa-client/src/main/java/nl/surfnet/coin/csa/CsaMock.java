@@ -52,14 +52,16 @@ public class CsaMock implements Csa {
 
   @Override
   public Service getServiceForIdp(String id, long serviceId) {
-    Service service = new Service(serviceId, "service " + serviceId, "http://123", "http://123231", false, "http://mock-sp", null);
-    service.setArp(getArp());
-    return service;
+    return getService();
   }
   
   @Override
   public Service getServiceForIdp(String id, String spEntityId) {
-    Service service = new Service(66L, "service " + 66L, "http://123", "http://123231", false, "http://mock-sp", null);
+    return getService();
+  }
+
+  private Service getService() {
+    Service service = new Service(66L, "service " + 66L, "http://123", "http://123231", false, "http://crmUrl", "http://mock-sp");
     service.setArp(new ARP());
     return service;
   }
