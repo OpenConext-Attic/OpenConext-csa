@@ -16,73 +16,51 @@
 
 package nl.surfnet.coin.csa;
 
-import nl.surfnet.coin.csa.model.*;
-import nl.surfnet.coin.janus.domain.ARP;
+import java.util.List;
 
-import java.util.*;
+import nl.surfnet.coin.csa.model.Action;
+import nl.surfnet.coin.csa.model.Service;
+import nl.surfnet.coin.csa.model.Taxonomy;
 
-import javax.servlet.http.HttpServletRequest;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.codehaus.jackson.type.TypeReference;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * Mock implementation of CSA. To be filled with lots of data for local development. Perhaps JSON-local-file-backed.
  */
 public class CsaMock implements Csa {
 
-  private List<Service> someServices() {
-    return Arrays.asList(
-            new Service(1L, "service 1", "http://logo-url", "http://website-url", false, "http://mock-sp", null),
-            new Service(2L, "service 2", "http://logo-url", "http://website-url", true, "http://mock-sp", "foobar-crmlink"),
-            new Service(3L, "service 3", "http://logo-url", "http://website-url", false, "http://mock-sp", null),
-            new Service(4L, "service 4", "http://logo-url", "http://website-url", false, "http://mock-sp", null)
-    );
-  }
+
+  private ObjectMapper objectMapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+    .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
   @Override
   public List<Service> getPublicServices() {
-    return someServices();
+    return (List<Service>) parseJsonData(new TypeReference<List<Service>>(){}, "csa-json/public-services.json");
   }
 
   @Override
   public List<Service> getProtectedServices() {
-    return Collections.emptyList();
+    return (List<Service>) parseJsonData(new TypeReference<List<Service>>(){}, "csa-json/protected-services.json");
   }
 
   @Override
   public List<Service> getServicesForIdp(String idpEntityId) {
-    return someServices();
+    return (List<Service>) parseJsonData(new TypeReference<List<Service>>(){}, "csa-json/services-for-idp.json");
+
   }
 
   @Override
-  public Service getServiceForIdp(String id, long serviceId) {
-    return getService();
+  public Service getServiceForIdp(String idpEntityId, long serviceId) {
+    return (Service) parseJsonData(new TypeReference<Service>(){}, "csa-json/service-for-idp.json");
   }
-  
+
   @Override
-  public Service getServiceForIdp(String id, String spEntityId) {
-    return getService();
-  }
-
-  private Service getService() {
-    Service service = new Service(66L, "service " + 66L, "http://123", "http://123231", false, "http://crmUrl", "http://mock-sp");
-    service.setArp(getArp());
-    return service;
-  }
-
-  private ARP getArp() {
-    ARP arp = new ARP();
-    arp.setDescription("My ARP");
-    arp.setName("My ARP");
-    Map<String,List<Object>> attributes = new HashMap<String, List<Object>>();
-    attributes.put("urn:mace:dir:attribute-def:uid", Collections.<Object>singletonList("*"));
-    attributes.put("urn:mace:dir:attribute-def:displayName", Collections.<Object>singletonList("*"));
-    attributes.put("urn:mace:dir:attribute-def:cn", Collections.<Object>singletonList("*"));
-    attributes.put("urn:mace:dir:attribute-def:givenName", Collections.<Object>singletonList("*"));
-    attributes.put("urn:mace:dir:attribute-def:sn", Collections.<Object>singletonList("*"));
-    attributes.put("urn:mace:dir:attribute-def:mail", Collections.<Object>singletonList("*"));
-    attributes.put("urn:mace:dir:attribute-def:schacHomeOrganization", Collections.<Object>singletonList("*"));
-    attributes.put("urn:mace:dir:attribute-def:schacHomeOrganizationType", Collections.<Object>singletonList("*"));
-    arp.setAttributes(attributes);
-    return arp;
+  public Service getServiceForIdp(String idpEntityId, String spEntityId) {
+    return (Service) parseJsonData(new TypeReference<Service>(){}, "csa-json/service-for-idp.json");
   }
 
   @Override
@@ -91,24 +69,25 @@ public class CsaMock implements Csa {
 
   @Override
   public Taxonomy getTaxonomy() {
-    return new Taxonomy(Arrays.asList(
-            new Category("cat1"),
-            new Category("cat2"),
-            new Category("cat3")
-    ));
+    return (Taxonomy) parseJsonData(new TypeReference<Taxonomy>(){}, "csa-json/taxonomy.json");
   }
 
   @Override
   public List<Action> getJiraActions(String idpEntityId) {
-    Action action = new Action("TEST-123", "pietje.puk", "Pietje Puk", "pietje@puk.nl", JiraTask.Type.LINKREQUEST, JiraTask.Status.OPEN, "Body", "http://mock-idp",
-            "http://mock-sp", "institutionId", new Date());
-    return Arrays.asList(action);
+    return (List<Action>) parseJsonData(new TypeReference<List<Action>>(){}, "csa-json/actions.json");
   }
 
   @Override
   public Action createAction(Action action) {
-    action.setJiraKey("TEST-" + System.currentTimeMillis());
-    action.setStatus(JiraTask.Status.OPEN);
-    return action;
+    return (Action) parseJsonData(new TypeReference<Action>(){}, "csa-json/create-action.json");
+  }
+
+
+  public Object parseJsonData(TypeReference<? extends Object> typeReference, String jsonFile) {
+    try {
+      return objectMapper.readValue(new ClassPathResource(jsonFile).getInputStream(), typeReference);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }
