@@ -55,7 +55,13 @@ public class CsaMock implements Csa {
 
   @Override
   public Service getServiceForIdp(String idpEntityId, long serviceId) {
-    return (Service) parseJsonData(new TypeReference<Service>(){}, "csa-json/service-for-idp.json");
+    List<Service> services = getServicesForIdp(idpEntityId);
+    for (Service s : services) {
+      if (s.getId() == serviceId) {
+        return s;
+      }
+    }
+    return null;
   }
 
   @Override
