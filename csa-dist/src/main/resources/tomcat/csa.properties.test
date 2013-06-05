@@ -26,8 +26,6 @@ coin-csa.jdbc.password=??
 
 crmServiceClassEndpoint=https://lmng01.dev.coin.surf.net:8444/CrmService.svc
 
-coin-mailserver=s01.dev.coin.surf.net
-
 # Email address that recieves error notifications
 coin-errormail-to=
 coin-administrative-email=
@@ -59,7 +57,5 @@ api-callbackuri=https\://csa.test.surfconext.nl/apiOauthCallback?apiOauthCallbac
 adminService.tokenVerificationUrl=https://apis.acc.showroom.surfconext.nl/v1/tokeninfo
 adminService.resourceServerKey=??
 adminService.resourceServerSecret=??
-adminService.cacheEnabled=false
-
 
 public.api.lmng.guids={8833CEAE-960C-E211-B6B9-005056950050},{9833CEAE-960C-E213-B6B9-115056950050}

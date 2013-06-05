@@ -57,5 +57,4 @@ api-callbackuri=https\://csa.acc.surfconext.nl/apiOauthCallback?apiOauthCallback
 adminService.tokenVerificationUrl=https://apis.acc.csa.surfconext.nl/v1/tokeninfo
 adminService.resourceServerKey=??
 adminService.resourceServerSecret=??
-adminService.allowCorsRequests=true
 
