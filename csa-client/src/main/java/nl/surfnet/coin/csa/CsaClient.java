@@ -16,26 +16,22 @@
 
 package nl.surfnet.coin.csa;
 
-import nl.surfnet.coin.csa.model.*;
-
-import java.util.*;
-
 import nl.surfnet.coin.csa.model.Action;
+import nl.surfnet.coin.csa.model.InstitutionIdentityProvider;
+import nl.surfnet.coin.csa.model.Service;
+import nl.surfnet.coin.csa.model.Taxonomy;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Client for the CSA API.
@@ -47,25 +43,21 @@ public class CsaClient implements Csa {
   /**
    * OAuth2 Client Key (from the JS oauth2 client when this client was registered
    */
-  @Value("${csa.client.key}")
   private String csaClientKey;
 
   /**
    * OAuth2 Client Secret (from the JS oauth2 client when this client was registered
    */
-  @Value("${csa.client.secret}")
   private String csaClientSecret;
 
   /**
    * Location of the API
    */
-  @Value("${csa.oauth2.authorization.url}")
   private String csaOAuth2AuthorizationUrl;
 
   /**
    * Location of the OAuth2 Authorization Server to retrieve the Access Token (client credentials)
    */
-  @Value("${csa.base.url}")
   private String csaBaseLocation;
 
   private String accessToken;
@@ -187,6 +179,8 @@ public class CsaClient implements Csa {
       method = HttpMethod.GET;
     }
 
+    LOG.debug("Will send {}-request to {}, with parameters {} and body: {}", method.name(), url, variables, bodyJson);
+
     ResponseEntity<T> response;
 
     if (CollectionUtils.isEmpty(variables)) {
@@ -194,10 +188,15 @@ public class CsaClient implements Csa {
     } else {
       response = restTemplate.exchange(csaBaseLocation + url, method, requestEntity, clazz, variables);
     }
-    if (retry && response.getStatusCode() != HttpStatus.OK) {
-      //let's try again with a new AccessToken
-      accessToken = null;
-      doGetFromCsa(url, variables, bodyJson, clazz, false);
+    if (response.getStatusCode() == HttpStatus.FORBIDDEN) {
+
+      if (retry) {
+        //let's try again with a new AccessToken
+        accessToken = null;
+        doGetFromCsa(url, variables, bodyJson, clazz, false);
+      } else {
+        throw new HttpClientErrorException(response.getStatusCode());
+      }
     }
     T body = response.getBody();
     if (clazz.isArray()) {
