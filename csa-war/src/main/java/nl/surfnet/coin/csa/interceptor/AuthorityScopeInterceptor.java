@@ -33,10 +33,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import static ch.lambdaj.Lambda.having;
-import static ch.lambdaj.collection.LambdaCollections.with;
 import static nl.surfnet.coin.csa.control.BaseController.*;
-import static nl.surfnet.coin.csa.domain.CoinAuthority.Authority.*;
+import static nl.surfnet.coin.csa.domain.CoinAuthority.Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
@@ -49,7 +47,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  */
 public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
 
-  public static final String OAUTH_CLIENT_SCOPE_JIRA = "csa";
+  public static final String OAUTH_CLIENT_SCOPE_ACTIONS = "actions";
 
   private static final Logger LOG = LoggerFactory.getLogger(AuthorityScopeInterceptor.class);
 

@@ -19,7 +19,6 @@ package nl.surfnet.coin.csa.api.control;
 import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
-import nl.surfnet.coin.csa.domain.Provider;
 import nl.surfnet.coin.csa.domain.Provider.Language;
 import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
 import nl.surfnet.coin.csa.model.Service;
@@ -112,7 +111,7 @@ public class ServicesController extends BaseApiController {
   @ResponseBody
   List<Service> getProtectedServicesByIdp(@RequestParam(value = "lang", defaultValue = "en") String language, @RequestParam(value = "idpEntityId") String idpEntityId,
                                           final HttpServletRequest request) {
-    verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_JIRA);
+    verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_ACTIONS);
     return doGetServicesForIdP(language, idpEntityId);
   }
 

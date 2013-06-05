@@ -16,27 +16,28 @@
 
 package nl.surfnet.coin.csa.api.control;
 
+import nl.surfnet.coin.csa.domain.IdentityProvider;
+import nl.surfnet.coin.csa.domain.ServiceProvider;
+import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
+import nl.surfnet.coin.csa.model.Action;
+import nl.surfnet.coin.csa.service.ActionsService;
+import nl.surfnet.coin.csa.service.EmailService;
+import nl.surfnet.coin.csa.service.IdentityProviderService;
+import nl.surfnet.coin.csa.service.ServiceProviderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import nl.surfnet.coin.csa.model.Action;
-import nl.surfnet.coin.csa.domain.IdentityProvider;
-import nl.surfnet.coin.csa.domain.ServiceProvider;
-import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
-import nl.surfnet.coin.csa.service.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping
@@ -66,7 +67,7 @@ public class JiraController extends BaseApiController {
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/actions.json")
   public @ResponseBody
   List<Action> listActions(@RequestParam(value = "idpEntityId") String idpEntityId, HttpServletRequest request) throws IOException {
-    verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_JIRA);
+    verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_ACTIONS);
     return actionsService.getActions(idpEntityId);
   }
 
@@ -74,7 +75,7 @@ public class JiraController extends BaseApiController {
   public
   @ResponseBody
   Action newAction(HttpServletRequest request, @RequestBody Action action) throws IOException {
-    verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_JIRA);
+    verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_ACTIONS);
 
     ServiceProvider serviceProvider = serviceProviderService.getServiceProvider(action.getSpId());
     IdentityProvider identityProvider = identityProviderService.getIdentityProvider(action.getIdpId());
