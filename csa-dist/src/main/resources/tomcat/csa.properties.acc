@@ -14,10 +14,6 @@
 # limitations under the License.
 #
 
-##########################################################################
-# The following properties are the responsibility of Maintenance. The    #
-# values depend on the environment and are unknown to the developers     #
-##########################################################################
 
 janus.user=??
 janus.secret=??
@@ -28,20 +24,7 @@ coin-csa.jdbc.url=jdbc:mysql://db.acc.surfconext.nl:3306/csa
 coin-csa.jdbc.user=??
 coin-csa.jdbc.password=??
 
-# SOAP service endpoint for LMNG.
-# This is a complete URL to which requests will be posted.
-# Example: https://lmng01.dev.coin.surf.net:8444/CrmService.svc
 crmServiceClassEndpoint=https\://na.example.org
-
-# If set to true, requests/responses will be written to a file in the java.io.tmpdir directory.
-crmServiceClassDebug=false
-
-# SMTP server settings for notifications
-coin-mailserver=localhost
-coin-mailserver-port=25
-
-# Email address that is the sender of invitations/requests
-systemEmail=SURFconext <no-reply@surfconext.nl>
 
 # Email address that recieves error notifications
 coin-errormail-to=coin-logs@list.surfnet.nl
@@ -54,26 +37,13 @@ wayf.certificate=??
 ## Properties for opensaml
 ISSUING_ENTITY_ID=https\://csa.acc.surfconext.nl
 
-WEB_APPLICATION_CHANNEL=https
 WEB_APPLICATION_HOST_AND_PORT=csa.acc.surfconext.nl
-WEB_APPLICATION_CONTEXT_PATH=
 
-ASSERTION_CONSUMER_URI=/AssertionConsumerService
-ASSERTION_CONSUMER_URL=${WEB_APPLICATION_CHANNEL}://${WEB_APPLICATION_HOST_AND_PORT}${WEB_APPLICATION_CONTEXT_PATH}${ASSERTION_CONSUMER_URI}
-
-MAX_PARSER_POOL_SIZE=2
-
-REPLAY_CACHE_LIFE_IN_MILLIS=14400000
-ISSUE_INSTANT_CHECK_CLOCK_SKEW_IN_SECONDS=90
-ISSUE_INSTANT_CHECK_VALIDITY_TIME_IN_SECONDS=300
 
 jiraBaseUrl=https\://issues.surfnet.nl/jira
 jiraUsername=??
 jiraPassword=??
 jiraProjectKey=TEST
-
-# Location of the json file that contains the labels for the ARP attributes
-personAttributesLabels.location=classpath\:person_attributes.json
 
 # Team id that is used as definition of who is a 'shop manager/shop admin'.
 admin.distribution.channel.teamname=urn\:collab\:group\:dev.surfteams.nl\:nl\:surfnet\:diensten\:csa_shopmanager
@@ -87,58 +57,5 @@ api-callbackuri=https\://csa.acc.surfconext.nl/apiOauthCallback?apiOauthCallback
 adminService.tokenVerificationUrl=https://apis.acc.csa.surfconext.nl/v1/tokeninfo
 adminService.resourceServerKey=??
 adminService.resourceServerSecret=??
-adminService.cacheEnabled=true
 adminService.allowCorsRequests=true
 
-
-####################################################################
-##
-## The following properties are used to enable/disable features
-##
-####################################################################
-# Defines if the site is in local dev mode or deployed on the server. Used for CSS/JS concatenation
-mode.dev=false
-
-#toggle the creation of an email when a question is asked or an entity is linked / unlinked
-administration.email.enabled=true
-
-#toggle the creation of a jira ticket when a question is asked or an entity is linked / unlinked
-administration.jira.ticket.enabled=false
-
-##########################################################################
-# The following properties are the responsibility of development.
-##########################################################################
-
-hibernate-csa.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
-hibernate-csa.hbm2ddl.auto=none
-hibernate-csa.format_sql=true
-hibernate-csa.show_sql=false
-
-# Alle real implementations (and not local mocks for testing purposes)
-janus.class=nl.surfnet.coin.janus.JanusRestClient
-openConextApiClient=nl.surfnet.coin.api.client.OpenConextOAuthClientImpl
-crmServiceClass=nl.surfnet.coin.csa.service.impl.LmngServiceImpl
-keyStoreClass=nl.surfnet.coin.csa.service.impl.ssl.KeyStore
-jiraServiceClass=nl.surfnet.coin.csa.service.impl.JiraServiceImpl
-cacheManagerClass=org.springframework.cache.ehcache.EhCacheCacheManager
-authorizationServerFilterClass=nl.surfnet.coin.csa.filter.AuthorizationServerFilter
-
-coin-csa.jdbc.driver=com.mysql.jdbc.Driver
-
-# global configuration of database properties, used for all data sources
-coin-csa.database.idleConnectionTestPeriod=900
-coin-csa.database.maxIdleTime=900
-
-coin-csa.db.migrations.folder=db/migration/mysql
-
-#which SAML attribute holds the UUID
-saml-uuid-attribute=urn:oid:1.3.6.1.4.1.1076.20.40.40.1
-
-# For deeplinks from detail pages to SURFmarket
-lmngDeepLinkBaseUrl=https://www.surfmarket.nl/instelling/dlc/paginas/productomschrijving.aspx?pid=
-
-lmngArticleCacheSeconds=21600
-lmngLicenseCacheSeconds=1800
-
-# LMNG article that should be part of external API without reference in SR
-public.api.lmng.guids=

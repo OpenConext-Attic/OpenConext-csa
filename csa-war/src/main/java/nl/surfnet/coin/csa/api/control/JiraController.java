@@ -57,7 +57,7 @@ public class JiraController extends BaseApiController {
   @Resource
   private IdentityProviderService identityProviderService;
 
-  @Value("${administration.email.enabled:true}")
+  @Value("${administration.email.enabled}")
   private boolean sendAdministrationEmail;
 
   @Value("${administration.jira.ticket.enabled:false}")

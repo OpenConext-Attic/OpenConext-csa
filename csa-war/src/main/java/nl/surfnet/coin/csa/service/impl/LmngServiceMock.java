@@ -20,7 +20,6 @@ import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.domain.License;
 import nl.surfnet.coin.csa.service.CrmService;
-import nl.surfnet.coin.csa.service.impl.ssl.KeyStore;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
