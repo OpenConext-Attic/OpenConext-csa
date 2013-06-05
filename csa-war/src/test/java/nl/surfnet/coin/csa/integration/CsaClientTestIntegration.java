@@ -33,6 +33,12 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.localserver.LocalTestServer;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonMethod;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -45,6 +51,10 @@ public class CsaClientTestIntegration {
   private static String endpoint = "http://localhost:8282/csa";
 
   private static String answer = "{\"scope\":\"something\",\"access_token\":\"3fc6a956-a414-4f4b-a280-65cfbeb9ba2a\",\"token_type\":\"bearer\",\"expires_in\":0}";
+
+  private static ObjectMapper mapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+                                            .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL).setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
+
 
   /*
    * We need to mock the authorization server response for an client credentials access token
@@ -119,7 +129,7 @@ public class CsaClientTestIntegration {
   }
 
   @Test
-  public void institutionsIdentityProviders() {
+  public void institutionsIdentityProviders() throws IOException {
     List<InstitutionIdentityProvider> providers = csaClient.getInstitutionIdentityProviders("http://mock-idp");
     assertEquals(3, providers.size());
     for (InstitutionIdentityProvider provider : providers) {
