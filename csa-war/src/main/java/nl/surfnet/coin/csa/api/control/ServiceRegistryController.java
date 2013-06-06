@@ -17,29 +17,20 @@
 package nl.surfnet.coin.csa.api.control;
 
 import nl.surfnet.coin.csa.domain.IdentityProvider;
-import nl.surfnet.coin.csa.domain.ServiceProvider;
-import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
-import nl.surfnet.coin.csa.model.Action;
 import nl.surfnet.coin.csa.model.InstitutionIdentityProvider;
-import nl.surfnet.coin.csa.service.ActionsService;
-import nl.surfnet.coin.csa.service.EmailService;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
-import nl.surfnet.coin.csa.service.ServiceProviderService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -54,7 +45,8 @@ public class ServiceRegistryController extends BaseApiController {
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/identityproviders.json")
   public @ResponseBody
-  List<InstitutionIdentityProvider> listActions(@RequestParam(value = "identityProviderId") String identityProviderId, HttpServletRequest request) throws IOException {
+  List<InstitutionIdentityProvider> getIdps(@RequestParam(value = "identityProviderId") String identityProviderId) throws IOException {
+    LOG.debug("Got request for identityProviders. identityProviderId: {}", identityProviderId);
     List<InstitutionIdentityProvider> result = new ArrayList<InstitutionIdentityProvider>();
     IdentityProvider identityProvider = identityProviderService.getIdentityProvider(identityProviderId);
     if (identityProvider != null) {
@@ -68,11 +60,11 @@ public class ServiceRegistryController extends BaseApiController {
         }
       }
     }
+    LOG.debug("Result of call to getIdps with parameter {}: {}", identityProviderId, result);
     return result;
   }
 
   private InstitutionIdentityProvider convertIdentityProviderToInstitutionIdentityProvider(IdentityProvider identityProvider) {
     return new InstitutionIdentityProvider(identityProvider.getId(), identityProvider.getName(), identityProvider.getInstitutionId());
   }
-
 }
