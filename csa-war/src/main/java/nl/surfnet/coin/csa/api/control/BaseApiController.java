@@ -18,16 +18,23 @@
  */
 package nl.surfnet.coin.csa.api.control;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.surfnet.oaaas.auth.AuthorizationServerFilter;
 import org.surfnet.oaaas.auth.principal.AuthenticatedPrincipal;
 import org.surfnet.oaaas.conext.SAMLAuthenticatedPrincipal;
 import org.surfnet.oaaas.model.VerifyTokenResponse;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 public abstract class BaseApiController {
+
+  private static final Logger LOG = LoggerFactory.getLogger(BaseApiController.class);
 
   /*
  * Retrieve IDP Entity ID from the oauth token stored in the request
@@ -47,8 +54,15 @@ public abstract class BaseApiController {
     VerifyTokenResponse verifyTokenResponse = (VerifyTokenResponse) request.getAttribute(AuthorizationServerFilter.VERIFY_TOKEN_RESPONSE);
     List<String> scopes = verifyTokenResponse.getScopes();
     if (CollectionUtils.isEmpty(scopes) || !scopes.contains(scopeRequired)) {
-      throw new SecurityException("Scope required is '" + scopeRequired + "', but not granted");
+      throw new ScopeVerificationException("Scope required is '" + scopeRequired + "', but not granted. Granted scopes: " + scopes);
     }
   }
 
+
+  @ExceptionHandler(ScopeVerificationException.class)
+  public void handleSecurityException(Exception ex, HttpServletResponse response) throws IOException {
+    LOG.info("Will return 403 Forbidden", ex);
+    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Granted scope not sufficient");
+    response.flushBuffer();
+  }
 }
