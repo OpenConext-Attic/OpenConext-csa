@@ -52,7 +52,6 @@
     <script src="<c:url value="/js/jquery/jquery.tickback.min.js"/>"></script>
     <script src="<c:url value="/js/jquery/select2.js"/>"></script>
     <script src="<c:url value="/js/main.js"/>"></script>
-    <script src="<c:url value="/js/modules/app-grid.js"/>"></script>
     <script src="<c:url value="/js/modules/forms.js"/>"></script>
     <script src="<c:url value="/js/modules/gallery.js"/>"></script>
     <script src="<c:url value="/js/modules/global.js"/>"></script>
@@ -60,7 +59,6 @@
     <script src="<c:url value="/js/modules/respond.js"/>"></script>
     <script src="<c:url value="/js/modules/compound-sp-edit.js"/>"></script>
     <script src="<c:url value="/js/modules/table.js"/>"></script>
-    <script src="<c:url value="/js/modules/graphs.js"/>"></script>
     <script src="<c:url value="/js/modules/idp-status.js"/>"></script>
     <script src="<c:url value="/js/modules/app-detail.js"/>"></script>
     <script src="<c:url value="/js/modules/shop-admin.js"/>"></script>
