@@ -22,4 +22,12 @@ public class CrmArticle {
   public void setAppleAppStoreUrl(String appleAppStoreUrl) {
     this.appleAppStoreUrl = appleAppStoreUrl;
   }
+
+  public String getGuid() {
+    return guid;
+  }
+
+  public void setGuid(String guid) {
+    this.guid = guid;
+  }
 }

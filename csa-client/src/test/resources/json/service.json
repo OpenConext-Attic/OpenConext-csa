@@ -1,0 +1,22 @@
+{
+  "id": 16,
+  "spEntityId": "theSpEntityId",
+  "name": "Gadgets (oAuth)",
+  "logoUrl": "http://localhost:8282/csa/fieldimages/32.img",
+  "connected": false,
+  "hasCrmLink": false,
+  "crmArticle": {
+    "guid": "{123}",
+    "appleAppStoreUrl": "itns://the-apple-url-for-foodle",
+    "androidPlayStoreUrl": "http://the-android-url-for-foodle"
+  },
+  "arp": {
+    "name": "thearp",
+    "description": "descr",
+    "attributes": {
+      "fooAttr1": "fooVal",
+      "fooAttr2": "fooVal",
+      "fooAttr3": "fooVal"
+    }
+  }
+}
