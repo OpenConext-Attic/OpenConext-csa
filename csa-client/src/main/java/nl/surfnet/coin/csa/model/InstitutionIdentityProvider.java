@@ -18,7 +18,11 @@
  */
 package nl.surfnet.coin.csa.model;
 
-public class InstitutionIdentityProvider {
+import java.io.Serializable;
+
+public class InstitutionIdentityProvider implements Serializable {
+
+  private static final long serialVersionUID = 0L;
 
   private String id;
   private String name;
