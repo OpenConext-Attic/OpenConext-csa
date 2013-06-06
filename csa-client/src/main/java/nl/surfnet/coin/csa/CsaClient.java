@@ -21,9 +21,11 @@ import nl.surfnet.coin.csa.model.InstitutionIdentityProvider;
 import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.model.Taxonomy;
 import org.apache.commons.codec.binary.Base64;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
@@ -33,6 +35,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.util.*;
+import java.io.IOException;
 
 /**
  * Client for the CSA API.
@@ -42,7 +45,13 @@ public class CsaClient implements Csa {
   private static final Logger LOG = LoggerFactory.getLogger(CsaClient.class);
 
   /**
-   * OAuth2 Client Key (from the JS oauth2 client when this client was registered )
+   * ObjectMapper to log responses in the same format they arrived.
+   */
+  private ObjectMapper objectMapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+          .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+
+  /**
+   * OAuth2 Client Key (from the JS oauth2 client when this client was registered)
    */
   private String csaClientKey;
 
@@ -54,7 +63,6 @@ public class CsaClient implements Csa {
   /**
    * Location of the OAuth2 Authorization Server to retrieve the Access Token (client credentials)
    */
-  @Value("${csa.oauth2.authorization.url}")
   private String apisOAuth2AuthorizationUrl;
 
   /**
@@ -201,6 +209,13 @@ public class CsaClient implements Csa {
       }
     }
     T body = response.getBody();
+    if (LOG.isDebugEnabled()) {
+      try {
+        LOG.debug("Response: {}", objectMapper.writeValueAsString(body));
+      } catch (IOException e) {
+        LOG.info("Could not serialize response object for logging: {}", e.getMessage());
+      }
+    }
     if (clazz.isArray()) {
       return getListResult((T[]) body);
     }
