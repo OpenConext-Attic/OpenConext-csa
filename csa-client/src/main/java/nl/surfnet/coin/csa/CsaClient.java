@@ -28,10 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.*;
 
 import java.net.URI;
 import java.util.*;
@@ -82,14 +79,6 @@ public class CsaClient implements Csa {
     this.apisOAuth2AuthorizationUrl = apisOAuth2AuthorizationUrl;
     this.csaClientKey = csaClientKey;
     this.csaClientSecret = csaClientSecret;
-    this.accessToken = getAccessToken();
-    // we handle invalid access_token ourselves
-    restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
-      protected boolean hasError(HttpStatus statusCode) {
-        return super.hasError(statusCode) && statusCode != HttpStatus.FORBIDDEN;
-      }
-
-    });
   }
 
   @Override
@@ -189,26 +178,35 @@ public class CsaClient implements Csa {
       method = HttpMethod.GET;
     }
 
-    LOG.debug("Will send {}-request to {}, with parameters {} and body: {}", method.name(), url, variables, bodyJson);
+    String fullUrl = csaBaseLocation + url;
+
+    LOG.debug("Will send {}-request to {}, with parameters {} and body: {}", method.name(), fullUrl, variables, bodyJson);
 
     ResponseEntity<T> response;
 
-    if (CollectionUtils.isEmpty(variables)) {
-      response = restTemplate.exchange(URI.create(csaBaseLocation + url), method, requestEntity, clazz);
-    } else {
-      response = restTemplate.exchange(csaBaseLocation + url, method, requestEntity, clazz, variables);
-    }
-    if (response.getStatusCode() == HttpStatus.FORBIDDEN) {
-
-      if (retry) {
-        //let's try again with a new AccessToken
-        accessToken = null;
-        doGetFromCsa(url, variables, bodyJson, clazz, false);
+    try {
+      if (CollectionUtils.isEmpty(variables)) {
+        response = restTemplate.exchange(URI.create(fullUrl), method, requestEntity, clazz);
       } else {
-        throw new HttpClientErrorException(response.getStatusCode());
+        response = restTemplate.exchange(fullUrl, method, requestEntity, clazz, variables);
       }
+    } catch (HttpClientErrorException clientException) {
+      if (clientException.getStatusCode() == HttpStatus.FORBIDDEN && retry) {
+        LOG.info("Got a 'forbidden' response. Will retry with a new access token. HTTP status: {}", clientException.getMessage());
+        accessToken = null;
+        return doGetFromCsa(url, variables, bodyJson, clazz, false);
+      } else {
+        LOG.info("Error during request to CSA. Response body: {}", clientException.getResponseBodyAsString());
+        throw clientException;
+      }
+    } catch (HttpServerErrorException serverException) {
+      LOG.info("Error during request to CSA. Response body: {}", serverException.getResponseBodyAsString());
+      throw serverException;
     }
+
+
     T body = response.getBody();
+
     if (LOG.isDebugEnabled()) {
       try {
         LOG.debug("Response: {}", objectMapper.writeValueAsString(body));
@@ -216,6 +214,7 @@ public class CsaClient implements Csa {
         LOG.info("Could not serialize response object for logging: {}", e.getMessage());
       }
     }
+
     if (clazz.isArray()) {
       return getListResult((T[]) body);
     }
