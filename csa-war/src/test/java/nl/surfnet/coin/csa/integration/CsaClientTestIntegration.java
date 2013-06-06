@@ -55,7 +55,6 @@ public class CsaClientTestIntegration {
   private static ObjectMapper mapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
                                             .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL).setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
 
-
   /*
    * We need to mock the authorization server response for an client credentials access token
    */

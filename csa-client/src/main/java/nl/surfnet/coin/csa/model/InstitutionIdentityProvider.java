@@ -56,4 +56,10 @@ public class InstitutionIdentityProvider {
   public void setInstitutionId(String institutionId) {
     this.institutionId = institutionId;
   }
+
+  @Override
+  public String toString() {
+    return name;
+  }
+
 }

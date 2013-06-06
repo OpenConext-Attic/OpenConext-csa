@@ -41,7 +41,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping
-public class JiraController extends BaseApiController {
+public class  JiraController extends BaseApiController {
 
 
   private static final Logger LOG = LoggerFactory.getLogger(JiraController.class);

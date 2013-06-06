@@ -14,7 +14,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.surfnet.coin</groupId>
     <artifactId>csa-parent</artifactId>
@@ -54,8 +55,7 @@
     <jetty.port>8282</jetty.port>
 
 
-    
-    <!-- default webdriver for selenium tests. To be overridden on a per 
+    <!-- default webdriver for selenium tests. To be overridden on a per
       profile base -->
     <selenium.webdriver>firefox</selenium.webdriver>
   </properties>
@@ -216,7 +216,7 @@
         </exclusion>
       </exclusions>
     </dependency>
-    
+
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
@@ -378,7 +378,9 @@
           <contextHandlers>
             <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
               <contextPath>/mujina-idp</contextPath>
-              <war>${settings.localRepository}/org/surfnet/coin/mujina-idp/${mujina-idp.version}/mujina-idp-${mujina-idp.version}.war</war>
+              <war>
+                ${settings.localRepository}/org/surfnet/coin/mujina-idp/${mujina-idp.version}/mujina-idp-${mujina-idp.version}.war
+              </war>
               <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
             </contextHandler>
           </contextHandlers>
@@ -452,7 +454,8 @@
             <configuration>
               <execArgs>${project.build.directory}/rubygems/bin/compass
                 compile ${basedir}/src/main/webapp
-                ${basedir}/src/main/webapp/sass/screen.sass</execArgs>
+                ${basedir}/src/main/webapp/sass/screen.sass
+              </execArgs>
             </configuration>
           </plugin>
           <plugin>
@@ -566,7 +569,9 @@
               <contextHandlers>
                 <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
                   <contextPath>/mujina-idp</contextPath>
-                  <war>${settings.localRepository}/org/surfnet/coin/mujina-idp/${mujina-idp.version}/mujina-idp-${mujina-idp.version}.war</war>
+                  <war>
+                    ${settings.localRepository}/org/surfnet/coin/mujina-idp/${mujina-idp.version}/mujina-idp-${mujina-idp.version}.war
+                  </war>
                   <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
                 </contextHandler>
               </contextHandlers>

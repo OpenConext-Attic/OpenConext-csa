@@ -23,6 +23,7 @@ import nl.surfnet.coin.csa.model.Taxonomy;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
@@ -41,7 +42,7 @@ public class CsaClient implements Csa {
   private static final Logger LOG = LoggerFactory.getLogger(CsaClient.class);
 
   /**
-   * OAuth2 Client Key (from the JS oauth2 client when this client was registered
+   * OAuth2 Client Key (from the JS oauth2 client when this client was registered )
    */
   private String csaClientKey;
 
@@ -51,12 +52,13 @@ public class CsaClient implements Csa {
   private String csaClientSecret;
 
   /**
-   * Location of the API
+   * Location of the OAuth2 Authorization Server to retrieve the Access Token (client credentials)
    */
-  private String csaOAuth2AuthorizationUrl;
+  @Value("${csa.oauth2.authorization.url}")
+  private String apisOAuth2AuthorizationUrl;
 
   /**
-   * Location of the OAuth2 Authorization Server to retrieve the Access Token (client credentials)
+   * Location of the CSA API
    */
   private String csaBaseLocation;
 
@@ -67,9 +69,9 @@ public class CsaClient implements Csa {
   public CsaClient() {
   }
 
-  public CsaClient(String csaBaseLocation, String csaOAuth2AuthorizationUrl, String csaClientKey, String csaClientSecret) {
+  public CsaClient(String csaBaseLocation, String apisOAuth2AuthorizationUrl, String csaClientKey, String csaClientSecret) {
     this.csaBaseLocation = csaBaseLocation;
-    this.csaOAuth2AuthorizationUrl = csaOAuth2AuthorizationUrl;
+    this.apisOAuth2AuthorizationUrl = apisOAuth2AuthorizationUrl;
     this.csaClientKey = csaClientKey;
     this.csaClientSecret = csaClientSecret;
     this.accessToken = getAccessToken();
@@ -227,7 +229,7 @@ public class CsaClient implements Csa {
 
     HttpEntity<String> requestEntity = new HttpEntity<String>("grant_type=client_credentials", headers);
     try {
-      ResponseEntity<Map> response = restTemplate.exchange(URI.create(csaOAuth2AuthorizationUrl),
+      ResponseEntity<Map> response = restTemplate.exchange(URI.create(apisOAuth2AuthorizationUrl),
               HttpMethod.POST,
               requestEntity,
               Map.class);
