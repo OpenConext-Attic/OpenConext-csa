@@ -176,6 +176,10 @@ public class CompoundSPService {
    */
   public CompoundServiceProvider getCSPById(IdentityProvider idp, long compoundSpId, boolean refreshCache) {
     CompoundServiceProvider csp = compoundServiceProviderDao.findById(compoundSpId);
+    if (csp == null) {
+      LOG.debug("Cannot find CSP by id {}, will return null", compoundSpId);
+      return null;
+    }
     ServiceProvider sp = serviceProviderService.getServiceProvider(csp.getServiceProviderEntityId(), idp.getId());
     if (sp == null) {
       LOG.info("Cannot get serviceProvider by known entity id: {}, cannot enrich CSP with SP information.",
