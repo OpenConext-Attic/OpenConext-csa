@@ -47,7 +47,15 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  */
 public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
 
+  /**
+   * The OAuth 2.0 scope used for actions-related requests.
+   */
   public static final String OAUTH_CLIENT_SCOPE_ACTIONS = "actions";
+
+  /**
+   * The OAuth 2.0 scope used for requests that provide an IDP-id themselves, without need to rely on user authorization.
+   */
+  public static final String OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES = "cross-idp-services";
 
   private static final Logger LOG = LoggerFactory.getLogger(AuthorityScopeInterceptor.class);
 
