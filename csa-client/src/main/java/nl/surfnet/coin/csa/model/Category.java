@@ -18,9 +18,9 @@
  */
 package nl.surfnet.coin.csa.model;
 
-import java.util.List;
-
 import org.codehaus.jackson.annotate.JsonIgnore;
+
+import java.util.List;
 
 public class Category {
 
@@ -46,6 +46,16 @@ public class Category {
   }
   public String getName() {
     return name;
+  }
+
+  @JsonIgnore
+  public boolean containsValue(String value) {
+    for (CategoryValue cv : values) {
+      if (cv.getValue().equals(value)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @JsonIgnore

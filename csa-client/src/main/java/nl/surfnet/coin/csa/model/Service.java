@@ -79,7 +79,7 @@ public class Service implements Comparable<Service> {
    */
   private License license;
 
-  private Map<Category, List<CategoryValue>> categories;
+  private List<Category> categories;
 
   private String spEntityId;
 
@@ -138,14 +138,6 @@ public class Service implements Comparable<Service> {
     this.crmUrl = crmUrl;
   }
 
-  public Map<Category, List<CategoryValue>> getCategories() {
-    return categories;
-  }
-
-  public void setCategories(Map<Category, List<CategoryValue>> categories) {
-    this.categories = categories;
-  }
-
   @Override
   public int compareTo(Service other) {
     if (other == null) {
@@ -188,13 +180,21 @@ public class Service implements Comparable<Service> {
     this.license = license;
   }
 
+  public List<Category> getCategories() {
+    return categories;
+  }
+
+  public void setCategories(List<Category> categories) {
+    this.categories = categories;
+  }
+
   @JsonIgnore
   public String getSearchFacetValues() {
     Collection<String> values = new ArrayList<String>();
     if (categories != null && !categories.isEmpty()) {
-      for (List<CategoryValue> c : categories.values()) {
-        for (CategoryValue value : c) {
-          values.add(value.getSearchValue());
+      for (Category c : categories) {
+        for (CategoryValue v : c.getValues()) {
+          values.add(v.getSearchValue());
         }
       }
     }
