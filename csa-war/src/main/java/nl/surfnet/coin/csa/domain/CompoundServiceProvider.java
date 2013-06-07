@@ -14,35 +14,12 @@
  * limitations under the License.
  */
 package nl.surfnet.coin.csa.domain;
-import static java.lang.Boolean.*;
-import static nl.surfnet.coin.csa.domain.Field.Key.APPSTORE_LOGO;
-import static nl.surfnet.coin.csa.domain.Field.Key.APP_URL;
-import static nl.surfnet.coin.csa.domain.Field.Key.DETAIL_LOGO;
-import static nl.surfnet.coin.csa.domain.Field.Key.ENDUSER_DESCRIPTION_EN;
-import static nl.surfnet.coin.csa.domain.Field.Key.ENDUSER_DESCRIPTION_NL;
-import static nl.surfnet.coin.csa.domain.Field.Key.EULA_URL;
-import static nl.surfnet.coin.csa.domain.Field.Key.INSTITUTION_DESCRIPTION_EN;
-import static nl.surfnet.coin.csa.domain.Field.Key.INSTITUTION_DESCRIPTION_NL;
-import static nl.surfnet.coin.csa.domain.Field.Key.SERVICE_DESCRIPTION_EN;
-import static nl.surfnet.coin.csa.domain.Field.Key.SERVICE_DESCRIPTION_NL;
-import static nl.surfnet.coin.csa.domain.Field.Key.SERVICE_URL;
-import static nl.surfnet.coin.csa.domain.Field.Key.SUPPORT_MAIL;
-import static nl.surfnet.coin.csa.domain.Field.Key.SUPPORT_URL_EN;
-import static nl.surfnet.coin.csa.domain.Field.Key.SUPPORT_URL_NL;
-import static nl.surfnet.coin.csa.domain.Field.Key.TECHNICAL_SUPPORTMAIL;
-import static org.springframework.util.StringUtils.hasText;
 
-import java.io.IOException;
-import java.util.*;
-
-import javax.persistence.*;
-
-import nl.surfnet.coin.csa.model.FacetValue;
 import nl.surfnet.coin.csa.domain.Field.Key;
 import nl.surfnet.coin.csa.domain.Field.Source;
 import nl.surfnet.coin.csa.domain.Provider.Language;
+import nl.surfnet.coin.csa.model.FacetValue;
 import nl.surfnet.coin.shared.domain.DomainObject;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -53,6 +30,15 @@ import org.hibernate.annotations.SortType;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+
+import javax.persistence.*;
+import java.io.IOException;
+import java.util.*;
+
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static nl.surfnet.coin.csa.domain.Field.Key.*;
+import static org.springframework.util.StringUtils.hasText;
 
 
 /**
