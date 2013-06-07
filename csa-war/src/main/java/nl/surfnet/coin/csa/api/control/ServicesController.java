@@ -20,11 +20,15 @@ import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.domain.Provider.Language;
+import nl.surfnet.coin.csa.domain.Screenshot;
 import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
+import nl.surfnet.coin.csa.model.CrmArticle;
+import nl.surfnet.coin.csa.model.License;
 import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -33,7 +37,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Collections.sort;
@@ -86,15 +89,17 @@ public class ServicesController extends BaseApiController {
     return result;
   }
 
-  private String getServiceLogo(CompoundServiceProvider csP) {
-    String detailLogo = csP.getDetailLogo();
-    if (detailLogo != null) {
-      if (detailLogo.startsWith("/")) {
-        detailLogo = protocol + "://" + hostAndPort + (StringUtils.hasText(contextPath) ? contextPath : "")
-                + detailLogo;
+  /**
+   * Returns an absolute URL for the given url
+   */
+  private String absoluteUrl(final String relativeUrl) {
+    String result = relativeUrl;
+    if (result != null) {
+      if (result.startsWith("/")) {
+        result = protocol + "://" + hostAndPort + (StringUtils.hasText(contextPath) ? contextPath : "") + result;
       }
     }
-    return detailLogo;
+    return result;
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/services.json")
@@ -109,20 +114,26 @@ public class ServicesController extends BaseApiController {
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/idp/services.json")
   public
   @ResponseBody
-  List<Service> getProtectedServicesByIdp(@RequestParam(value = "lang", defaultValue = "en") String language, @RequestParam(value = "idpEntityId") String idpEntityId,
-                                          final HttpServletRequest request) {
-    verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_ACTIONS);
+  List<Service> getProtectedServicesByIdp(
+          @RequestParam(value = "lang", defaultValue = "en") String language,
+          @RequestParam(value = "idpEntityId") String idpEntityId,
+          final HttpServletRequest request) {
+    verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
     return doGetServicesForIdP(language, idpEntityId);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/services/{serviceId}.json")
   public
   @ResponseBody
-  Service getServiceForIdp(@PathVariable("serviceId") long serviceId, @RequestParam(value = "lang", defaultValue = "en") String language, @RequestParam(value = "idpEntityId") String idpEntityId) {
+  Service getServiceForIdp(
+          @PathVariable("serviceId") long serviceId,
+          @RequestParam(value = "lang", defaultValue = "en") String language,
+          @RequestParam(value = "idpEntityId") String idpEntityId,
+          final HttpServletRequest request) {
+    verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
     IdentityProvider identityProvider = idpService.getIdentityProvider(idpEntityId);
     CompoundServiceProvider csp = compoundSPService.getCSPById(identityProvider, serviceId, false);
-    List<Service> services = buildApiServices(Arrays.asList(csp), language);
-    return services.get(0);
+    return buildApiService(csp, language);
   }
 
   private List<Service> doGetServicesForIdP(String language, String ipdEntityId) {
@@ -153,15 +164,83 @@ public class ServicesController extends BaseApiController {
    */
   private List<Service> buildApiServices(List<CompoundServiceProvider> services, String language) {
     List<Service> result = new ArrayList<Service>();
-    boolean isEn = language.equalsIgnoreCase("en");
-    for (CompoundServiceProvider csP : services) {
-      String crmLink = csP.isArticleAvailable() ? (lmngDeepLinkBaseUrl + csP.getLmngId()) : null;
-      Service service = new Service(csP.getId(), isEn ? csP.getSp().getName(Language.EN) : csP.getSp().getName(Language.NL),
-              getServiceLogo(csP), csP.getServiceUrl(), csP.isArticleAvailable(), crmLink, csP.getSp().getId());
-      service.setArp(csP.getSp().getArp());
-      result.add(service);
+    for (CompoundServiceProvider csp : services) {
+      result.add(buildApiService(csp, language));
     }
     return result;
+  }
+
+  /**
+   * Build a Service object based on the given CSP
+   */
+  private Service buildApiService(CompoundServiceProvider csp, String language) {
+    boolean isEn = language.equalsIgnoreCase("en");
+
+    Service service = new Service();
+
+    // Plain properties
+    service.setSpEntityId(csp.getSp().getId());
+    service.setAppUrl(csp.getAppUrl());
+    service.setServiceUrl(csp.getAppUrl()); // TODO: duplicates AppUrl?
+    service.setId(csp.getId());
+    service.setEulaUrl(csp.getEulaUrl());
+    service.setCrmUrl(csp.isArticleAvailable() ? (lmngDeepLinkBaseUrl + csp.getLmngId()) : null);
+    service.setDetailLogoUrl(absoluteUrl(csp.getDetailLogo()));
+    service.setLogoUrl(absoluteUrl(csp.getAppStoreLogo()));
+    service.setSupportMail(csp.getSupportMail());
+    service.setWebsiteUrl(csp.getSp().getHomeUrl()); // TODO: verify whether this is the correct property in the SP
+    service.setConnected(csp.getSp().isLinked());
+    service.setArp(csp.getSp().getArp());
+
+    // Screenshots
+    if (CollectionUtils.isNotEmpty(csp.getScreenShotsImages())) {
+      List<String> screenshots = new ArrayList<String>();
+      for (Screenshot screenshot : csp.getScreenShotsImages()) {
+        screenshots.add(absoluteUrl(screenshot.getFileUrl()));
+      }
+      service.setScreenshotUrls(screenshots);
+    }
+
+    // Language-specific properties
+    if (isEn) {
+      service.setDescription(csp.getServiceDescriptionEn());
+      service.setEnduserDescription(csp.getEnduserDescriptionEn());
+      service.setName(csp.getSp().getName(Language.EN));
+      service.setSupportUrl(csp.getSupportUrlEn());
+      service.setInstitutionDescription(csp.getInstitutionDescriptionEn());
+    } else {
+      service.setEnduserDescription(csp.getEnduserDescriptionNl());
+      service.setName(csp.getSp().getName(Language.NL));
+      service.setSupportUrl(csp.getSupportUrlNl());
+      service.setInstitutionDescription(csp.getInstitutionDescriptionNl());
+    }
+
+
+    // CRM-related properties
+    if (csp.isArticleAvailable()) {
+      CrmArticle crmArticle = new CrmArticle();
+      crmArticle.setGuid(csp.getArticle().getLmngIdentifier());
+      crmArticle.setAndroidPlayStoreUrl(csp.getArticle().getAndroidPlayStoreMedium().getUrl());
+      crmArticle.setAppleAppStoreUrl(csp.getArticle().getAppleAppStoreMedium().getUrl());
+      service.setHasCrmLink(true);
+      service.setCrmArticle(crmArticle);
+    }
+
+    // License-related
+    if (csp.isLicenseAvailable()) {
+      License l = new License();
+      l.setEndDate(csp.getLicense().getEndDate());
+      l.setStartDate(csp.getLicense().getStartDate());
+      l.setGroupLicense(csp.getLicense().isGroupLicense());
+      l.setLicenseNumber(csp.getLicense().getLicenseNumber());
+      l.setInstitutionName(csp.getLicense().getInstitutionName());
+      service.setLicense(l);
+    }
+
+    // TODO: categories
+
+
+    return service;
   }
 
 }
