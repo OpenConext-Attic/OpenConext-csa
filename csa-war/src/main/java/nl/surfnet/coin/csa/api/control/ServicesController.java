@@ -220,8 +220,12 @@ public class ServicesController extends BaseApiController {
     if (csp.isArticleAvailable()) {
       CrmArticle crmArticle = new CrmArticle();
       crmArticle.setGuid(csp.getArticle().getLmngIdentifier());
-      crmArticle.setAndroidPlayStoreUrl(csp.getArticle().getAndroidPlayStoreMedium().getUrl());
-      crmArticle.setAppleAppStoreUrl(csp.getArticle().getAppleAppStoreMedium().getUrl());
+      if (csp.getArticle().getAndroidPlayStoreMedium() != null) {
+        crmArticle.setAndroidPlayStoreUrl(csp.getArticle().getAndroidPlayStoreMedium().getUrl());
+      }
+      if (csp.getArticle().getAppleAppStoreMedium() != null) {
+        crmArticle.setAppleAppStoreUrl(csp.getArticle().getAppleAppStoreMedium().getUrl());
+      }
       service.setHasCrmLink(true);
       service.setCrmArticle(crmArticle);
     }
