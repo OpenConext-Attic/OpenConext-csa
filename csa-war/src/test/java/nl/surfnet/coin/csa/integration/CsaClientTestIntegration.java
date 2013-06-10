@@ -18,13 +18,10 @@
  */
 package nl.surfnet.coin.csa.integration;
 
-import java.io.IOException;
-import java.util.List;
-
 import nl.surfnet.coin.csa.CsaClient;
 import nl.surfnet.coin.csa.model.*;
 import nl.surfnet.coin.janus.domain.ARP;
-
+import nl.surfnet.coin.shared.oauth.ClientCredentialsClient;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -33,7 +30,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.localserver.LocalTestServer;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonMethod;
 import org.codehaus.jackson.map.DeserializationConfig;
@@ -42,9 +38,10 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import java.io.IOException;
+import java.util.List;
+
+import static junit.framework.Assert.*;
 
 public class CsaClientTestIntegration {
 
@@ -76,7 +73,12 @@ public class CsaClientTestIntegration {
     });
     String csaOAuth2AuthorizationUrl = String.format("http://%s:%d/oauth2/token", oauth2AuthServer.getServiceAddress().getHostName(),
             oauth2AuthServer.getServiceAddress().getPort());
-    csaClient = new CsaClient(endpoint, csaOAuth2AuthorizationUrl, "key", "secret");
+    csaClient = new CsaClient(endpoint);
+    ClientCredentialsClient oauthClient = new ClientCredentialsClient();
+    oauthClient.setClientKey("key");
+    oauthClient.setClientSecret("secret");
+    oauthClient.setOauthAuthorizationUrl(csaOAuth2AuthorizationUrl);
+    csaClient.setOauthClient(oauthClient);
   }
 
   @Test
