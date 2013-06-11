@@ -20,6 +20,7 @@ package nl.surfnet.coin.csa.model;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Category {
@@ -34,6 +35,7 @@ public class Category {
   public Category(String name) {
     this.name = name;
   }
+
   public void setName(String name) {
     this.name = name;
   }
@@ -41,15 +43,28 @@ public class Category {
   public List<CategoryValue> getValues() {
     return values;
   }
+
   public void setValues(List<CategoryValue> values) {
     this.values = values;
   }
+
   public String getName() {
     return name;
   }
 
   @JsonIgnore
+  public void addCategoryValue(CategoryValue value) {
+    if (values == null) {
+      values = new ArrayList<CategoryValue>();
+    }
+    values.add(value);
+  }
+
+  @JsonIgnore
   public boolean containsValue(String value) {
+    if (values == null) {
+      return false;
+    }
     for (CategoryValue cv : values) {
       if (cv.getValue().equals(value)) {
         return true;

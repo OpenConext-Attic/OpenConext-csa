@@ -16,17 +16,16 @@
 
 package nl.surfnet.coin.csa.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import nl.surfnet.coin.janus.domain.ARP;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Service implements Comparable<Service> {
 
   private long id;
@@ -143,8 +142,8 @@ public class Service implements Comparable<Service> {
     if (other == null) {
       return 1;
     }
-    String otherName =  other.getName();
-    if (this.name == null && otherName == null ) {
+    String otherName = other.getName();
+    if (this.name == null && otherName == null) {
       return -1;
     }
     if (this.name == null) {
@@ -305,4 +304,15 @@ public class Service implements Comparable<Service> {
     this.arp = arp;
   }
 
+  public void restoreCategoryReferences() {
+    if (categories == null) {
+      return;
+    }
+    for (Category category : categories) {
+      List<CategoryValue> values = category.getValues();
+      for (CategoryValue value : values) {
+        value.setCategory(category);
+      }
+    }
+  }
 }

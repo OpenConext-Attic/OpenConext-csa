@@ -18,12 +18,16 @@ package nl.surfnet.coin.csa.model;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.springframework.util.Assert;
 
-public class CategoryValue implements Comparable<CategoryValue>{
+public class CategoryValue implements Comparable<CategoryValue> {
 
   private int count;
 
   private String value;
+
+  @JsonIgnore
+  private Category category;
 
   //we need no-argument constructor for json parsing
   public CategoryValue() {
@@ -48,22 +52,38 @@ public class CategoryValue implements Comparable<CategoryValue>{
   public String getValue() {
     return value;
   }
-  
-/*
+
+  @JsonIgnore
+  public Category getCategory() {
+    return category;
+  }
+
+  @JsonIgnore
+  public void setCategory(Category category) {
+    this.category = category;
+  }
+
+
+  /*
  * The value of a FacetValue may contain spaces, but if we want to search in (any) clients, then we
  * want to be able to have all the FacetValues of a Service separated by spaces therefore this method
- * can be used to underscore-separate the different FacetValues
+ * can be used to underscore-separate the different FacetValues.
+ *
+ * Because it is possible to have FacetValues that have the same value, but belong to different Facet's, we need
+ * to include the Facet value (represented by Category) as well in the String
  */
   @JsonIgnore
   public String getSearchValue() {
-    String val = getValue();
-    return val != null ? val.replaceAll(" ", "_").toLowerCase() : val;
+    Assert.notNull(category);
+    Assert.hasLength(category.getName());
+    Assert.hasLength(value);
+    return category.getName().replaceAll(" ", "_").toLowerCase() + getValue().replaceAll(" ", "_").toLowerCase();
   }
 
   @Override
   public int compareTo(CategoryValue o) {
     return new CompareToBuilder()
-      .append(this.value, o.value)
-      .toComparison();
+            .append(this.value, o.value)
+            .toComparison();
   }
 }

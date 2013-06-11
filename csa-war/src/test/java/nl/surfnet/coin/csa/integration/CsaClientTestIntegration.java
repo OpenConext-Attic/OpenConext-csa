@@ -84,9 +84,16 @@ public class CsaClientTestIntegration {
   @Test
   public void taxonomy() throws IOException {
     Taxonomy taxonomy = csaClient.getTaxonomy();
-    assertEquals(2, taxonomy.getCategories().size());
+    List<Category> categories = taxonomy.getCategories();
+    assertEquals(2, categories.size());
+    assertEquals(2, categories.get(0).getValues().size());
 
-    assertEquals(2, taxonomy.getCategories().get(0).getValues().size());
+    for (Category category : categories) {
+      List<CategoryValue> values = category.getValues();
+      for (CategoryValue value : values) {
+        assertNotNull(value.getCategory());
+      }
+    }
   }
 
   @Test

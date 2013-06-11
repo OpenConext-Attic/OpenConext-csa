@@ -16,15 +16,14 @@
 
 package nl.surfnet.coin.csa.api.control;
 
+import nl.surfnet.coin.csa.dao.FacetDao;
 import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.domain.Provider.Language;
 import nl.surfnet.coin.csa.domain.Screenshot;
 import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
-import nl.surfnet.coin.csa.model.CrmArticle;
-import nl.surfnet.coin.csa.model.License;
-import nl.surfnet.coin.csa.model.Service;
+import nl.surfnet.coin.csa.model.*;
 import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
@@ -63,6 +62,9 @@ public class ServicesController extends BaseApiController {
 
   @Resource
   private CrmService lmngService;
+
+  @Resource
+  private FacetDao facetDao;
 
   @Resource
   private IdentityProviderService idpService;
@@ -241,10 +243,28 @@ public class ServicesController extends BaseApiController {
       service.setLicense(l);
     }
 
-    // TODO: categories
-
-
+    // WIP: categories
+    List<Category> categories = new ArrayList<Category>();
+    for (FacetValue facetValue : csp.getFacetValues()) {
+      Facet facet = facetValue.getFacet();
+      Category category = findCategory(categories, facet);
+      if (category == null) {
+        category = new Category(facet.getName());
+        categories.add(category);
+      }
+      category.addCategoryValue(new CategoryValue(facetValue.getValue()));
+    }
+    service.setCategories(categories);
     return service;
+  }
+
+  private Category findCategory(List<Category> categories, Facet facet) {
+    for (Category category : categories) {
+      if (category.getName().equalsIgnoreCase(facet.getName())) {
+        return category;
+      }
+    }
+    return null;
   }
 
 }

@@ -19,6 +19,8 @@
 package nl.surfnet.coin.csa.model;
 
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import java.util.List;
 
 public class Taxonomy {
@@ -40,5 +42,17 @@ public class Taxonomy {
     this.categories = categories;
   }
 
+  /*
+   * Json serialize can't handle bidirectional one-to-many relation
+   */
+  @JsonIgnore
+  public void restoreCategoryReferences() {
+    for (Category category : categories) {
+      List<CategoryValue> values = category.getValues();
+      for (CategoryValue value : values) {
+        value.setCategory(category);
+      }
+    }
+  }
 
 }
