@@ -16,10 +16,7 @@
 
 package nl.surfnet.coin.csa;
 
-import nl.surfnet.coin.csa.model.Action;
-import nl.surfnet.coin.csa.model.InstitutionIdentityProvider;
-import nl.surfnet.coin.csa.model.Service;
-import nl.surfnet.coin.csa.model.Taxonomy;
+import nl.surfnet.coin.csa.model.*;
 import nl.surfnet.coin.shared.oauth.OauthClient;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -60,12 +57,12 @@ public class CsaClient implements Csa {
 
   @Override
   public List<Service> getPublicServices() {
-    return oauthClient.exchange(csaBaseLocation + "/api/public/services.json", Service[].class);
+    return restoreCategoryReferences((List<Service>) oauthClient.exchange(csaBaseLocation + "/api/public/services.json", Service[].class));
   }
 
   @Override
   public List<Service> getProtectedServices() {
-    return oauthClient.exchange(csaBaseLocation + "/api/protected/services.json", Service[].class);
+    return restoreCategoryReferences((List<Service>) oauthClient.exchange(csaBaseLocation + "/api/protected/services.json", Service[].class));
   }
 
   @Override
@@ -73,7 +70,7 @@ public class CsaClient implements Csa {
     String url = csaBaseLocation + "/api/protected/idp/services.json?idpEntityId={idpEntityId}";
     Map variables = new HashMap<String, String>();
     variables.put("idpEntityId", idpEntityId);
-    return (List<Service>) oauthClient.exchange(url, variables, Service[].class);
+    return restoreCategoryReferences((List<Service>) oauthClient.exchange(url, variables, Service[].class));
   }
 
   @Override
@@ -82,7 +79,9 @@ public class CsaClient implements Csa {
     Map variables = new HashMap<String, String>();
     variables.put("serviceId", serviceId);
     variables.put("idpEntityId", idpEntityId);
-    return (Service) oauthClient.exchange(location, variables, Service.class);
+    Service service = (Service) oauthClient.exchange(location, variables, Service.class);
+    service.restoreCategoryReferences();
+    return service;
   }
 
   @Override
@@ -91,12 +90,22 @@ public class CsaClient implements Csa {
     Map variables = new HashMap<String, String>();
     variables.put("idpEntityId", idpEntityId);
     variables.put("spEntityId", spEntityId);
-    return (Service) oauthClient.exchange(url, variables, Service.class);
+    Service service = (Service) oauthClient.exchange(url, variables, Service.class);
+    service.restoreCategoryReferences();
+    return service;
   }
 
   @Override
   public Taxonomy getTaxonomy() {
-    return (Taxonomy) oauthClient.exchange(csaBaseLocation + "/api/public/taxonomy.json", Taxonomy.class);
+    Taxonomy taxonomy = (Taxonomy) oauthClient.exchange(csaBaseLocation + "/api/public/taxonomy.json", Taxonomy.class);
+    List<Category> categories = taxonomy.getCategories();
+    for (Category category : categories) {
+      List<CategoryValue> values = category.getValues();
+      for (CategoryValue value : values) {
+        value.setCategory(category);
+      }
+    }
+    return taxonomy;
   }
 
   @Override
@@ -124,5 +133,12 @@ public class CsaClient implements Csa {
 
   public void setOauthClient(OauthClient oauthClient) {
     this.oauthClient = oauthClient;
+  }
+
+  private List<Service> restoreCategoryReferences(List<Service> services) {
+    for (Service service : services) {
+      service.restoreCategoryReferences();
+    }
+    return services;
   }
 }
