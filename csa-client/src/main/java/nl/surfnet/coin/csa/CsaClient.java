@@ -17,7 +17,7 @@
 package nl.surfnet.coin.csa;
 
 import nl.surfnet.coin.csa.model.*;
-import nl.surfnet.coin.shared.oauth.OauthClient;
+import nl.surfnet.coin.oauth.OauthClient;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;

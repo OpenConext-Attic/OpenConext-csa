@@ -21,7 +21,7 @@ package nl.surfnet.coin.csa.integration;
 import nl.surfnet.coin.csa.CsaClient;
 import nl.surfnet.coin.csa.model.*;
 import nl.surfnet.coin.janus.domain.ARP;
-import nl.surfnet.coin.shared.oauth.ClientCredentialsClient;
+import nl.surfnet.coin.oauth.ClientCredentialsClient;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;

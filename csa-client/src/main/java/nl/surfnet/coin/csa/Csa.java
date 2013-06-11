@@ -20,7 +20,7 @@ import nl.surfnet.coin.csa.model.Action;
 import nl.surfnet.coin.csa.model.InstitutionIdentityProvider;
 import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.model.Taxonomy;
-import nl.surfnet.coin.shared.oauth.OauthClient;
+import nl.surfnet.coin.oauth.OauthClient;
 
 import java.util.List;
 
