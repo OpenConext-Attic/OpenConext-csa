@@ -77,7 +77,7 @@ public class CategoryValue implements Comparable<CategoryValue> {
     Assert.notNull(category);
     Assert.hasLength(category.getName());
     Assert.hasLength(value);
-    return category.getName().replaceAll(" ", "_").toLowerCase() + getValue().replaceAll(" ", "_").toLowerCase();
+    return category.getName().replaceAll(" ", "_").toLowerCase() + "_" +  getValue().replaceAll(" ", "_").toLowerCase();
   }
 
   @Override
