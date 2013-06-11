@@ -15,21 +15,11 @@
  */
 package nl.surfnet.coin.csa.service.impl;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import nl.surfnet.coin.csa.domain.Account;
 import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
-import nl.surfnet.coin.csa.domain.License;
+import nl.surfnet.coin.csa.model.License;
 import nl.surfnet.coin.csa.service.CrmService;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.codehaus.jackson.map.DeserializationConfig;
@@ -43,18 +33,22 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+
 /**
  * LmngServiceImplIT.java
- * 
- * @TODO move to the integration tests
- *       (/conext-integration-tests/src/test/java/nl/surfnet/conext/test/)
- * 
- *       NOTE! we us this for a local integration test only
- * 
+ * NOTE! we us this for a local integration test only
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:coin-csa-context.xml",
-    "classpath:coin-csa-properties-integration-context.xml", "classpath:coin-shared-context.xml" })
+@ContextConfiguration(locations = {"classpath:coin-csa-context.xml",
+        "classpath:coin-csa-properties-integration-context.xml", "classpath:coin-shared-context.xml"})
 public class LmngServiceImplIT {
 
   @Autowired
@@ -64,7 +58,7 @@ public class LmngServiceImplIT {
   public void init() throws FileNotFoundException, IOException {
   }
 
-//   we us this for a local integration test only
+  //   we us this for a local integration test only
 //  @Test
   public void testRetrieveLmngGoogleEdugroepGreencloudSurfMarket() throws IOException, LmngException {
 
@@ -86,7 +80,7 @@ public class LmngServiceImplIT {
 
   }
 
-//  @Test
+  //  @Test
   public void testRetrievalAllAccounts() throws IOException {
     List<Account> accounts = licensingService.getAccounts(true);
     System.out.println(accounts.size());
@@ -99,7 +93,7 @@ public class LmngServiceImplIT {
 
   }
 
-//  @Test
+  //  @Test
   public void testPerformArticles() throws Exception {
     String query = IOUtils.toString(new ClassPathResource("lmngqueries/lmngQueryAllArticles.xml").getInputStream());
     String result = licensingService.performQuery(query);
@@ -110,7 +104,7 @@ public class LmngServiceImplIT {
 //  @Test
   public void testRetrieveInstitutionName() throws IOException {
     String guid = "{ED3207DC-1910-DC11-A6C7-0019B9DE3AA4}";
-    
+
     String instituteName = licensingService.getInstitutionName(guid);
 
     assertNotNull(instituteName);
@@ -121,18 +115,18 @@ public class LmngServiceImplIT {
 //  @Test
   public void testRetrieveArticle() throws IOException {
     String guid =
-                              "{A1EA4AF9-6C9E-E111-B429-0050569E0013}";
+            "{A1EA4AF9-6C9E-E111-B429-0050569E0013}";
     Article instituteName = licensingService.getService(guid);
-    
+
     assertNotNull(instituteName);
   }
-  
+
   @Test
   public void testRetrieveAllLicensesForIdpAndSp() throws LmngException {
     IdentityProvider identityProvider = new IdentityProvider();
     identityProvider.setId("SurfNet");
     identityProvider.setInstitutionId("SURFnet");
-    
+
     List<String> articlesIdentifiers = new ArrayList<String>();
     articlesIdentifiers.add("{F46CCB08-6135-E111-B32A-0050569E0007}");
     articlesIdentifiers.add("{4EF1EE04-ED7C-E111-8393-0050569E0011}");
@@ -142,41 +136,39 @@ public class LmngServiceImplIT {
     List<License> result = licensingService.getLicensesForIdpAndSps(identityProvider, articlesIdentifiers, new Date());
     System.out.println(result);
   }
-    
-    
-    
-    
-//    @Test
-    public void testRawQuery() {
-    licensingService.performQuery("<fetch version=\"1.0\" output-format=\"xml-platform\" mapping=\"logical\" distinct=\"true\">"+
-  "<entity name=\"lmng_sdnarticle\">"+
+
+
+  //    @Test
+  public void testRawQuery() {
+    licensingService.performQuery("<fetch version=\"1.0\" output-format=\"xml-platform\" mapping=\"logical\" distinct=\"true\">" +
+            "<entity name=\"lmng_sdnarticle\">" +
 //"   <filter>"+
 //"     <condition attribute=\"lmng_sdnarticleid\" operator=\"in\">"+
 //"       <value>{099F8003-64A7-E211-9388-0050569E66E5}</value>"+
 //"     </condition>"+
 //"   </filter>"+
-"   <link-entity name=\"lmng_sdnarticle_lmng_product\" from=\"lmng_sdnarticleid\" to=\"lmng_sdnarticleid\" visible=\"false\" intersect=\"true\">"+
-"         <attribute name=\"lmng_sdnarticleid\"/>" +
-"     <link-entity name=\"lmng_product\" from=\"lmng_productid\" to=\"lmng_productid\" alias=\"product\">"+
-"        <link-entity name=\"lmng_productvariation\" from=\"lmng_productid\" to=\"lmng_productid\" alias=\"productvariation\">"+
-"         <attribute name=\"lmng_licensemodel\"/>"+
-"         <link-entity name=\"lmng_licenseagreement\" from=\"lmng_productvariationid\" to=\"lmng_productvariationid\" alias=\"license\" >"+
-"           <attribute name=\"lmng_number\"/>"+
-"           <attribute name=\"lmng_validfrom\"/>"+
-"           <attribute name=\"lmng_validto\"/>"+
-"           <attribute name=\"lmng_organisationid\"/>"+
-"           <filter type=\"and\">"+
-"             <condition attribute=\"lmng_validfrom\" operator=\"on-or-before\" value=\"2013-05-01\" />"+
-"             <condition attribute=\"lmng_validto\" operator=\"on-or-after\" value=\"2013-05-01\" />"+
-"             <condition attribute=\"statuscode\" operator=\"eq\" value=\"4\"/>"+
-"             <condition attribute=\"lmng_organisationid\" operator=\"eq\" value=\"{837326CA-1A10-DC11-A6C7-0019B9DE3AA4}\" />"+
-"           </filter>"+
-"         </link-entity>"+
-"       </link-entity>"+
-"     </link-entity>"+
-"   </link-entity>"+
-" </entity>"+
-"</fetch>");
+            "   <link-entity name=\"lmng_sdnarticle_lmng_product\" from=\"lmng_sdnarticleid\" to=\"lmng_sdnarticleid\" visible=\"false\" intersect=\"true\">" +
+            "         <attribute name=\"lmng_sdnarticleid\"/>" +
+            "     <link-entity name=\"lmng_product\" from=\"lmng_productid\" to=\"lmng_productid\" alias=\"product\">" +
+            "        <link-entity name=\"lmng_productvariation\" from=\"lmng_productid\" to=\"lmng_productid\" alias=\"productvariation\">" +
+            "         <attribute name=\"lmng_licensemodel\"/>" +
+            "         <link-entity name=\"lmng_licenseagreement\" from=\"lmng_productvariationid\" to=\"lmng_productvariationid\" alias=\"license\" >" +
+            "           <attribute name=\"lmng_number\"/>" +
+            "           <attribute name=\"lmng_validfrom\"/>" +
+            "           <attribute name=\"lmng_validto\"/>" +
+            "           <attribute name=\"lmng_organisationid\"/>" +
+            "           <filter type=\"and\">" +
+            "             <condition attribute=\"lmng_validfrom\" operator=\"on-or-before\" value=\"2013-05-01\" />" +
+            "             <condition attribute=\"lmng_validto\" operator=\"on-or-after\" value=\"2013-05-01\" />" +
+            "             <condition attribute=\"statuscode\" operator=\"eq\" value=\"4\"/>" +
+            "             <condition attribute=\"lmng_organisationid\" operator=\"eq\" value=\"{837326CA-1A10-DC11-A6C7-0019B9DE3AA4}\" />" +
+            "           </filter>" +
+            "         </link-entity>" +
+            "       </link-entity>" +
+            "     </link-entity>" +
+            "   </link-entity>" +
+            " </entity>" +
+            "</fetch>");
   }
 
 }

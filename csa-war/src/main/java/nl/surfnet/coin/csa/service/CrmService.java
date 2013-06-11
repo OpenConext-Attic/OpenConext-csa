@@ -22,7 +22,7 @@ import java.util.List;
 import nl.surfnet.coin.csa.domain.Account;
 import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
-import nl.surfnet.coin.csa.domain.License;
+import nl.surfnet.coin.csa.model.License;
 import nl.surfnet.coin.csa.service.impl.LmngException;
 
 /**

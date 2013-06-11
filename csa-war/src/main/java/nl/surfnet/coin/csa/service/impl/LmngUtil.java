@@ -20,7 +20,7 @@ import nl.surfnet.coin.csa.domain.Account;
 import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.ArticleMedium;
 import nl.surfnet.coin.csa.domain.ArticleMedium.ArticleMediumType;
-import nl.surfnet.coin.csa.domain.License;
+import nl.surfnet.coin.csa.model.License;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -272,8 +272,8 @@ public class LmngUtil {
   }
 
   private static Account createAccount(Element element) {
-    String name = getFirstSubElementStringValue(element,"name");
-    String status = getFirstSubElementStringValue(element,"statuscode");
+    String name = getFirstSubElementStringValue(element, "name");
+    String status = getFirstSubElementStringValue(element, "statuscode");
     String guid = getFirstSubElementStringValue(element, "accountid");
     return new Account(name, status, guid);
   }
@@ -305,8 +305,8 @@ public class LmngUtil {
    * String This method will return the first (if available) item value,
    * possible multiple values will be ignored.
    *
-   * @param element The element to get the subelement from
-   * @param subItemName  the string of the subelement
+   * @param element     The element to get the subelement from
+   * @param subItemName the string of the subelement
    * @return a string representation of the content of the subelement
    */
   private static String getFirstSubElementStringValue(Element element, String subItemName) {

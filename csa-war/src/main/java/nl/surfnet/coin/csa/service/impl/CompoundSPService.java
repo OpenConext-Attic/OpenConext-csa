@@ -18,6 +18,7 @@ package nl.surfnet.coin.csa.service.impl;
 
 import nl.surfnet.coin.csa.dao.CompoundServiceProviderDao;
 import nl.surfnet.coin.csa.domain.*;
+import nl.surfnet.coin.csa.model.License;
 import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.ServiceProviderService;
 import org.hibernate.HibernateException;

@@ -19,6 +19,7 @@ import nl.surfnet.coin.csa.domain.Field.Key;
 import nl.surfnet.coin.csa.domain.Field.Source;
 import nl.surfnet.coin.csa.domain.Provider.Language;
 import nl.surfnet.coin.csa.model.FacetValue;
+import nl.surfnet.coin.csa.model.License;
 import nl.surfnet.coin.shared.domain.DomainObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;

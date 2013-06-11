@@ -18,7 +18,7 @@ package nl.surfnet.coin.csa.service.impl;
 import nl.surfnet.coin.csa.domain.Account;
 import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
-import nl.surfnet.coin.csa.domain.License;
+import nl.surfnet.coin.csa.model.License;
 import nl.surfnet.coin.csa.service.CrmService;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;

@@ -27,14 +27,6 @@ import java.util.List;
 public class License implements Serializable {
 
   /*
-  FIXME: blatantly copied from csa.model.
-  It is used in the CSA interface, so we need it here. But could the original be removed therefore?
-  Or is it a slightly different view on the same data?
-   */
-
-  private static final long serialVersionUID = 1L;
-
-  /*
    * Optional pattern applied to prevent many, many nullpointer checks and
    * exceptions
    */
