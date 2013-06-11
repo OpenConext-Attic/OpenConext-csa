@@ -80,7 +80,6 @@ public class ServicesController extends BaseApiController {
     // add public service from LMNG directly
     for (String guid : guids) {
       Article currentArticle = lmngService.getService(guid);
-      //TODO: here we use id 0 as there is no CSP. How to handle this in the public API? We probably do not want to expose the ID at all there.
       Service currentPS = new Service(0L, currentArticle.getServiceDescriptionNl(), currentArticle.getDetailLogo(),
               null, true, lmngDeepLinkBaseUrl + guid, null);
       result.add(currentPS);
@@ -235,11 +234,13 @@ public class ServicesController extends BaseApiController {
       service.setName(csp.getSp().getName(Language.EN));
       service.setSupportUrl(csp.getSupportUrlEn());
       service.setInstitutionDescription(csp.getInstitutionDescriptionEn());
+      service.setServiceUrl(csp.getSupportUrlEn());
     } else {
       service.setEnduserDescription(csp.getEnduserDescriptionNl());
       service.setName(csp.getSp().getName(Language.NL));
       service.setSupportUrl(csp.getSupportUrlNl());
       service.setInstitutionDescription(csp.getInstitutionDescriptionNl());
+      service.setServiceUrl(csp.getSupportUrlNl());
     }
   }
 
@@ -258,14 +259,13 @@ public class ServicesController extends BaseApiController {
     // Plain properties
     service.setSpEntityId(csp.getSp().getId());
     service.setAppUrl(csp.getAppUrl());
-    service.setServiceUrl(csp.getAppUrl()); // TODO: duplicates AppUrl?
     service.setId(csp.getId());
     service.setEulaUrl(csp.getEulaUrl());
     service.setCrmUrl(csp.isArticleAvailable() ? (lmngDeepLinkBaseUrl + csp.getLmngId()) : null);
     service.setDetailLogoUrl(absoluteUrl(csp.getDetailLogo()));
     service.setLogoUrl(absoluteUrl(csp.getAppStoreLogo()));
     service.setSupportMail(csp.getSupportMail());
-    service.setWebsiteUrl(csp.getSp().getHomeUrl()); // TODO: verify whether this is the correct property in the SP
+    service.setWebsiteUrl(csp.getServiceUrl());
     service.setConnected(csp.getSp().isLinked());
     service.setArp(csp.getSp().getArp());
   }
