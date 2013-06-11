@@ -23,6 +23,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
@@ -57,6 +58,8 @@ public class Service implements Comparable<Service> {
   private String enduserDescription;
 
   private String institutionDescription;
+
+   private Date lastLoginDate;
 
   /**
    * Whether this service is connected to the IdP in the service registry
@@ -314,5 +317,13 @@ public class Service implements Comparable<Service> {
         value.setCategory(category);
       }
     }
+  }
+
+  public Date getLastLoginDate() {
+    return lastLoginDate;
+  }
+
+  public void setLastLoginDate(Date lastLoginDate) {
+    this.lastLoginDate = lastLoginDate;
   }
 }

@@ -3,6 +3,7 @@
   "spEntityId": "theSpEntityId",
   "name": "Gadgets (oAuth)",
   "logoUrl": "http://localhost:8282/csa/fieldimages/32.img",
+  "lastLoginDate": 1370938863238,
   "connected": false,
   "hasCrmLink": false,
   "crmArticle": {
@@ -18,5 +19,24 @@
       "fooAttr2": "fooVal",
       "fooAttr3": "fooVal"
     }
-  }
+  },
+  "categories": [
+    {
+      "name": "Location",
+      "values": [
+        {
+          "value": "USA"
+        }
+      ]
+    },
+    {
+      "name": "Target Group",
+      "values": [
+        {
+          "value": "Students"
+        }
+      ]
+    }
+  ]
+
 }

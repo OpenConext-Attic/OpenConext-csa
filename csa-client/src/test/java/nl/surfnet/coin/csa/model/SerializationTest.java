@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -38,8 +39,10 @@ public class SerializationTest {
     Service s = objectMapper.readValue(new ClassPathResource("json/service.json").getInputStream(), Service.class);
     assertEquals("theSpEntityId", s.getSpEntityId());
     assertEquals("{123}", s.getCrmArticle().getGuid());
+    assertEquals(1370938863238L, s.getLastLoginDate().getTime());
     assertTrue(s.getArp().getAttributes().containsKey("fooAttr1"));
 
+    s.setLastLoginDate(new Date());
     String serialized = objectMapper.writeValueAsString(s);
     assertTrue(serialized.contains("theSpEntityId"));
   }
