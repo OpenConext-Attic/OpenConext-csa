@@ -37,6 +37,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.IOException;
 import java.util.List;
@@ -50,7 +51,7 @@ public class CsaClientTestIntegration {
   private static String answer = "{\"scope\":\"something\",\"access_token\":\"3fc6a956-a414-4f4b-a280-65cfbeb9ba2a\",\"token_type\":\"bearer\",\"expires_in\":0}";
 
   private static ObjectMapper mapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-                                            .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL).setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
+          .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL).setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
 
   /*
    * We need to mock the authorization server response for an client credentials access token
@@ -115,6 +116,12 @@ public class CsaClientTestIntegration {
   }
 
   @Test
+  public void actionsForNonExistentProvider() throws IOException {
+    List<Action> jiraActions = csaClient.getJiraActions("http://i-dont-exist");
+    assertEquals(0, jiraActions.size());
+  }
+
+  @Test
   public void newAction() throws Exception {
     Action action = new Action("jonh.doe", "john.doe@nl", "John Doe", JiraTask.Type.LINKREQUEST, "Body remarks", "http://mock-idp",
             "http://mock-sp", "mock-institution");
@@ -153,14 +160,27 @@ public class CsaClientTestIntegration {
   }
 
   @Test
+  public void serviceForIdpNonExistent() throws IOException {
+    try {
+      csaClient.getServiceForIdp("http://mock-idp", Long.MAX_VALUE);
+      fail();
+    } catch (HttpClientErrorException e) {
+      assertEquals(409, e.getStatusCode().value());
+    }
+  }
+
+  @Test
   public void servicesByIdp() throws IOException {
     List<Service> services = csaClient.getServicesForIdp("http://mock-idp");
     assertEquals(29, services.size());
     for (Service service : services) {
       assertNotNull(service);
     }
+  }
 
-    services = csaClient.getServicesForIdp("does-not-exist");
+  @Test
+  public void servicesByIdpForNonExistent() throws IOException {
+    List<Service> services = csaClient.getServicesForIdp("http://i-don't-exist");
     assertEquals(0, services.size());
   }
 

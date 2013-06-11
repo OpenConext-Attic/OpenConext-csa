@@ -58,11 +58,18 @@ public abstract class BaseApiController {
     }
   }
 
-
   @ExceptionHandler(ScopeVerificationException.class)
   public void handleSecurityException(Exception ex, HttpServletResponse response) throws IOException {
     LOG.info("Will return 403 Forbidden", ex);
     response.sendError(HttpServletResponse.SC_FORBIDDEN, "Granted scope not sufficient");
     response.flushBuffer();
   }
+
+  @ExceptionHandler(Exception.class)
+  public void handleGenericException(Exception ex, HttpServletResponse response) throws IOException {
+    LOG.info("Will return 409 Not found", ex);
+    response.sendError(HttpServletResponse.SC_CONFLICT, "The request could not be completed due to a conflict with the current state of the resource.");
+    response.flushBuffer();
+  }
+
 }

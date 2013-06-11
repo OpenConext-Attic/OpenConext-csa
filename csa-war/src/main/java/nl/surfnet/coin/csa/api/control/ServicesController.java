@@ -17,13 +17,11 @@
 package nl.surfnet.coin.csa.api.control;
 
 import nl.surfnet.coin.csa.dao.FacetDao;
-import nl.surfnet.coin.csa.domain.Article;
-import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
-import nl.surfnet.coin.csa.domain.IdentityProvider;
+import nl.surfnet.coin.csa.domain.*;
 import nl.surfnet.coin.csa.domain.Provider.Language;
-import nl.surfnet.coin.csa.domain.Screenshot;
 import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
 import nl.surfnet.coin.csa.model.*;
+import nl.surfnet.coin.csa.model.License;
 import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
@@ -179,45 +177,30 @@ public class ServicesController extends BaseApiController {
     boolean isEn = language.equalsIgnoreCase("en");
 
     Service service = new Service();
+    plainProperties(csp, service);
+    screenshots(csp, service);
+    languageSpecificProperties(csp, isEn, service);
+    crmRelatedProperties(csp, service);
+    categories(csp, service);
+    return service;
+  }
 
-    // Plain properties
-    service.setSpEntityId(csp.getSp().getId());
-    service.setAppUrl(csp.getAppUrl());
-    service.setServiceUrl(csp.getAppUrl()); // TODO: duplicates AppUrl?
-    service.setId(csp.getId());
-    service.setEulaUrl(csp.getEulaUrl());
-    service.setCrmUrl(csp.isArticleAvailable() ? (lmngDeepLinkBaseUrl + csp.getLmngId()) : null);
-    service.setDetailLogoUrl(absoluteUrl(csp.getDetailLogo()));
-    service.setLogoUrl(absoluteUrl(csp.getAppStoreLogo()));
-    service.setSupportMail(csp.getSupportMail());
-    service.setWebsiteUrl(csp.getSp().getHomeUrl()); // TODO: verify whether this is the correct property in the SP
-    service.setConnected(csp.getSp().isLinked());
-    service.setArp(csp.getSp().getArp());
-
-    // Screenshots
-    if (CollectionUtils.isNotEmpty(csp.getScreenShotsImages())) {
-      List<String> screenshots = new ArrayList<String>();
-      for (Screenshot screenshot : csp.getScreenShotsImages()) {
-        screenshots.add(absoluteUrl(screenshot.getFileUrl()));
+  private void categories(CompoundServiceProvider csp, Service service) {
+    // Categories
+    List<Category> categories = new ArrayList<Category>();
+    for (FacetValue facetValue : csp.getFacetValues()) {
+      Facet facet = facetValue.getFacet();
+      Category category = findCategory(categories, facet);
+      if (category == null) {
+        category = new Category(facet.getName());
+        categories.add(category);
       }
-      service.setScreenshotUrls(screenshots);
+      category.addCategoryValue(new CategoryValue(facetValue.getValue()));
     }
+    service.setCategories(categories);
+  }
 
-    // Language-specific properties
-    if (isEn) {
-      service.setDescription(csp.getServiceDescriptionEn());
-      service.setEnduserDescription(csp.getEnduserDescriptionEn());
-      service.setName(csp.getSp().getName(Language.EN));
-      service.setSupportUrl(csp.getSupportUrlEn());
-      service.setInstitutionDescription(csp.getInstitutionDescriptionEn());
-    } else {
-      service.setEnduserDescription(csp.getEnduserDescriptionNl());
-      service.setName(csp.getSp().getName(Language.NL));
-      service.setSupportUrl(csp.getSupportUrlNl());
-      service.setInstitutionDescription(csp.getInstitutionDescriptionNl());
-    }
-
-
+  private void crmRelatedProperties(CompoundServiceProvider csp, Service service) {
     // CRM-related properties
     if (csp.isArticleAvailable()) {
       CrmArticle crmArticle = new CrmArticle();
@@ -242,20 +225,49 @@ public class ServicesController extends BaseApiController {
       l.setInstitutionName(csp.getLicense().getInstitutionName());
       service.setLicense(l);
     }
+  }
 
-    // WIP: categories
-    List<Category> categories = new ArrayList<Category>();
-    for (FacetValue facetValue : csp.getFacetValues()) {
-      Facet facet = facetValue.getFacet();
-      Category category = findCategory(categories, facet);
-      if (category == null) {
-        category = new Category(facet.getName());
-        categories.add(category);
-      }
-      category.addCategoryValue(new CategoryValue(facetValue.getValue()));
+  private void languageSpecificProperties(CompoundServiceProvider csp, boolean en, Service service) {
+    // Language-specific properties
+    if (en) {
+      service.setDescription(csp.getServiceDescriptionEn());
+      service.setEnduserDescription(csp.getEnduserDescriptionEn());
+      service.setName(csp.getSp().getName(Language.EN));
+      service.setSupportUrl(csp.getSupportUrlEn());
+      service.setInstitutionDescription(csp.getInstitutionDescriptionEn());
+    } else {
+      service.setEnduserDescription(csp.getEnduserDescriptionNl());
+      service.setName(csp.getSp().getName(Language.NL));
+      service.setSupportUrl(csp.getSupportUrlNl());
+      service.setInstitutionDescription(csp.getInstitutionDescriptionNl());
     }
-    service.setCategories(categories);
-    return service;
+  }
+
+  private void screenshots(CompoundServiceProvider csp, Service service) {
+    // Screenshots
+    if (CollectionUtils.isNotEmpty(csp.getScreenShotsImages())) {
+      List<String> screenshots = new ArrayList<String>();
+      for (Screenshot screenshot : csp.getScreenShotsImages()) {
+        screenshots.add(absoluteUrl(screenshot.getFileUrl()));
+      }
+      service.setScreenshotUrls(screenshots);
+    }
+  }
+
+  private void plainProperties(CompoundServiceProvider csp, Service service) {
+    // Plain properties
+    service.setSpEntityId(csp.getSp().getId());
+    service.setAppUrl(csp.getAppUrl());
+    service.setServiceUrl(csp.getAppUrl()); // TODO: duplicates AppUrl?
+    service.setId(csp.getId());
+    service.setEulaUrl(csp.getEulaUrl());
+    service.setCrmUrl(csp.isArticleAvailable() ? (lmngDeepLinkBaseUrl + csp.getLmngId()) : null);
+    service.setDetailLogoUrl(absoluteUrl(csp.getDetailLogo()));
+    service.setLogoUrl(absoluteUrl(csp.getAppStoreLogo()));
+    service.setSupportMail(csp.getSupportMail());
+    service.setWebsiteUrl(csp.getSp().getHomeUrl()); // TODO: verify whether this is the correct property in the SP
+    service.setConnected(csp.getSp().isLinked());
+    service.setArp(csp.getSp().getArp());
   }
 
   private Category findCategory(List<Category> categories, Facet facet) {
