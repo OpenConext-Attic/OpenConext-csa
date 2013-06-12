@@ -16,16 +16,22 @@
 
 package nl.surfnet.coin.csa.model;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.junit.Test;
+import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.ClassPathResource;
 
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class SerializationTest {
@@ -35,15 +41,15 @@ public class SerializationTest {
 
 
   @Test
-  public void service() throws IOException {
-    Service s = objectMapper.readValue(new ClassPathResource("json/service.json").getInputStream(), Service.class);
-    assertEquals("theSpEntityId", s.getSpEntityId());
-    assertEquals("{123}", s.getCrmArticle().getGuid());
-    assertEquals(1370938863238L, s.getLastLoginDate().getTime());
-    assertTrue(s.getArp().getAttributes().containsKey("fooAttr1"));
+  public void service() throws IOException, InvocationTargetException, IllegalAccessException {
+    Service service = objectMapper.readValue(new ClassPathResource("json/service.json").getInputStream(), Service.class);
+    service.restoreCategoryReferences();
 
-    s.setLastLoginDate(new Date());
-    String serialized = objectMapper.writeValueAsString(s);
-    assertTrue(serialized.contains("theSpEntityId"));
+    PropertyDescriptor[] propertyDescriptors = BeanUtils.getPropertyDescriptors(Service.class);
+    for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+      Method readMethod = propertyDescriptor.getReadMethod();
+      Object result = readMethod.invoke(service);
+      assertNotNull(readMethod.getName(), result);
+    }
   }
 }
