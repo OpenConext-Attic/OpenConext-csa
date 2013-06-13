@@ -35,7 +35,6 @@
   <h1>${title}
     <spring:url value="/app-detail.shtml" var="detailUrl" htmlEscape="true">
       <spring:param name="serviceProviderEntityId" value="${compoundSp.serviceProviderEntityId}" />
-      <spring:param name="refreshCache" value="true"/>
     </spring:url>
     <a href="${detailUrl}">
       <i class="icon-eye-open" rel="tooltip" title="<spring:message code="jsp.compoundsp_detail.previewlink" />"></i>

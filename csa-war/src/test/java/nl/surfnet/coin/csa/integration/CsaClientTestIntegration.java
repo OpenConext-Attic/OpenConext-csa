@@ -37,6 +37,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.IOException;
@@ -175,7 +176,11 @@ public class CsaClientTestIntegration {
     assertEquals(29, services.size());
     for (Service service : services) {
       assertNotNull(service);
+      if (!CollectionUtils.isEmpty(service.getCategories())) {
+        System.out.println(service);
+      }
     }
+
   }
 
   @Test

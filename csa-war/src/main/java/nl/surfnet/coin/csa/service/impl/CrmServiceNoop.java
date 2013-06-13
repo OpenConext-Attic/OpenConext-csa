@@ -38,12 +38,12 @@ public class CrmServiceNoop implements CrmService{
   private String endpoint;
 
   @Override
-  public List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier, Date validOn) throws LmngException {
+  public List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier) throws LmngException {
     return new ArrayList<License>();
   }
 
   @Override
-  public List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers, Date validOn) throws LmngException {
+  public List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers) throws LmngException {
     return new ArrayList<License>();
   }
 
@@ -75,6 +75,10 @@ public class CrmServiceNoop implements CrmService{
   @Override
   public String performQuery(String rawQuery) {
     return null;
+  }
+
+  @Override
+  public void evictCache() {
   }
 
   public String getEndpoint() {

@@ -86,6 +86,10 @@ public class LmngServiceMock implements CrmService {
     throw new RuntimeException("performQuery not implemented by " + getClass().getName());
   }
 
+  @Override
+  public void evictCache() {
+  }
+
 
   @Override
   public String getInstitutionName(String guid) {
@@ -114,13 +118,12 @@ public class LmngServiceMock implements CrmService {
   }
 
   @Override
-  public List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier, Date validOn) {
+  public List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier) {
     return Arrays.asList(new License[]{license});
   }
 
   @Override
-  public List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers,
-      Date validOn) throws LmngException {
+  public List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers) throws LmngException {
     return Arrays.asList(new License[]{license});
   }
 

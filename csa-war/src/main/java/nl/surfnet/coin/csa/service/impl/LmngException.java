@@ -16,12 +16,10 @@
 
 package nl.surfnet.coin.csa.service.impl;
 
-public class LmngException extends Exception {
+public class LmngException extends RuntimeException {
 
-  private static final long serialVersionUID = 1L;
-
-  public LmngException(String arg0, Throwable arg1) {
-    super(arg0, arg1);
+  public LmngException(String message, Throwable cause) {
+    super(message, cause);
   }
 
 }

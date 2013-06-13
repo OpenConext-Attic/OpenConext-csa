@@ -65,6 +65,8 @@ public class SpLnmgListController extends BaseController {
   @Autowired
   private CompoundServiceProviderDao compoundServiceProviderDao;
 
+  private LmngUtil lmngUtil = new LmngUtil();
+
   @RequestMapping(value = "/all-spslmng")
   public ModelAndView listAllSpsLmng(Map<String, Object> model) {
     List<CompoundServiceProvider> services = compoundSPService.getAllCSPs();
@@ -96,7 +98,7 @@ public class SpLnmgListController extends BaseController {
       lmngId = null;
     } else {
       // extra validation (also done in frontend/jquery)
-      if (!LmngUtil.isValidGuid(lmngId)) {
+      if (!lmngUtil.isValidGuid(lmngId)) {
         model.put("errorMessage", "jsp.lmng_binding_overview.wrong.guid");
         model.put("messageIndex", index);
         return listAllSpsLmng(model);

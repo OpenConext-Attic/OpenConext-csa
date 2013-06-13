@@ -77,7 +77,7 @@ public class SAMLProvisionerTest {
     CoinUser cu = (CoinUser) provisioner.provisionUser(a);
 
     assertEquals("urn:collab:person:surfguest.nl:gvanderploeg", cu.getUsername());
-    assertEquals("https://surfguest.nl", cu.getIdp());
+    assertEquals("https://surfguest.nl", cu.getIdp().getId());
     assertEquals("surfguest.nl", cu.getSchacHomeOrganization());
     assertEquals("Geert van der Ploeg", cu.getDisplayName());
     assertEquals("gvanderploeg@iprofs.nl", cu.getEmail());

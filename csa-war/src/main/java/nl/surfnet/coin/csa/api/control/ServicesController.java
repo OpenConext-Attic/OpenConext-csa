@@ -88,19 +88,6 @@ public class ServicesController extends BaseApiController {
     return result;
   }
 
-  /**
-   * Returns an absolute URL for the given url
-   */
-  private String absoluteUrl(final String relativeUrl) {
-    String result = relativeUrl;
-    if (result != null) {
-      if (result.startsWith("/")) {
-        result = protocol + "://" + hostAndPort + (StringUtils.hasText(contextPath) ? contextPath : "") + result;
-      }
-    }
-    return result;
-  }
-
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/services.json")
   public
   @ResponseBody
@@ -131,7 +118,7 @@ public class ServicesController extends BaseApiController {
           final HttpServletRequest request) {
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
     IdentityProvider identityProvider = idpService.getIdentityProvider(idpEntityId);
-    CompoundServiceProvider csp = compoundSPService.getCSPById(identityProvider, serviceId, false);
+    CompoundServiceProvider csp = compoundSPService.getCSPById(identityProvider, serviceId);
     return buildApiService(csp, language);
   }
 
@@ -278,5 +265,19 @@ public class ServicesController extends BaseApiController {
     }
     return null;
   }
+
+  /**
+   * Returns an absolute URL for the given url
+   */
+  private String absoluteUrl(final String relativeUrl) {
+    String result = relativeUrl;
+    if (result != null) {
+      if (result.startsWith("/")) {
+        result = protocol + "://" + hostAndPort + (StringUtils.hasText(contextPath) ? contextPath : "") + result;
+      }
+    }
+    return result;
+  }
+
 
 }

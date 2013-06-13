@@ -39,7 +39,7 @@ import static junit.framework.Assert.assertEquals;
         "/coin-csa-context.xml",
         "/coin-csa-properties-context.xml",
         "classpath:coin-shared-context.xml"})
-public class ActionsServiceTest {
+public class  ActionsServiceTest {
 
   @Resource(name="actionsService")
   private ActionsService actionsService;

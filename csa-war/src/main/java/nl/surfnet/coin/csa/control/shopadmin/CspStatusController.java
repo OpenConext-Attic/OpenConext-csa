@@ -16,25 +16,24 @@
 
 package nl.surfnet.coin.csa.control.shopadmin;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
 import nl.surfnet.coin.csa.control.BaseController;
 import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Controller that handles the CSP status page (used for the shopmanager to get
@@ -58,21 +57,24 @@ public class CspStatusController extends BaseController {
   }
 
   @RequestMapping("/csp-status-overview.shtml")
-  public ModelAndView allCspsForSelectedIdp(@ModelAttribute(value = "selectedidp") IdentityProvider selectedidp) {
-    Map<String, Object> model = new HashMap<String, Object>();
-    
-    if (selectedidp!=null) {
-      List<CompoundServiceProvider> services = compoundSPService.getCSPsByIdp(selectedidp);
-      model.put(COMPOUND_SPS, services);
-      model.put("filteredIdp", selectedidp.getId());
-    }
-    return new ModelAndView("shopadmin/csp-status-overview", model);
+  public ModelAndView allCspsForSelectedIdp(HttpServletRequest request) {
+    IdentityProvider selectedidp = getSelectedIdp(request);
+
+    return statusOverview(selectedidp);
   }
 
   @RequestMapping(value = "/selectIdp", method = RequestMethod.GET)
   public ModelAndView selectIdp(@RequestParam String filteredIdpId) {
     IdentityProvider selectedidp = idpService.getIdentityProvider(filteredIdpId);
-    return allCspsForSelectedIdp(selectedidp);
+    return statusOverview(selectedidp);
+  }
+
+  private ModelAndView statusOverview(IdentityProvider selectedidp) {
+    Map<String, Object> model = new HashMap<String, Object>();
+    List<CompoundServiceProvider> services = compoundSPService.getCSPsByIdp(selectedidp);
+    model.put(COMPOUND_SPS, services);
+    model.put("filteredIdp", selectedidp.getId());
+    return new ModelAndView("shopadmin/csp-status-overview", model);
   }
 
 }

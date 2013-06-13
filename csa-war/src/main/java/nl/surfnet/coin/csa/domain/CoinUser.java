@@ -36,7 +36,7 @@ public class CoinUser implements UserDetails {
   private String uid;
   private String displayName;
   private String schacHomeOrganization;
-  private String idp;
+  private IdentityProvider idp;
   private List<IdentityProvider> institutionIdps = new ArrayList<IdentityProvider>();
   private String institutionId;
   private String email;
@@ -181,11 +181,11 @@ public class CoinUser implements UserDetails {
    * 
    * @return Identifier of the IdentityProvider the user has logged in with
    */
-  public String getIdp() {
+  public IdentityProvider getIdp() {
     return idp;
   }
 
-  public void setIdp(String idp) {
+  public void setIdp(IdentityProvider idp) {
     this.idp = idp;
   }
 
