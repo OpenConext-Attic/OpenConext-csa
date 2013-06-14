@@ -35,7 +35,7 @@ public class IdpLmngListControllerTestSelenium extends SeleniumSupport {
     WebDriver driver = getRestartedWebDriver();
     
     driver.get(getCsaBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.CSA_ADMIN); // login
     driver.get(getCsaBaseUrl()+bindingAdminUrl); // get lmng sp admin page
     WebElement element = driver.findElement(By.id("form-14"));
     Assert.assertNotNull("Element form-14 should exist (expected 15 visable or invisable rows/forms)", element);
@@ -46,7 +46,7 @@ public class IdpLmngListControllerTestSelenium extends SeleniumSupport {
     WebDriver driver = getRestartedWebDriver();
 
     driver.get(getCsaBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login as normal user
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.CSA_ADMIN); // login as normal user
     driver.get(getCsaBaseUrl()+bindingAdminUrl); // get lmng sp admin page
     
     WebElement element = driver.findElement(By.id("idp_overview_table")); 
@@ -60,7 +60,7 @@ public class IdpLmngListControllerTestSelenium extends SeleniumSupport {
     String newLmngValue = "{AF1F54D8-1B10-DC11-A6C7-0019B9DE3AA4}";
 
     driver.get(getCsaBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login as normal user
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.CSA_ADMIN); // login as normal user
     driver.get(getCsaBaseUrl()+bindingAdminUrl); // get lmng sp admin page
 
     WebElement form = driver.findElement(xpath("//form[@class='lmng-id-edit'][1]"));
@@ -95,7 +95,7 @@ public class IdpLmngListControllerTestSelenium extends SeleniumSupport {
     String newLmngValue = "illegal string value";
 
     driver.get(getCsaBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login as normal user
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.CSA_ADMIN); // login as normal user
     driver.get(getCsaBaseUrl()+bindingAdminUrl); // get lmng sp admin page
 
     WebElement form = driver.findElement(xpath("//form[@class='lmng-id-edit'][1]"));

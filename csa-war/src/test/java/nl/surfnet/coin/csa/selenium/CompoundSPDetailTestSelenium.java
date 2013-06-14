@@ -22,7 +22,7 @@ public class CompoundSPDetailTestSelenium extends SeleniumSupport {
     WebDriver driver = getRestartedWebDriver();
 
     driver.get(getCsaBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.CSA_ADMIN); // login
     driver.get(getCsaBaseUrl() + bindingAdminUrl); // get lmng sp admin page
     clickOnPartialLink("Configure sources");
     clickOnPartialLink("URL of the app");
