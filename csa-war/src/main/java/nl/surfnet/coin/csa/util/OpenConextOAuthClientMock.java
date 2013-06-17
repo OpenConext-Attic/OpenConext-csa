@@ -44,7 +44,7 @@ public class OpenConextOAuthClientMock implements OpenConextOAuthClient, Initial
     /*
      * ROLE_DISTRIBUTION_CHANNEL_ADMIN=Distribution Channel Administrator
      */
-    ADMIN_DISTRIBUTIE_CHANNEL("admindk"), // admin from surfmarket for csa
+    CSA_ADMIN("csa_admin"), // admin from surfmarket for csa
 
     NOT_PERMITTED("NA");
 
@@ -120,7 +120,7 @@ public class OpenConextOAuthClientMock implements OpenConextOAuthClient, Initial
   public List<Group20> getGroups20(String userId, String onBehalfOf) {
     final Users user = Users.fromUser(userId);
     switch (user) {
-    case ADMIN_DISTRIBUTIE_CHANNEL:
+    case CSA_ADMIN:
       return asList(createGroup20(adminDistributionTeam));
     default:
       throw new RuntimeException("Unknown");

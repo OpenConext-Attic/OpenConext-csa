@@ -36,7 +36,7 @@ public class SpLmngListControllerTestSelenium extends SeleniumSupport {
     WebDriver driver = getRestartedWebDriver();
     
     driver.get(getCsaBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.CSA_ADMIN); // login
     driver.get(getCsaBaseUrl()+bindingAdminUrl); // get lmng sp admin page
     List<WebElement> element = driver.findElements(By.id("form-40"));
     Assert.assertNotNull("Element form-40 should exist (expected > 40 rows/forms)", element.get(0));
@@ -47,7 +47,7 @@ public class SpLmngListControllerTestSelenium extends SeleniumSupport {
     WebDriver driver = getRestartedWebDriver();
 
     driver.get(getCsaBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login as normal user
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.CSA_ADMIN); // login as normal user
     driver.get(getCsaBaseUrl()+bindingAdminUrl); // get lmng sp admin page
     
     WebElement element = driver.findElement(By.id("sp_overview_table")); 
@@ -61,7 +61,7 @@ public class SpLmngListControllerTestSelenium extends SeleniumSupport {
     String newLmngValue = "{41D136D1-3819-E211-B687-005056950050}";
 
     driver.get(getCsaBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login as normal user
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.CSA_ADMIN); // login as normal user
     driver.get(getCsaBaseUrl()+bindingAdminUrl); // get lmng sp admin page
 
     WebElement inputLmng = driver.findElement(By.id("lmngId-0"));
@@ -90,7 +90,7 @@ public class SpLmngListControllerTestSelenium extends SeleniumSupport {
     String newLmngValue = "illegal string value";
 
     driver.get(getCsaBaseUrl()); // get homepage
-    loginAtMujinaAs(OpenConextOAuthClientMock.Users.ADMIN_DISTRIBUTIE_CHANNEL); // login as normal user
+    loginAtMujinaAs(OpenConextOAuthClientMock.Users.CSA_ADMIN); // login as normal user
     driver.get(getCsaBaseUrl()+bindingAdminUrl); // get lmng sp admin page
 
     WebElement inputLmng = driver.findElement(By.id("lmngId-0"));
