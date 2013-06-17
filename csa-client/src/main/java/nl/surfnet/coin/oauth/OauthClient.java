@@ -101,7 +101,9 @@ public abstract class OauthClient {
 
     String fullUrl = url;
 
-    LOG.debug("Will send {}-request to {}, with parameters {} and body: {}", method.name(), fullUrl, variables, bodyJson);
+    if (LOG.isTraceEnabled()) {
+      LOG.trace("Will send {}-request to {}, with parameters {} and body: {}", method.name(), fullUrl, variables, bodyJson);
+    }
 
     ResponseEntity<T> response;
 
@@ -128,9 +130,9 @@ public abstract class OauthClient {
 
     T body = response.getBody();
 
-    if (LOG.isDebugEnabled()) {
+    if (LOG.isTraceEnabled()) {
       try {
-        LOG.debug("Response: {}", objectMapper.writeValueAsString(body));
+        LOG.trace("Response: {}", objectMapper.writeValueAsString(body));
       } catch (IOException e) {
         LOG.info("Could not serialize response object for logging: {}", e.getMessage());
       }
