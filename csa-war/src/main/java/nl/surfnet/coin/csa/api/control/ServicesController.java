@@ -34,13 +34,18 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Collections.sort;
 
 @Controller
 @RequestMapping
-public class ServicesController extends BaseApiController {
+public class ServicesController extends BaseApiController implements ServicesService {
+
+  private final ServicesCache cache;
 
   private
   @Value("${WEB_APPLICATION_CHANNEL}")
@@ -70,35 +75,41 @@ public class ServicesController extends BaseApiController {
   @Value("${public.api.lmng.guids}")
   private String[] guids;
 
+  public ServicesController() {
+    this(TimeUnit.HOURS, 1);
+  }
+
+  public ServicesController(TimeUnit timeUnit, long duration) {
+    this.cache = new ServicesCache(this, timeUnit, duration);
+  }
+
+  @Override
+  public Map<String, List<Service>> findAll() {
+    List<CompoundServiceProvider> allCSPs = compoundSPService.getAllCSPs();
+    List<Service> servicesEn = buildApiServices(allCSPs, "en");
+    List<Service> servicesNl = buildApiServices(allCSPs, "nl");
+    List<Service> crmOnlyServices = getCrmOnlyServices();
+    servicesEn.addAll(crmOnlyServices);
+    servicesNl.addAll(crmOnlyServices);
+    Map<String, List<Service>> result = new HashMap<String, List<Service>>();
+    result.put("en",servicesEn);
+    result.put("nl",servicesNl);
+    return result;
+  }
+
+
   @RequestMapping(method = RequestMethod.GET, value = "/api/public/services.json")
   public
   @ResponseBody
   List<Service> getPublicServices(@RequestParam(value = "lang", defaultValue = "en") String language) {
-    List<CompoundServiceProvider> csPs = compoundSPService.getAllPublicCSPs();
-    List<Service> result = buildApiServices(csPs, language);
-
-    // add public service from LMNG directly
-    for (String guid : guids) {
-      Article currentArticle = lmngService.getService(guid);
-      Service currentPS = new Service(0L, currentArticle.getServiceDescriptionNl(), currentArticle.getDetailLogo(),
-              null, true, lmngDeepLinkBaseUrl + guid, null);
-      result.add(currentPS);
-    }
-    sort(result);
-    return result;
-  }
-
-  /**
-   * Returns an absolute URL for the given url
-   */
-  private String absoluteUrl(final String relativeUrl) {
-    String result = relativeUrl;
-    if (result != null) {
-      if (result.startsWith("/")) {
-        result = protocol + "://" + hostAndPort + (StringUtils.hasText(contextPath) ? contextPath : "") + result;
+    List<Service> allServices = cache.getAllServices(language);
+    List<Service> publicServices = new ArrayList<Service>();
+    for (Service service : allServices) {
+      if (!service.isHideInPublicApi()) {
+        publicServices.add(service);
       }
     }
-    return result;
+    return publicServices;
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/services.json")
@@ -268,6 +279,8 @@ public class ServicesController extends BaseApiController {
     service.setWebsiteUrl(csp.getServiceUrl());
     service.setConnected(csp.getSp().isLinked());
     service.setArp(csp.getSp().getArp());
+    service.setHideInPublicApi(csp.isHideInPublicCsa());
+    service.setHideInProtectedApi(csp.isHideInProtectedCsa());
   }
 
   private Category findCategory(List<Category> categories, Facet facet) {
@@ -278,5 +291,30 @@ public class ServicesController extends BaseApiController {
     }
     return null;
   }
+
+  /**
+   * Returns an absolute URL for the given url
+   */
+  private String absoluteUrl(final String relativeUrl) {
+    String result = relativeUrl;
+    if (result != null) {
+      if (result.startsWith("/")) {
+        result = protocol + "://" + hostAndPort + (StringUtils.hasText(contextPath) ? contextPath : "") + result;
+      }
+    }
+    return result;
+  }
+
+  private List<Service> getCrmOnlyServices() {
+    List<Service> result = new ArrayList<Service>();
+    for (String guid : guids) {
+      Article currentArticle = lmngService.getService(guid);
+      Service currentPS = new Service(0L, currentArticle.getServiceDescriptionNl(), currentArticle.getDetailLogo(),
+              null, true, lmngDeepLinkBaseUrl + guid, null);
+      result.add(currentPS);
+    }
+    return result;
+  }
+
 
 }

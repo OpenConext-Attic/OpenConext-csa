@@ -87,6 +87,12 @@ public class Service implements Comparable<Service> {
 
   private ARP arp;
 
+  @JsonIgnore
+  private boolean hideInPublicApi;
+
+  @JsonIgnore
+  private boolean hideInProtectedApi;
+
   public Service() {
   }
 
@@ -326,4 +332,26 @@ public class Service implements Comparable<Service> {
   public void setLastLoginDate(Date lastLoginDate) {
     this.lastLoginDate = lastLoginDate;
   }
+
+  @JsonIgnore
+  public boolean isHideInPublicApi() {
+    return hideInPublicApi;
+  }
+
+  @JsonIgnore
+  public void setHideInPublicApi(boolean hideInPublicApi) {
+    this.hideInPublicApi = hideInPublicApi;
+  }
+
+  @JsonIgnore
+  public boolean isHideInProtectedApi() {
+    return hideInProtectedApi;
+  }
+
+  @JsonIgnore
+  public void setHideInProtectedApi(boolean hideInProtectedApi) {
+    this.hideInProtectedApi = hideInProtectedApi;
+  }
+
+
 }
