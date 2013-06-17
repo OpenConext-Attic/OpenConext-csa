@@ -45,6 +45,10 @@ jiraUsername=??
 jiraPassword=??
 jiraProjectKey=CXT
 
+administration.email.enabled=true
+
+administration.jira.ticket.enabled=false
+
 
 # Team id that is used as definition of who is a 'shop manager/shop admin'.
 admin.distribution.channel.teamname=urn\:collab\:group\:dev.surfteams.nl\:nl\:surfnet\:diensten\:csa_shopmanager

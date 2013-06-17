@@ -61,7 +61,7 @@ public class  JiraController extends BaseApiController {
   @Value("${administration.email.enabled}")
   private boolean sendAdministrationEmail;
 
-  @Value("${administration.jira.ticket.enabled:false}")
+  @Value("${administration.jira.ticket.enabled}")
   private boolean createAdministrationJiraTicket;
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/actions.json")
