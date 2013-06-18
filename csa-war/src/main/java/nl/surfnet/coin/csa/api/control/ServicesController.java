@@ -110,6 +110,18 @@ public class ServicesController extends BaseApiController {
     return doGetServicesForIdP(language, ipdEntityId);
   }
 
+  @RequestMapping(method = RequestMethod.GET, value = "/api/protected/service.json")
+  public
+  @ResponseBody
+  Service getServiceForSpEntityId(@RequestParam(value = "lang", defaultValue = "en") String language,
+      @RequestParam(value="idpEntityId") String idpEntityId,
+      @RequestParam(value="spEntityId") String spEntityId,
+                                     final HttpServletRequest request) {
+    verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
+    CompoundServiceProvider csp = compoundSPService.getCSPByServiceProviderEntityId(spEntityId);
+    return buildApiService(csp, language);
+  }
+
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/idp/services.json")
   public
   @ResponseBody

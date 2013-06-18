@@ -105,6 +105,15 @@ public class CsaClientTestIntegration {
       assertNotNull(service);
     }
   }
+  
+  @Test
+  public void getServiceBySpEntityID() {
+    Service service = csaClient.getServiceForIdp("http://mock-idp", "https://rave.beta.surfnet.nl");
+    assertNotNull(service);
+    assertEquals("Braindrops Rave demo portal", service.getName());
+    assertEquals("https://rave.beta.surfnet.nl/application_rul", service.getAppUrl());
+    assertEquals("https://rave.beta.surfnet.nl", service.getSpEntityId());
+  }
 
   @Test
   public void actions() throws IOException {
