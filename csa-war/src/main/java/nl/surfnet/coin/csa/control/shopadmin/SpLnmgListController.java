@@ -72,7 +72,7 @@ public class SpLnmgListController extends BaseController {
     List<CompoundServiceProvider> services = compoundSPService.getAllCSPs();
 
     List<LmngServiceBinding> lmngServiceBindings = new ArrayList<LmngServiceBinding>();
-    for (ServiceProvider serviceProvider : providerService.getAllServiceProviders(false)) {
+    for (ServiceProvider serviceProvider : providerService.getAllServiceProviders()) {
       String lmngIdentifier = lmngIdentifierDao.getLmngIdForServiceProviderId(serviceProvider.getId());
       CompoundServiceProvider compoundServiceProvider = compoundServiceProviderDao.findByEntityId(serviceProvider.getId());
       if (compoundServiceProvider != null) {

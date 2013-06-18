@@ -16,12 +16,15 @@
 
 package nl.surfnet.coin.csa.api.control;
 
+import nl.surfnet.coin.csa.api.cache.ProviderCache;
+import nl.surfnet.coin.csa.api.cache.ServicesCache;
 import nl.surfnet.coin.csa.dao.FacetDao;
-import nl.surfnet.coin.csa.domain.*;
+import nl.surfnet.coin.csa.domain.Article;
+import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.csa.domain.Provider.Language;
+import nl.surfnet.coin.csa.domain.Screenshot;
 import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
 import nl.surfnet.coin.csa.model.*;
-import nl.surfnet.coin.csa.model.License;
 import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
@@ -37,15 +40,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import static java.util.Collections.sort;
 
 @Controller
 @RequestMapping
 public class ServicesController extends BaseApiController implements ServicesService {
 
-  private final ServicesCache cache;
+  @Resource
+  private ServicesCache servicesCache;
+
+  @Resource
+  private ProviderCache providerCache;
 
   private
   @Value("${WEB_APPLICATION_CHANNEL}")
@@ -75,14 +79,6 @@ public class ServicesController extends BaseApiController implements ServicesSer
   @Value("${public.api.lmng.guids}")
   private String[] guids;
 
-  public ServicesController() {
-    this(TimeUnit.HOURS, 1);
-  }
-
-  public ServicesController(TimeUnit timeUnit, long duration) {
-    this.cache = new ServicesCache(this, timeUnit, duration);
-  }
-
   @Override
   public Map<String, List<Service>> findAll() {
     List<CompoundServiceProvider> allCSPs = compoundSPService.getAllCSPs();
@@ -92,8 +88,8 @@ public class ServicesController extends BaseApiController implements ServicesSer
     servicesEn.addAll(crmOnlyServices);
     servicesNl.addAll(crmOnlyServices);
     Map<String, List<Service>> result = new HashMap<String, List<Service>>();
-    result.put("en",servicesEn);
-    result.put("nl",servicesNl);
+    result.put("en", servicesEn);
+    result.put("nl", servicesNl);
     return result;
   }
 
@@ -101,7 +97,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
   public
   @ResponseBody
   List<Service> getPublicServices(@RequestParam(value = "lang", defaultValue = "en") String language) {
-    List<Service> allServices = cache.getAllServices(language);
+    List<Service> allServices = servicesCache.getAllServices(language);
     List<Service> publicServices = new ArrayList<Service>();
     for (Service service : allServices) {
       if (!service.isHideInPublicApi()) {
@@ -117,7 +113,10 @@ public class ServicesController extends BaseApiController implements ServicesSer
   List<Service> getProtectedServices(@RequestParam(value = "lang", defaultValue = "en") String language,
                                      final HttpServletRequest request) {
     String ipdEntityId = getIdpEntityIdFromToken(request);
-    return doGetServicesForIdP(language, ipdEntityId);
+    /*
+     * Non-client-credential client where we only return linked services
+     */
+    return doGetServicesForIdP(language, ipdEntityId, false);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/idp/services.json")
@@ -128,7 +127,10 @@ public class ServicesController extends BaseApiController implements ServicesSer
           @RequestParam(value = "idpEntityId") String idpEntityId,
           final HttpServletRequest request) {
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
-    return doGetServicesForIdP(language, idpEntityId);
+    /*
+     * Client-credential client where we also return non-linked services (e.g. dashboard functionality)
+     */
+    return doGetServicesForIdP(language, idpEntityId, true);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/services/{serviceId}.json")
@@ -140,26 +142,24 @@ public class ServicesController extends BaseApiController implements ServicesSer
           @RequestParam(value = "idpEntityId") String idpEntityId,
           final HttpServletRequest request) {
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
-    IdentityProvider identityProvider = idpService.getIdentityProvider(idpEntityId);
-    CompoundServiceProvider csp = compoundSPService.getCSPById(identityProvider, serviceId);
-    return buildApiService(csp, language);
-  }
-
-  private List<Service> doGetServicesForIdP(String language, String ipdEntityId) {
-    IdentityProvider identityProvider = idpService.getIdentityProvider(ipdEntityId);
-    List<CompoundServiceProvider> csPs = compoundSPService.getCSPsByIdp(identityProvider);
-    List<CompoundServiceProvider> scopedSsPs = new ArrayList<CompoundServiceProvider>();
-    /*
-     * We only want the SP's that are currently linked to the IdP, not the also included SP's that are NOT IdP-only
-     */
-    for (CompoundServiceProvider csp : csPs) {
-      if (csp.getServiceProvider().isLinked() && !csp.isHideInProtectedCsa()) {
-        scopedSsPs.add(csp);
+    List<Service> allServices = servicesCache.getAllServices(language);
+    for (Service service : allServices) {
+      if (service.getId() == serviceId) {
+        return service;
       }
     }
-    List<Service> result = buildApiServices(scopedSsPs, language);
+    throw new RuntimeException("Non-existen service ID('" + serviceId + "')");
+  }
 
-    sort(result);
+  private List<Service> doGetServicesForIdP(String language, String idpEntityId, boolean includeNotLinkedSPs) {
+    List<String> serviceProviderIdentifiers = providerCache.getServiceProviderIdentifiers(idpEntityId);
+    List<Service> allServices = servicesCache.getAllServices(language);
+    List<Service> result = new ArrayList<Service>();
+    for (Service service : allServices) {
+      if (!service.isHideInProtectedApi() && (serviceProviderIdentifiers.contains(service.getSpEntityId()) || includeNotLinkedSPs)) {
+        result.add(service);
+      }
+    }
     return result;
   }
 

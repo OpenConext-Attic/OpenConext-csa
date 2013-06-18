@@ -16,13 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package nl.surfnet.coin.csa.api.control;
+package nl.surfnet.coin.csa.api.cache;
 
+import nl.surfnet.coin.csa.api.control.ServicesService;
 import nl.surfnet.coin.csa.model.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -30,34 +35,41 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-public class ServicesCache {
+@Component
+public class ServicesCache implements InitializingBean {
 
   private static final Logger LOG = LoggerFactory.getLogger(ServicesCache.class);
-  private static final String CACHE_KEY = "cache_key";
-  private final ServicesService service;
+
+  @Resource
+  private ServicesService service;
+
+  private @Value("${cacheMillisecondsServices}") long duration;
 
   private ConcurrentHashMap<String, List<Service>> cache = new ConcurrentHashMap<String, List<Service>>();
 
-  public ServicesCache(ServicesService service, TimeUnit timeUnit, long duration) {
-    this.service = service;
-    this.scheduleRefresh(timeUnit, duration);
-  }
-
-  private void scheduleRefresh(TimeUnit timeUnit, long duration) {
+  private void scheduleRefresh() {
     Timer timer = new Timer();
-    long milliSeconds = TimeUnit.MILLISECONDS.convert(duration, timeUnit);
-
     timer.scheduleAtFixedRate(new TimerTask() {
       @Override
       public void run() {
+        LOG.info("Starting refreshing Services cache");
         try {
           Map<String, List<Service>> services = service.findAll();
           cache.putAll(services);
         } catch (Throwable t) {
-          LOG.error("Error in the refrash of the Services cache",t);
+          /*
+           * anti pattern, but:
+           *
+           * http://stackoverflow.com/questions/637618/how-to-reschedule-a-task-using-a-scheduledexecutorservice
+           * http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/ScheduledExecutorService.html#scheduleAtFixedRate(java.lang.Runnable,%20long,%20long,%20java.util.concurrent.TimeUnit)
+           */
+          LOG.error("Error in the refresh of the Services cache", t);
+        }
+        finally {
+          LOG.info("Finished refreshing Services cache");
         }
       }
-    }, 0, milliSeconds);
+    }, 2500, duration);
   }
 
   public List<Service> getAllServices(String lang) {
@@ -65,4 +77,8 @@ public class ServicesCache {
     return cache.get(lang);
   }
 
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    scheduleRefresh();
+  }
 }

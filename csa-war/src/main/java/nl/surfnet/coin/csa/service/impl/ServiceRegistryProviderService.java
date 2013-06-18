@@ -75,45 +75,11 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   }
 
   @Override
-  public List<ServiceProvider> getAllServiceProviders(boolean filterIdPOnly) {
-    List<ServiceProvider> allSPs = getAllServiceProvidersUnfiltered();
-    List<ServiceProvider> filteredList = new ArrayList<ServiceProvider>();
-    if (filterIdPOnly) {
-      for (ServiceProvider sp : allSPs) {
-        if (!sp.isIdpVisibleOnly()) {
-          filteredList.add(sp);
-        }
-      }
-    } else {
-      filteredList = allSPs;
-    }
-    return filteredList;
+  public List<ServiceProvider> getAllServiceProviders() {
+    return getAllServiceProvidersUnfiltered();
   }
 
-  /**
-   * It's "cheaper" to get all SPs from ServiceRegistry and iterate over them
-   * than to retrieve the list of all linked entity id's and then get their
-   * individual metadata.
-   * <p/>
-   * {@inheritDoc}
-   */
   @Override
-  public List<ServiceProvider> getLinkedServiceProviders(String idpId) {
-
-    final List<ServiceProvider> allServiceProviders = getAllServiceProviders(idpId);
-    if (CollectionUtils.isEmpty(allServiceProviders)) {
-      return Collections.emptyList();
-    }
-
-    List<ServiceProvider> linked = new ArrayList<ServiceProvider>();
-    for (ServiceProvider sp : allServiceProviders) {
-      if (sp.isLinked()) {
-        linked.add(sp);
-      }
-    }
-    return linked;
-  }
-
   public List<String> getLinkedServiceProviderIDs(String idpId) {
     List<String> spList = new ArrayList<String>();
     try {

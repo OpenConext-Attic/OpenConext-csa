@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package nl.surfnet.coin.csa.api.control;
+package nl.surfnet.coin.csa.api.cache;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -27,21 +27,5 @@ import java.util.TimerTask;
 
 public class ServicesCacheTest {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ServicesCacheTest.class);
-  private int i = 0;
 
-  @Test
-  public void schedule() throws InterruptedException {
-    Timer timer = new Timer();
-    timer.scheduleAtFixedRate(new TimerTask() {
-      @Override
-      public void run() {
-        LOG.debug("run called " + ++i);
-        if (i > 5) {
-          throw new RuntimeException();
-        }
-      }
-    }, 0, 100);
-    Thread.sleep(500000);
-  }
 }

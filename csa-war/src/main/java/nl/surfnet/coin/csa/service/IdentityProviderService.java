@@ -41,10 +41,14 @@ public interface IdentityProviderService {
   
   /**
    * Get a list of all idps 
-   * @param instituteId the instituteId
    * @return List&lt;IdentityProvider&gt;
    */
   List<IdentityProvider> getAllIdentityProviders();
-  
-  
+
+
+  /**
+   * Get a list of all SP identifiers linked to the Idp
+   * @return List&lt;String&gt;
+   */
+  List<String> getLinkedServiceProviderIDs(String idpId);
 }

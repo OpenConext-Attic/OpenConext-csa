@@ -53,20 +53,8 @@ public class CompoundSPService {
   @Resource
   private CrmService licensingService;
 
-  public List<CompoundServiceProvider> getAllPublicCSPs() {
-    List<ServiceProvider> allServiceProviders = serviceProviderService.getAllServiceProviders(false);
-    List<CompoundServiceProvider> csPs = getCSPs(null, allServiceProviders);
-    List<CompoundServiceProvider> result = new ArrayList<CompoundServiceProvider>();
-    for (CompoundServiceProvider csP : csPs) {
-      if (!csP.isHideInPublicCsa()) {
-        result.add(csP);
-      }
-    }
-    return result;
-  }
-
   public List<CompoundServiceProvider> getAllCSPs() {
-    List<ServiceProvider> allServiceProviders = serviceProviderService.getAllServiceProviders(false);
+    List<ServiceProvider> allServiceProviders = serviceProviderService.getAllServiceProviders();
     return getCSPs(null, allServiceProviders);
   }
 
@@ -211,8 +199,6 @@ public class CompoundSPService {
         return article;
       }
     }
-
-    LOG.debug("No Article found for given SP with ID " + sp.getId());
     return null;
   }
 
