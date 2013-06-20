@@ -23,9 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -177,9 +174,9 @@ public abstract class Provider implements Comparable<Provider>, Serializable {
   
   public String getName(Language language) {
     if (names == null) {
-      return null;
+      return getName();
     } else {
-      return names.get(language.name().toLowerCase());
+      return null == names.get(language.name().toLowerCase()) ? getName() : names.get(language.name().toLowerCase());
     }
   }
 

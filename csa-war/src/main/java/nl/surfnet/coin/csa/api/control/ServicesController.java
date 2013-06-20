@@ -16,27 +16,40 @@
 
 package nl.surfnet.coin.csa.api.control;
 
+import static java.util.Collections.sort;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
 import nl.surfnet.coin.csa.dao.FacetDao;
-import nl.surfnet.coin.csa.domain.*;
-import nl.surfnet.coin.csa.domain.Provider.Language;
+import nl.surfnet.coin.csa.domain.Article;
+import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
+import nl.surfnet.coin.csa.domain.IdentityProvider;
+import nl.surfnet.coin.csa.domain.Screenshot;
 import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
-import nl.surfnet.coin.csa.model.*;
+import nl.surfnet.coin.csa.model.Category;
+import nl.surfnet.coin.csa.model.CategoryValue;
+import nl.surfnet.coin.csa.model.CrmArticle;
+import nl.surfnet.coin.csa.model.Facet;
+import nl.surfnet.coin.csa.model.FacetValue;
 import nl.surfnet.coin.csa.model.License;
+import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Collections.sort;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping
@@ -243,13 +256,13 @@ public class ServicesController extends BaseApiController {
     if (en) {
       service.setDescription(csp.getServiceDescriptionEn());
       service.setEnduserDescription(csp.getEnduserDescriptionEn());
-      service.setName(csp.getSp().getName(Language.EN));
+      service.setName(csp.getTitleEn());
       service.setSupportUrl(csp.getSupportUrlEn());
       service.setInstitutionDescription(csp.getInstitutionDescriptionEn());
       service.setServiceUrl(csp.getSupportUrlEn());
     } else {
       service.setEnduserDescription(csp.getEnduserDescriptionNl());
-      service.setName(csp.getSp().getName(Language.NL));
+      service.setName(csp.getTitleNl());
       service.setSupportUrl(csp.getSupportUrlNl());
       service.setInstitutionDescription(csp.getInstitutionDescriptionNl());
       service.setServiceUrl(csp.getSupportUrlNl());

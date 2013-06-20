@@ -21,7 +21,7 @@
 
 
 <c:set var="title">
-  <tags:providername provider="${compoundSp.sp}"/>
+  <tags:providername provider="${compoundSp}"/>
 </c:set>
 
 <jsp:include page="../head.jsp">

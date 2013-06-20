@@ -1025,8 +1025,8 @@
     },
     {
         "names":{
-            "en":"",
-            "nl":""
+            "en":"cozmanova video gadget",
+            "nl":"cozmanova video gadget"
         },
         "oauthConsumerKey":"http://lab.cozmanova.com/videogadget/.*",
         "appTitle":"",
