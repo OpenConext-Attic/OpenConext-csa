@@ -77,7 +77,7 @@ public class CompoundSPService {
     List<CompoundServiceProvider> csPs = getCSPs(null, allServiceProviders);
     List<CompoundServiceProvider> result = new ArrayList<CompoundServiceProvider>();
     for (CompoundServiceProvider csP : csPs) {
-      if (!csP.isAvailableForEndUser()) {
+      if (csP.isAvailableForEndUser()) {
         result.add(csP);
       }
     }
