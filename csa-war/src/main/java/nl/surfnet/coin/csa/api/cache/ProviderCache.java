@@ -18,46 +18,55 @@
  */
 package nl.surfnet.coin.csa.api.cache;
 
-import nl.surfnet.coin.csa.api.control.ServicesService;
-import nl.surfnet.coin.csa.model.Service;
+import nl.surfnet.coin.csa.service.IdentityProviderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 @Component
-public class ServicesCache implements InitializingBean {
+public class ProviderCache implements InitializingBean {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ServicesCache.class);
-
-  @Resource
-  private ServicesService service;
-
-  private @Value("${cacheMillisecondsServices}") long duration;
+  private static final Logger LOG = LoggerFactory.getLogger(ProviderCache.class);
 
   private @Value("${cacheMillisecondsStartupDelayTime}") long delay;
 
-  private ConcurrentHashMap<String, List<Service>> cache = new ConcurrentHashMap<String, List<Service>>();
+  private @Value("${cacheMillisecondsProviders}") long duration;
+
+  private ConcurrentHashMap<String, List<String>> cache = new ConcurrentHashMap<String, List<String>>();
+
+  @Resource
+  private IdentityProviderService idpService;
+
+  public List<String> getServiceProviderIdentifiers(String identityProviderId) {
+    List<String> spIdentifiers = cache.get(identityProviderId);
+    if (spIdentifiers == null) {
+      spIdentifiers = idpService.getLinkedServiceProviderIDs(identityProviderId);
+      cache.put(identityProviderId, spIdentifiers);
+    }
+    return spIdentifiers;
+  }
 
   private void scheduleRefresh() {
     Timer timer = new Timer();
+
     timer.scheduleAtFixedRate(new TimerTask() {
       @Override
       public void run() {
-        LOG.info("Starting refreshing Services cache");
+        LOG.info("Starting refreshing SR cache");
         try {
-          Map<String, List<Service>> services = service.findAll();
-          cache.putAll(services);
+          Set<String> idpIdentifiers = cache.keySet();
+          Map<String, List<String>> swap = new HashMap<String, List<String>>();
+          for (String idpId : idpIdentifiers) {
+            List<String> spIdentifiers = idpService.getLinkedServiceProviderIDs(idpId);
+            swap.put(idpId, spIdentifiers);
+          }
+          cache.putAll(swap);
         } catch (Throwable t) {
           /*
            * anti pattern, but:
@@ -65,34 +74,29 @@ public class ServicesCache implements InitializingBean {
            * http://stackoverflow.com/questions/637618/how-to-reschedule-a-task-using-a-scheduledexecutorservice
            * http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/ScheduledExecutorService.html#scheduleAtFixedRate(java.lang.Runnable,%20long,%20long,%20java.util.concurrent.TimeUnit)
            */
-          LOG.error("Error in the refresh of the Services cache", t);
-        }
-        finally {
-          LOG.info("Finished refreshing Services cache");
+          LOG.error("Error in the refresh of the Providers cache", t);
+        } finally {
+          LOG.info("Finished refreshing SR cache");
         }
       }
     }, delay, duration);
   }
 
-  public List<Service> getAllServices(String lang) {
-    Assert.isTrue("en".equalsIgnoreCase(lang) || "nl".equalsIgnoreCase(lang), "The only languages supported are 'nl' and 'en'");
-    return cache.get(lang);
-  }
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    scheduleRefresh();
+    this.scheduleRefresh();
   }
 
-  public void setService(ServicesService service) {
-    this.service = service;
+  public void setDelay(long delay) {
+    this.delay = delay;
   }
 
   public void setDuration(long duration) {
     this.duration = duration;
   }
 
-  public void setDelay(long delay) {
-    this.delay = delay;
+  public void setIdpService(IdentityProviderService idpService) {
+    this.idpService = idpService;
   }
 }

@@ -61,12 +61,12 @@ public class JanusRestClientMock implements Janus {
       NON_EMPTY_ARP = (ARP) parseJsonData(new TypeReference<ARP>() {
       }, "janus-json/arp.json");
       spsForIdp.put("https://idp_with_all_but_one_sp", Arrays.asList(new String[]{
-              "https://populair_sp",
+              "http://mock-sp",
               "https://nice_sp",
               "https://sp_state_acc"
       }));
-      spsForIdp.put("https://main_idp", Arrays.asList(new String[]{
-              "https://populair_sp",
+      spsForIdp.put("http://mock-idp", Arrays.asList(new String[]{
+              "http://mock-sp",
               "https://nice_sp",
               "https://sp_state_acc",
               "https://sp_idp_only"

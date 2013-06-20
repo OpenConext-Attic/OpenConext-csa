@@ -100,19 +100,17 @@ public class CsaClientTestIntegration {
   @Test
   public void publicServices() throws IOException {
     List<Service> publicServices = csaClient.getPublicServices();
-    assertEquals(58, publicServices.size());
+    assertEquals(5, publicServices.size());
     for (Service service : publicServices) {
       assertNotNull(service);
     }
   }
-  
+
   @Test
   public void getServiceBySpEntityID() {
-    Service service = csaClient.getServiceForIdp("http://mock-idp", "https://rave.beta.surfnet.nl");
+    Service service = csaClient.getServiceForIdp("http://mock-idp", "http://mock-sp");
     assertNotNull(service);
-    assertEquals("Braindrops Rave demo portal", service.getName());
-    assertEquals("https://rave.beta.surfnet.nl/application_rul", service.getAppUrl());
-    assertEquals("https://rave.beta.surfnet.nl", service.getSpEntityId());
+    assertEquals("Populair SP (name en)", service.getName());
   }
 
   @Test
@@ -155,9 +153,9 @@ public class CsaClientTestIntegration {
   @Test
   public void institutionsIdentityProviders() throws IOException {
     List<InstitutionIdentityProvider> providers = csaClient.getInstitutionIdentityProviders("http://mock-idp");
-    assertEquals(3, providers.size());
+    assertEquals(2, providers.size());
     for (InstitutionIdentityProvider provider : providers) {
-      assertEquals("mock-institution-id", provider.getInstitutionId());
+      assertEquals("institution_id_present", provider.getInstitutionId());
     }
   }
 
@@ -181,7 +179,7 @@ public class CsaClientTestIntegration {
   @Test
   public void servicesByIdp() throws IOException {
     List<Service> services = csaClient.getServicesForIdp("http://mock-idp");
-    assertEquals(29, services.size());
+    assertEquals(6, services.size());
     for (Service service : services) {
       assertNotNull(service);
     }
@@ -189,15 +187,20 @@ public class CsaClientTestIntegration {
   }
 
   @Test
-  public void servicesByIdpForNonExistent() throws IOException {
-    List<Service> services = csaClient.getServicesForIdp("http://i-don't-exist");
-    assertEquals(0, services.size());
+  public void servicesByIdpForNonExistent() {
+    try {
+      List<Service> services = csaClient.getServicesForIdp("http://i-don't-exist");
+      fail();
+    } catch (HttpClientErrorException e) {
+      assertEquals(409, e.getStatusCode().value());
+    }
+
   }
 
   @Test
   public void protectedServices() throws IOException {
     List<Service> protectedServices = csaClient.getProtectedServices();
-    assertEquals(29, protectedServices.size());
+    assertEquals(4, protectedServices.size());
     for (Service service : protectedServices) {
       assertNotNull(service);
     }

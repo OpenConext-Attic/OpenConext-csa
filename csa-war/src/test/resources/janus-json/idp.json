@@ -1,9 +1,9 @@
 [
   {
-    "appEntityId": "https://main_idp",
+    "appEntityId": "http://mock-idp",
     "names": {
-      "en": "Main SP (name en)",
-      "nl": "Main SP (name nl)"
+      "en": "Main IdP (name en)",
+      "nl": "Main Idp (name nl)"
     },
     "appTitle": "App title",
     "appIcon": "http://ipsumimage.appspot.com/320x100?l=App Icon",
@@ -47,8 +47,8 @@
   {
     "appEntityId": "https://idp_with_all_but_one_sp",
     "names": {
-      "en": "All SP's connected, but one (name en)",
-      "nl": "Bijan alle SP's gelinked (name nl)"
+      "en": "IdP with All SP's connected, but one (name en)",
+      "nl": "Idp met Bijna alle SP's gelinked (name nl)"
     },
     "appTitle": "App title",
     "appIcon": "http://ipsumimage.appspot.com/320x100?l=App Icon",

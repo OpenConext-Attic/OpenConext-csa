@@ -120,10 +120,6 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
       EntityMetadata metadata = janusClient.getMetadataByEntityId(spEntityId);
       final ServiceProvider serviceProvider = buildServiceProviderByMetadata(metadata);
 
-      // Get the ARP (if there is any)
-      final ARP arp = janusClient.getArp(spEntityId);
-      serviceProvider.setArp(arp);
-
       // Check if the IdP can connect to this service
       if (idpEntityId != null) {
         final boolean linked = janusClient.isConnectionAllowed(spEntityId, idpEntityId);
@@ -149,7 +145,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
    * @param metadata Janus metadata
    * @return {@link ServiceProvider}
    */
-  public static ServiceProvider buildServiceProviderByMetadata(EntityMetadata metadata) {
+  public ServiceProvider buildServiceProviderByMetadata(EntityMetadata metadata) {
     Assert.notNull(metadata, "metadata cannot be null");
     final String appEntityId = metadata.getAppEntityId();
     String name = metadata.getNames().get("en");
@@ -174,6 +170,10 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
       p.setTelephoneNumber(c.getTelephoneNumber());
       sp.addContactPerson(p);
     }
+    // Get the ARP (if there is any)
+    final ARP arp = janusClient.getArp(appEntityId);
+    sp.setArp(arp);
+
     return sp;
   }
 

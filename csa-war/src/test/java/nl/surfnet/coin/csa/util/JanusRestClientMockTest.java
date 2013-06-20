@@ -35,8 +35,8 @@ import static org.junit.Assert.assertNotNull;
 public class JanusRestClientMockTest {
 
   private JanusRestClientMock mock = new JanusRestClientMock();
-  private final static String SP_ENTITY_ID = "https://populair_sp";
-  private final static String IDP_ENTITY_ID = "https://main_idp";
+  private final static String SP_ENTITY_ID = "http://mock-sp";
+  private final static String IDP_ENTITY_ID = "http://mock-idp";
 
   private ObjectMapper objectMapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
           .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);

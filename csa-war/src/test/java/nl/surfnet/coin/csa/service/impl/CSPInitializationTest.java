@@ -37,11 +37,11 @@ public class CSPInitializationTest {
     List<Integer> results = new ConcurrentRunnerContext<Integer>(10).run(new ConcurrentRunner() {
       @Override
       public Integer run() {
-        List<CompoundServiceProvider> csps = cspSvc.getCSPsByIdp(new IdentityProvider("id", "institutionId", "name"));
+        List<CompoundServiceProvider> csps = cspSvc.getCSPsByIdp(new IdentityProvider("http://mock-idp", "institutionId", "name"));
         return csps.size();
       }
     });
     for (Integer oneResult : results) {
-      assertEquals("all results of getCSPsByIdp should be the same", 58, oneResult.intValue());
+      assertEquals("all results of getCSPsByIdp should be the same", 4, oneResult.intValue());
     }}
 }
