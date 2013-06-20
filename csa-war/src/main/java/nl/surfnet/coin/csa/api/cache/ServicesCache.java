@@ -45,6 +45,8 @@ public class ServicesCache implements InitializingBean {
 
   private @Value("${cacheMillisecondsServices}") long duration;
 
+  private @Value("${cacheMillisecondsStartupDelayTime}") long delay;
+
   private ConcurrentHashMap<String, List<Service>> cache = new ConcurrentHashMap<String, List<Service>>();
 
   private void scheduleRefresh() {
@@ -80,5 +82,17 @@ public class ServicesCache implements InitializingBean {
   @Override
   public void afterPropertiesSet() throws Exception {
     scheduleRefresh();
+  }
+
+  public void setService(ServicesService service) {
+    this.service = service;
+  }
+
+  public void setDuration(long duration) {
+    this.duration = duration;
+  }
+
+  public void setDelay(long delay) {
+    this.delay = delay;
   }
 }

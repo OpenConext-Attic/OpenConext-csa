@@ -15,15 +15,10 @@
  */
 package nl.surfnet.coin.csa.util;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-
 import nl.surfnet.coin.janus.Janus;
 import nl.surfnet.coin.janus.domain.ARP;
 import nl.surfnet.coin.janus.domain.EntityMetadata;
 import nl.surfnet.coin.janus.domain.JanusEntity;
-
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -31,18 +26,22 @@ import org.codehaus.jackson.type.TypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StringUtils;
 
+import java.net.URI;
+import java.util.*;
+
 /**
  * JanusRestClientMock.java
- * 
  */
 public class JanusRestClientMock implements Janus {
 
   private ObjectMapper objectMapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-      .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+          .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
   private List<EntityMetadata> spList;
   private List<EntityMetadata> idpList;
   private List<EntityMetadata> all;
+
+  private Map<String, List<String>> spsForIdp = new HashMap<String, List<String>>();
 
   private final static String SP_TYPE = "saml20-sp";
   private final static String IDP_TYPE = "saml20-idp";
@@ -61,6 +60,18 @@ public class JanusRestClientMock implements Janus {
       all.addAll(idpList);
       NON_EMPTY_ARP = (ARP) parseJsonData(new TypeReference<ARP>() {
       }, "janus-json/arp.json");
+      spsForIdp.put("https://idp_with_all_but_one_sp", Arrays.asList(new String[]{
+              "https://populair_sp",
+              "https://nice_sp",
+              "https://sp_state_acc"
+      }));
+      spsForIdp.put("https://main_idp", Arrays.asList(new String[]{
+              "https://populair_sp",
+              "https://nice_sp",
+              "https://sp_state_acc",
+              "https://sp_idp_only"
+      }));
+
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -94,25 +105,25 @@ public class JanusRestClientMock implements Janus {
     // Janus.Metadata.INSITUTION_ID
     List<String> results = new ArrayList<String>();
     switch (key) {
-    case OAUTH_CONSUMERKEY:
-      for (EntityMetadata metadata : spList) {
-        String consumerKey = metadata.getOauthConsumerKey();
-        if (StringUtils.hasText(consumerKey) && consumerKey.matches(value)) {
-          results.add(metadata.getAppEntityId());
+      case OAUTH_CONSUMERKEY:
+        for (EntityMetadata metadata : spList) {
+          String consumerKey = metadata.getOauthConsumerKey();
+          if (StringUtils.hasText(consumerKey) && consumerKey.matches(value)) {
+            results.add(metadata.getAppEntityId());
+          }
         }
-      }
-      return results;
-    case INSITUTION_ID:
-      for (EntityMetadata metadata : idpList) {
-        String institutionId = metadata.getInstutionId();
-        if (StringUtils.hasText(institutionId) && institutionId.equalsIgnoreCase(value)) {
-          results.add(metadata.getAppEntityId());
+        return results;
+      case INSITUTION_ID:
+        for (EntityMetadata metadata : idpList) {
+          String institutionId = metadata.getInstutionId();
+          if (StringUtils.hasText(institutionId) && institutionId.equalsIgnoreCase(value)) {
+            results.add(metadata.getAppEntityId());
+          }
         }
-      }
-      return results;
-    default:
-      throw new RuntimeException("Only supported Janus.MetaData types are : " + Janus.Metadata.INSITUTION_ID + ","
-          + Janus.Metadata.OAUTH_CONSUMERKEY);
+        return results;
+      default:
+        throw new RuntimeException("Only supported Janus.MetaData types are : " + Janus.Metadata.INSITUTION_ID + ","
+                + Janus.Metadata.OAUTH_CONSUMERKEY);
     }
   }
 
@@ -123,14 +134,7 @@ public class JanusRestClientMock implements Janus {
    */
   @Override
   public List<String> getAllowedSps(String idpentityid) {
-    List<String> results = new ArrayList<String>();
-    for (int i = 0; i < spList.size(); i++) {
-      EntityMetadata metadata = spList.get(i);
-      if (i % 2 == 0) {
-        results.add(metadata.getAppEntityId());
-      }
-    } 
-    return results;
+    return spsForIdp.get(idpentityid);
   }
 
   /*
@@ -182,7 +186,8 @@ public class JanusRestClientMock implements Janus {
    */
   @Override
   public boolean isConnectionAllowed(String spEntityId, String idpEntityId) {
-    return true;
+    return spsForIdp.get(idpEntityId).contains(spEntityId);
+
   }
 
   /*
