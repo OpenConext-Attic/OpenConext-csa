@@ -67,10 +67,7 @@ public class CompoundServiceProvider extends DomainObject {
   private String lmngId;
 
   @Column
-  private boolean hideInPublicCsa;
-
-  @Column
-  private boolean hideInProtectedCsa;
+  private boolean availableForEndUser;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "compoundServiceProvider")
   @Sort(type = SortType.NATURAL)
@@ -103,7 +100,7 @@ public class CompoundServiceProvider extends DomainObject {
     CompoundServiceProvider provider = new CompoundServiceProvider();
     provider.setServiceProvider(serviceProvider);
     provider.setArticle(article);
-    provider.setHideInPublicCsa(serviceProvider.isIdpVisibleOnly());
+    provider.setAvailableForEndUser(!serviceProvider.isIdpVisibleOnly());
 
     buildFieldImage(Key.APPSTORE_LOGO, null, null, appStoreLogoImageBytes, provider);
     buildFieldString(Key.APP_URL, null, serviceProvider.getApplicationUrl(), todo, provider);
@@ -474,12 +471,12 @@ public class CompoundServiceProvider extends DomainObject {
     return isArticleAvailable() && isLicenseAvailable();
   }
 
-  public boolean isHideInPublicCsa() {
-    return hideInPublicCsa;
+  public boolean isAvailableForEndUser() {
+    return availableForEndUser;
   }
 
-  public void setHideInPublicCsa(boolean hideInPublicCsa) {
-    this.hideInPublicCsa = hideInPublicCsa;
+  public void setAvailableForEndUser(boolean availableForEndUser) {
+    this.availableForEndUser = availableForEndUser;
   }
 
 
@@ -586,14 +583,6 @@ public class CompoundServiceProvider extends DomainObject {
     default:
       return true;
     }
-  }
-
-  public void setHideInProtectedCsa(boolean hideInProtectedCsa) {
-    this.hideInProtectedCsa = hideInProtectedCsa;
-  }
-
-  public boolean isHideInProtectedCsa() {
-    return hideInProtectedCsa;
   }
 
   public SortedSet<FacetValue> getFacetValues() {

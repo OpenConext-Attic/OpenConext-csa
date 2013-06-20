@@ -12,8 +12,8 @@ app.compoundSpEdit = function() {
     if (error) {
       div.addClass("error");
     }
-    return div 
-  }
+    return div;
+  };
 
   $("button[name='usethis'],button[name='save']").click(function(e) {
     e.preventDefault();
@@ -70,7 +70,7 @@ app.compoundSpEdit = function() {
               $(form).prepend(alertDiv(app.message.i18n('success.save')));
             }
           });
-  }
+  };
 
   /*
   Begin File upload plugin
@@ -129,7 +129,7 @@ app.compoundSpEdit = function() {
 
   return {
     init: init
-  }
+  };
 }();
 
 app.register(app.compoundSpEdit);

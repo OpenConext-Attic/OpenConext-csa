@@ -124,7 +124,6 @@ app.table = function() {
         {'bSortable': false},
         {'bSortable': false},
         {'bSortable': false},
-        {'bSortable': false},
         {'bSortable': false} ]
     });
 

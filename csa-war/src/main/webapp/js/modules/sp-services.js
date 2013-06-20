@@ -14,7 +14,7 @@ app.spServices = function () {
       var tokencheck = $elm.parent("td").find("input[name='tokencheck']").val();
       var value = $elm.is(':checked');
       var cspId = $elm.data('compound-service-provider-id');
-      $.ajax("update-csp-" + methodPart + "-api/" + cspId + "/" + value + ".shtml?tokencheck=" + tokencheck,
+      $.ajax(methodPart + "/" + cspId + "/" + value + ".shtml?tokencheck=" + tokencheck,
         {
           type: "PUT"
         })
@@ -27,21 +27,17 @@ app.spServices = function () {
           var $mess = $("<span>" + app.message.i18n('failed.save') + "</span>");
           $elm.before($mess);
         });
-    }
+    };
 
-    $('#sp_overview_table').find("input[type='checkbox'][name='hideInPublicCsa']").click(function () {
-      performAjaxUpdate(this, "public");
-    });
-
-    $('#sp_overview_table').find("input[type='checkbox'][name='hideInProtectedCsa']").click(function () {
-      performAjaxUpdate(this, "protected");
+    $('#sp_overview_table').find("input[type='checkbox'][name='availableForEndUser']").click(function () {
+      performAjaxUpdate(this, "update-enduser-visible");
     });
 
   };
 
   return {
     init:init
-  };
+  }
 }();
 
 app.register(app.spServices);

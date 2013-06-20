@@ -153,12 +153,15 @@ public class ServicesController extends BaseApiController {
     List<CompoundServiceProvider> scopedSsPs = new ArrayList<CompoundServiceProvider>();
     /*
      * We only want the SP's that are currently linked to the IdP, not the also included SP's that are NOT IdP-only
-     */
+     *
+     * TODO
+     * This should be changed based on the scope we should return all or just a set of services
     for (CompoundServiceProvider csp : csPs) {
       if (csp.getServiceProvider().isLinked() && !csp.isHideInProtectedCsa()) {
         scopedSsPs.add(csp);
       }
     }
+     */
     List<Service> result = buildApiServices(scopedSsPs, language);
 
     sort(result);

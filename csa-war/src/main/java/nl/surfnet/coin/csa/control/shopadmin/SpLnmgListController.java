@@ -117,26 +117,14 @@ public class SpLnmgListController extends BaseController {
     return listAllSpsLmng(model);
   }
 
-  @RequestMapping(value = "/update-csp-public-api/{cspId}/{newValue}", method = RequestMethod.PUT)
+  @RequestMapping(value = "/update-enduser-visible/{cspId}/{newValue}", method = RequestMethod.PUT)
   public
   @ResponseBody
   String updateCspPublicApi(@PathVariable("cspId") Long cspId, @PathVariable("newValue") boolean newValue) {
     CompoundServiceProvider csp = compoundServiceProviderDao.findById(cspId);
-    csp.setHideInPublicCsa(newValue);
+    csp.setAvailableForEndUser(newValue);
     compoundServiceProviderDao.saveOrUpdate(csp);
-    log.info("Updated CompoundServiceProvider(" + cspId + ") to be included in public API:" + newValue);
+    log.info("Updated CompoundServiceProvider(" + cspId + ") to be available for end users:" + newValue);
     return "ok";
   }
-
-  @RequestMapping(value = "/update-csp-protected-api/{cspId}/{newValue}", method = RequestMethod.PUT)
-  public
-  @ResponseBody
-  String updateCspProtectedApi(@PathVariable("cspId") Long cspId, @PathVariable("newValue") boolean newValue) {
-    CompoundServiceProvider csp = compoundServiceProviderDao.findById(cspId);
-    csp.setHideInProtectedCsa(newValue);
-    compoundServiceProviderDao.saveOrUpdate(csp);
-    log.info("Updated CompoundServiceProvider(" + cspId + ") to be included in protected API:" + newValue);
-    return "ok";
-  }
-
 }

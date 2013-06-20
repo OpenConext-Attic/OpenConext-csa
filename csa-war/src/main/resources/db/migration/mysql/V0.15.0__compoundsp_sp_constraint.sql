@@ -1,9 +1,9 @@
 
-truncate table ss_idp_lmng_identifiers;
-truncate table ss_sp_lmng_identifiers;
-truncate table field_image;
-truncate table field_string;
-truncate table screenshot;
-truncate table compound_service_provider;
+DELETE FROM ss_idp_lmng_identifiers;
+DELETE FROM ss_sp_lmng_identifiers;
+DELETE FROM field_image;
+DELETE FROM field_string;
+DELETE FROM screenshot;
+DELETE FROM compound_service_provider;
 
 ALTER TABLE `compound_service_provider` ADD UNIQUE (service_provider_entity_id);
