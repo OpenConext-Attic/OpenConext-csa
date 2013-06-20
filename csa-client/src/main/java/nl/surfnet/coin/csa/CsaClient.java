@@ -86,7 +86,7 @@ public class CsaClient implements Csa {
 
   @Override
   public Service getServiceForIdp(String idpEntityId, String spEntityId) {
-    String url = csaBaseLocation + "/api/protected/idp/service.json?idpEntityId={idpEntityId}&spEntityId={spEntityId}";
+    String url = csaBaseLocation + "/api/protected/service.json?idpEntityId={idpEntityId}&spEntityId={spEntityId}";
     Map variables = new HashMap<String, String>();
     variables.put("idpEntityId", idpEntityId);
     variables.put("spEntityId", spEntityId);
