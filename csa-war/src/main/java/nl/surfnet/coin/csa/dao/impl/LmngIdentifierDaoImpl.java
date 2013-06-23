@@ -65,22 +65,6 @@ public class LmngIdentifierDaoImpl implements LmngIdentifierDao {
   }
 
   @Override
-  public String getIdentityProviderIdForLmngId(String lnmgId) {
-    List<String> result = jdbcTemplate.query("SELECT idpId FROM ss_idp_lmng_identifiers WHERE lmngId = ?", new RowMapper<String>() {
-      @Override
-      public String mapRow(final ResultSet resultSet, final int i) throws SQLException {
-        return resultSet.getString("idpId");
-      }
-    }, lnmgId);
-    if (result == null || result.size() == 0) {
-      //log.debug("No identityProviderId found for LmngId " + lnmgId);
-      return null;
-    }
-    log.debug("Got IDP ID '" + result.get(0) + "' for LMNG id " + lnmgId);
-    return result.get(0);
-  }
-
-  @Override
   public String getLmngIdForServiceProviderId(String spId) {
     List<String> result = jdbcTemplate.query("SELECT lmngId FROM ss_sp_lmng_identifiers WHERE spId = ?", new RowMapper<String>() {
       @Override

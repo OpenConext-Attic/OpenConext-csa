@@ -16,27 +16,22 @@
 
 package nl.surfnet.coin.csa.provisioner;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import nl.surfnet.coin.janus.Janus;
-import nl.surfnet.coin.janus.domain.JanusEntity;
 import nl.surfnet.coin.csa.domain.CoinUser;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
 import nl.surfnet.coin.csa.util.PersonAttributeUtil;
+import nl.surfnet.coin.janus.Janus;
+import nl.surfnet.coin.janus.domain.JanusEntity;
 import nl.surfnet.spring.security.opensaml.Provisioner;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opensaml.saml2.core.Assertion;
-import org.opensaml.saml2.core.Attribute;
-import org.opensaml.saml2.core.AttributeStatement;
-import org.opensaml.saml2.core.AuthenticatingAuthority;
-import org.opensaml.saml2.core.AuthnStatement;
+import org.opensaml.saml2.core.*;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * implementation to return UserDetails from a SAML Assertion
@@ -46,7 +41,7 @@ public class SAMLProvisioner implements Provisioner {
   private static final String DISPLAY_NAME = "urn:mace:dir:attribute-def:displayName";
   private static final String EMAIL = "urn:mace:dir:attribute-def:mail";
   private static final String SCHAC_HOME = "urn:mace:terena.org:attribute-def:schacHomeOrganization";
-  
+
   private String uuidAttribute = "urn:oid:1.3.6.1.4.1.1076.20.40.40.1";
 
   private IdentityProviderService identityProviderService;
@@ -60,7 +55,6 @@ public class SAMLProvisioner implements Provisioner {
     CoinUser coinUser = new CoinUser();
 
     final String idpId = getAuthenticatingAuthority(assertion);
-    coinUser.setIdp(idpId);
 
     coinUser.setInstitutionId(getInstitutionId(idpId));
 
@@ -76,6 +70,13 @@ public class SAMLProvisioner implements Provisioner {
       IdentityProvider idp = getInstitutionIdP(idpId);
       coinUser.addInstitutionIdp(idp);
     }
+    for (IdentityProvider idp : coinUser.getInstitutionIdps()) {
+      if (idp.getId().equalsIgnoreCase(idpId)) {
+        coinUser.setIdp(idp);
+      }
+    }
+
+    Assert.notNull(coinUser, "No IdP ('" + idpId + "') could be identified from institution IdP's ('" + coinUser.getInstitutionIdps() + "')");
 
     coinUser.setUid(getValueFromAttributeStatements(assertion, uuidAttribute));
     coinUser.setDisplayName(getValueFromAttributeStatements(assertion, DISPLAY_NAME));
@@ -146,5 +147,5 @@ public class SAMLProvisioner implements Provisioner {
     this.uuidAttribute = uuidAttribute;
   }
 
- 
+
 }

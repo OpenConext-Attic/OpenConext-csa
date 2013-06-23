@@ -37,13 +37,12 @@ public interface CrmService {
    * 
    * @param identityProvider the identityProvider to get the licenses for
    * @param articleIdentifier lmngIdentifier (belonging to SP's) where the licenses are for.
-   * @param validOn Date on which the license should be valid
    * @return a (possible) list of licenses
    * @throws LmngException If connection or call fails (rethrows all exceptions)
    */
-  List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier, Date validOn) throws LmngException;
+  List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier) throws LmngException;
   
-  List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers, Date validOn) throws LmngException;
+  List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers) throws LmngException;
 
   /**
    * Get articles for the given serviceProviders.
@@ -92,5 +91,7 @@ public interface CrmService {
    * @return the raw response
    */
   String performQuery(String rawQuery);
+
+  void evictCache();
 
 }

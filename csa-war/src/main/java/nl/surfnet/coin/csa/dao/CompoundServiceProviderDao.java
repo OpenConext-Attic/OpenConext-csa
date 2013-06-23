@@ -30,6 +30,4 @@ public interface CompoundServiceProviderDao extends GenericService<CompoundServi
    * @return the CompoundServiceProvider found
    */
   CompoundServiceProvider findByEntityId(String entityId);
-
-  void evict();
 }

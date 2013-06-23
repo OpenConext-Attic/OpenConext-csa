@@ -16,35 +16,32 @@
 
 package nl.surfnet.coin.csa.service.impl;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import nl.surfnet.coin.janus.Janus;
-import nl.surfnet.coin.janus.domain.ARP;
-import nl.surfnet.coin.janus.domain.Contact;
-import nl.surfnet.coin.janus.domain.EntityMetadata;
-import nl.surfnet.coin.janus.domain.JanusEntity;
 import nl.surfnet.coin.csa.domain.ContactPerson;
 import nl.surfnet.coin.csa.domain.ContactPersonType;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.domain.ServiceProvider;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
 import nl.surfnet.coin.csa.service.ServiceProviderService;
+import nl.surfnet.coin.janus.Janus;
+import nl.surfnet.coin.janus.domain.ARP;
+import nl.surfnet.coin.janus.domain.Contact;
+import nl.surfnet.coin.janus.domain.EntityMetadata;
+import nl.surfnet.coin.janus.domain.JanusEntity;
 import nl.surfnet.coin.shared.domain.ErrorMail;
 import nl.surfnet.coin.shared.service.ErrorMessageMailer;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestClientException;
+
+import javax.annotation.Resource;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ServiceRegistryProviderService implements ServiceProviderService, IdentityProviderService {
 
@@ -58,7 +55,6 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   private ErrorMessageMailer errorMessageMailer;
 
   @Override
-  @Cacheable("csaDefault")
   public List<ServiceProvider> getAllServiceProviders(String idpId) {
     List<ServiceProvider> allSPs = getAllServiceProvidersUnfiltered();
 
@@ -79,47 +75,11 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   }
 
   @Override
-  @Cacheable("csaDefault")
-  public List<ServiceProvider> getAllServiceProviders(boolean filterIdPOnly) {
-    List<ServiceProvider> allSPs = getAllServiceProvidersUnfiltered();
-    List<ServiceProvider> filteredList = new ArrayList<ServiceProvider>();
-    if (filterIdPOnly) {
-      for (ServiceProvider sp : allSPs) {
-        if (!sp.isIdpVisibleOnly()) {
-          filteredList.add(sp);
-        }
-      }
-    } else {
-      filteredList = allSPs;
-    }
-    return filteredList;
+  public List<ServiceProvider> getAllServiceProviders() {
+    return getAllServiceProvidersUnfiltered();
   }
 
-  /**
-   * It's "cheaper" to get all SPs from ServiceRegistry and iterate over them
-   * than to retrieve the list of all linked entity id's and then get their
-   * individual metadata.
-   * 
-   * {@inheritDoc}
-   */
   @Override
-  public List<ServiceProvider> getLinkedServiceProviders(String idpId) {
-
-    final List<ServiceProvider> allServiceProviders = getAllServiceProviders(idpId);
-    if (CollectionUtils.isEmpty(allServiceProviders)) {
-      return Collections.emptyList();
-    }
-
-    List<ServiceProvider> linked = new ArrayList<ServiceProvider>();
-    for (ServiceProvider sp : allServiceProviders) {
-      if (sp.isLinked()) {
-        linked.add(sp);
-      }
-    }
-    return linked;
-  }
-
-  @Cacheable("csaDefault")
   public List<String> getLinkedServiceProviderIDs(String idpId) {
     List<String> spList = new ArrayList<String>();
     try {
@@ -131,7 +91,6 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
     return spList;
   }
 
-  @Cacheable("csaDefault")
   private List<ServiceProvider> getAllServiceProvidersUnfiltered() {
     List<ServiceProvider> spList = new ArrayList<ServiceProvider>();
     try {
@@ -149,7 +108,6 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   }
 
   @Override
-  @Cacheable("csaDefault")
   public ServiceProvider getServiceProvider(String spEntityId, String idpEntityId) {
     try {
       // first get JanusEntity. This holds the information about the workflow
@@ -162,16 +120,12 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
       EntityMetadata metadata = janusClient.getMetadataByEntityId(spEntityId);
       final ServiceProvider serviceProvider = buildServiceProviderByMetadata(metadata);
 
-      // Get the ARP (if there is any)
-      final ARP arp = janusClient.getArp(spEntityId);
-      serviceProvider.setArp(arp);
-
       // Check if the IdP can connect to this service
       if (idpEntityId != null) {
         final boolean linked = janusClient.isConnectionAllowed(spEntityId, idpEntityId);
         serviceProvider.setLinked(linked);
       }
-      
+
       return serviceProvider;
     } catch (RestClientException e) {
       log.warn("Could not retrieve metadata from Janus client", e.getMessage());
@@ -181,19 +135,17 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   }
 
   @Override
-  @Cacheable("csaDefault")
   public ServiceProvider getServiceProvider(String spEntityId) {
     return getServiceProvider(spEntityId, null);
   }
 
   /**
    * Create a ServiceProvider and inflate it with the given metadata attributes.
-   * 
-   * @param metadata
-   *          Janus metadata
+   *
+   * @param metadata Janus metadata
    * @return {@link ServiceProvider}
    */
-  public static ServiceProvider buildServiceProviderByMetadata(EntityMetadata metadata) {
+  public ServiceProvider buildServiceProviderByMetadata(EntityMetadata metadata) {
     Assert.notNull(metadata, "metadata cannot be null");
     final String appEntityId = metadata.getAppEntityId();
     String name = metadata.getNames().get("en");
@@ -213,20 +165,23 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
     sp.setApplicationUrl(metadata.getApplicationUrl());
     sp.setGadgetBaseUrl(metadata.getOauthConsumerKey());
     for (Contact c : metadata.getContacts()) {
-      ContactPerson p = new ContactPerson(StringUtils.join(new Object[] { c.getGivenName(), c.getSurName() }, " "), c.getEmailAddress());
+      ContactPerson p = new ContactPerson(StringUtils.join(new Object[]{c.getGivenName(), c.getSurName()}, " "), c.getEmailAddress());
       p.setContactPersonType(contactPersonTypeByJanusContactType(c.getType()));
       p.setTelephoneNumber(c.getTelephoneNumber());
       sp.addContactPerson(p);
     }
+    // Get the ARP (if there is any)
+    final ARP arp = janusClient.getArp(appEntityId);
+    sp.setArp(arp);
+
     return sp;
   }
 
   /**
    * Create a IdentityProvider and inflate it with the given metadata
    * attributes.
-   * 
-   * @param metadata
-   *          Janus metadata
+   *
+   * @param metadata Janus metadata
    * @return {@link IdentityProvider}
    */
   public static IdentityProvider buildIdentityProviderByMetadata(EntityMetadata metadata) {
@@ -244,7 +199,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
     idp.setHomeUrls(metadata.getAppHomeUrls());
     idp.setDescriptions(metadata.getDescriptions());
     for (Contact c : metadata.getContacts()) {
-      ContactPerson p = new ContactPerson(StringUtils.join(new Object[] { c.getGivenName(), c.getSurName() }, " "), c.getEmailAddress());
+      ContactPerson p = new ContactPerson(StringUtils.join(new Object[]{c.getGivenName(), c.getSurName()}, " "), c.getEmailAddress());
       p.setContactPersonType(contactPersonTypeByJanusContactType(c.getType()));
       p.setTelephoneNumber(c.getTelephoneNumber());
       idp.addContactPerson(p);
@@ -254,12 +209,10 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
 
   /**
    * Convert a Janus contact type to a ServiceProvider's ContactPersonType.
-   * 
-   * @param contactType
-   *          the Janus type
+   *
+   * @param contactType the Janus type
    * @return the {@link ContactPersonType}
-   * @throws IllegalArgumentException
-   *           in case no match can be made.
+   * @throws IllegalArgumentException in case no match can be made.
    */
   public static ContactPersonType contactPersonTypeByJanusContactType(Contact.Type contactType) {
     ContactPersonType t = null;
@@ -281,7 +234,6 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   }
 
   @Override
-  @Cacheable("csaDefault")
   public IdentityProvider getIdentityProvider(String idpEntityId) {
     try {
       EntityMetadata metadataByEntityId = janusClient.getMetadataByEntityId(idpEntityId);
@@ -293,7 +245,6 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   }
 
   @Override
-  @Cacheable("csaDefault")
   public List<IdentityProvider> getInstituteIdentityProviders(String instituteId) {
     List<IdentityProvider> idps = new ArrayList<IdentityProvider>();
     if (StringUtils.isBlank(instituteId)) {
@@ -308,7 +259,6 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   }
 
   @Override
-  @Cacheable("csaDefault")
   public List<IdentityProvider> getAllIdentityProviders() {
     List<IdentityProvider> idps = new ArrayList<IdentityProvider>();
     try {
@@ -330,7 +280,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   private void sendErrorMail(String exceptionName, String message, String method) {
     String shortMessage = exceptionName + " while retrieving information from Janus";
     String formattedMessage = String.format("Janus call failed with a " + exceptionName + " containing the following message: '%s'",
-        message);
+            message);
     ErrorMail errorMail = new ErrorMail(shortMessage, formattedMessage, formattedMessage, getHost(), "Janus");
     errorMail.setLocation(this.getClass().getName() + "#get" + method);
     errorMessageMailer.sendErrorMail(errorMail);

@@ -60,21 +60,10 @@ public class CompoundSPServiceTest {
   @Mock
   private LmngIdentifierDao lmngIdentifierDao;
 
-  private DateTime now = new DateTime();
-
   @Before
   public void setUp() throws Exception {
-    cspService = new CompoundSPService() {
-      @Override
-      protected DateTime getNow() {
-        return getParametrizedNow();
-      }
-    };
+    cspService = new CompoundSPService() ;
     MockitoAnnotations.initMocks(this);
-  }
-
-  private DateTime getParametrizedNow() {
-    return now;
   }
 
   /**
@@ -125,78 +114,9 @@ public class CompoundSPServiceTest {
     CompoundServiceProvider csp = CompoundServiceProvider.builder(sp1, new Article());
     when(compoundServiceProviderDao.findById(1L)).thenReturn(csp);
     IdentityProvider idp = new IdentityProvider("idpid", "instid", "thename");
-    CompoundServiceProvider gottenCSP = cspService.getCSPById(idp, 1L, false);
+    CompoundServiceProvider gottenCSP = cspService.getCSPById(idp, 1L);
     assertTrue(csp == gottenCSP);
     assertTrue(sp1 == gottenCSP.getServiceProvider());
   }
 
-  @SuppressWarnings("unchecked")
-  @Test
-  public void testLmngCacheExpire() throws Exception {
-    //Set the cache to 1 minute
-    cspService.setLmngArticleCacheExpireSeconds(60);
-    cspService.setLmngLicenseCacheExpireSeconds(20);
-
-    // This is the IDP for whom we want all csps.
-    IdentityProvider idp = new IdentityProvider("idpId", "institutionid", "name");
-
-    // Two SPs exist
-    List<ServiceProvider> sps = new ArrayList<ServiceProvider>();
-    ServiceProvider sp1 = new ServiceProvider("spId1");
-    ServiceProvider sp2 = new ServiceProvider("spId2");
-    sps.add(sp1);
-    sps.add(sp2);
-
-    List<Article> articles = new ArrayList<Article>();
-    Article article1 = new Article();
-    article1.setServiceProviderEntityId(sp1.getId());
-    article1.setLmngIdentifier("article1");
-    articles.add(article1);
-    Article article2 = new Article();
-    article2.setServiceProviderEntityId(sp2.getId());
-    article2.setLmngIdentifier("article2");
-    articles.add(article2);
-
-    List<CompoundServiceProvider> csps = new ArrayList<CompoundServiceProvider>();
-    CompoundServiceProvider csp1 = CompoundServiceProvider.builder(sp1, article1);
-    CompoundServiceProvider csp2 = CompoundServiceProvider.builder(sp2, article2);
-    csps.add(csp1);
-    csps.add(csp2);
-
-    when(licensingService.getArticlesForServiceProviders(any(List.class))).thenReturn(articles);
-    when(serviceProviderService.getServiceProvider("spId2")).thenReturn(sp2);
-    when(compoundServiceProviderDao.findAll()).thenReturn(csps);
-    when(serviceProviderService.getAllServiceProviders(false)).thenReturn(sps);
-    when(serviceProviderService.getAllServiceProviders("idpId")).thenReturn(sps);
-
-    now = new DateTime();
-    cspService.getCSPsByIdp(idp);
-
-    // licensingService called once for all articles together articles, after that everything came from cache
-    // licensingService called twice for licenses (once per article),
-    verify(licensingService, times(1)).getArticlesForServiceProviders(any(List.class));
-    verify(licensingService, times(2)).getLicensesForIdpAndSp(eq(idp),any(String.class),any(Date.class));
-    
-    // add half 10 seconds, articles and licenses should still come from cache
-    now = now.plusSeconds(10);
-    cspService.getCSPsByIdp(idp);
-    // licensingservice should still be called once for articles and twice for licenses
-    verify(licensingService, times(1)).getArticlesForServiceProviders(any(List.class));  
-    verify(licensingService, times(2)).getLicensesForIdpAndSp(eq(idp),any(String.class),any(Date.class));
-
-    // add half another 20 seconds, articles should still come from cache, licenses are expired
-    now = now.plusSeconds(20);
-    cspService.getCSPsByIdp(idp);
-    // licensingservice should still be called once for articles and twice for licenses
-    verify(licensingService, times(1)).getArticlesForServiceProviders(any(List.class));  
-    verify(licensingService, times(4)).getLicensesForIdpAndSp(eq(idp),any(String.class),any(Date.class));
-
-    // add another minute, now cache should be invalidated
-    now = now.plusMinutes(1);
-    cspService.getCSPsByIdp(idp);
-    // licensingservice should be called one extra time for both articles and licenses
-    verify(licensingService, times(2)).getArticlesForServiceProviders(any(List.class));
-    verify(licensingService, times(6)).getLicensesForIdpAndSp(eq(idp),any(String.class),any(Date.class));
-
-}
 }

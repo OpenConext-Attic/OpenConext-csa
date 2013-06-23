@@ -38,8 +38,8 @@ public class SpLmngListControllerTestSelenium extends SeleniumSupport {
     driver.get(getCsaBaseUrl()); // get homepage
     loginAtMujinaAs(OpenConextOAuthClientMock.Users.CSA_ADMIN); // login
     driver.get(getCsaBaseUrl()+bindingAdminUrl); // get lmng sp admin page
-    List<WebElement> element = driver.findElements(By.id("form-40"));
-    Assert.assertNotNull("Element form-40 should exist (expected > 40 rows/forms)", element.get(0));
+    List<WebElement> element = driver.findElements(By.id("form-3"));
+    Assert.assertNotNull("Element form-3 should exist (expected 4 rows/forms)", element.get(0));
   }
   
   @Test

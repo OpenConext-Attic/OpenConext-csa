@@ -27,14 +27,6 @@ public interface LmngIdentifierDao {
   String getLmngIdForIdentityProviderId(String identityProviderId);
   
   /**
-   * Method that returns a identifier for the IdP belonging to the given LMNG-Id
-   *  
-   * @param lnmgId the identifier as used in LMNG for an IdP
-   * @return the identifier as used in this project for an IdP
-   */
-  String getIdentityProviderIdForLmngId(String lnmgId);
-
-  /**
    * Method that returns a identifier for the SP in LMNG belonging to the given SP-Id
    *  
    * @param spId the identifier as used in this project for an SP

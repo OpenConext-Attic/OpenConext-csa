@@ -133,7 +133,7 @@ public class LmngServiceImplIT {
     articlesIdentifiers.add("{FFA274E1-E5DA-E111-8363-0050569E0011}");
     articlesIdentifiers.add("{6157077A-D933-E211-BCF7-0050569E0013}");
 
-    List<License> result = licensingService.getLicensesForIdpAndSps(identityProvider, articlesIdentifiers, new Date());
+    List<License> result = licensingService.getLicensesForIdpAndSps(identityProvider, articlesIdentifiers);
     System.out.println(result);
   }
 

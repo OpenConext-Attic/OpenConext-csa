@@ -15,27 +15,23 @@
  */
 package nl.surfnet.coin.csa.dao.impl;
 
-import java.util.List;
-
 import nl.surfnet.coin.csa.dao.CompoundServiceProviderDao;
 import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.shared.service.GenericServiceHibernateImpl;
-
 import org.hibernate.NonUniqueResultException;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * CompoundServiceProviderHibernateDaoImpl.java
- * 
  */
 @Repository
 public class CompoundServiceProviderHibernateDaoImpl extends GenericServiceHibernateImpl<CompoundServiceProvider> implements
-    CompoundServiceProviderDao {
+        CompoundServiceProviderDao {
 
   private static final Logger LOG = LoggerFactory.getLogger(CompoundServiceProviderHibernateDaoImpl.class);
 
@@ -56,13 +52,8 @@ public class CompoundServiceProviderHibernateDaoImpl extends GenericServiceHiber
   }
 
   @Override
-  @Cacheable("csaDefault")
   public List<CompoundServiceProvider> findAll() {
     return super.findAll();
   }
 
-  @CacheEvict(value = "csaDefault", allEntries = true)
-  public void evict() {
-    LOG.debug("Evicted cache");
-  }
 }

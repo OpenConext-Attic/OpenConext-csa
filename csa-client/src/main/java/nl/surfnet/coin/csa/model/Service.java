@@ -87,6 +87,9 @@ public class Service implements Comparable<Service> {
 
   private ARP arp;
 
+  @JsonIgnore
+  private boolean availableForEndUser;
+
   public Service() {
   }
 
@@ -325,5 +328,13 @@ public class Service implements Comparable<Service> {
 
   public void setLastLoginDate(Date lastLoginDate) {
     this.lastLoginDate = lastLoginDate;
+  }
+
+  public boolean isAvailableForEndUser() {
+    return availableForEndUser;
+  }
+
+  public void setAvailableForEndUser(boolean availableForEndUser) {
+    this.availableForEndUser = availableForEndUser;
   }
 }

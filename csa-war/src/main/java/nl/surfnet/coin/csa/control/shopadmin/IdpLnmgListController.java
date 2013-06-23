@@ -55,6 +55,8 @@ public class IdpLnmgListController extends BaseController {
   @Autowired
   private LmngIdentifierDao lmngIdentifierDao;
 
+  private LmngUtil lmngUtil = new LmngUtil();
+
   @RequestMapping(value = "/all-idpslmng")
   public ModelAndView listAllIdps(Map<String, Object> model) {
     if (model == null) {
@@ -89,7 +91,7 @@ public class IdpLnmgListController extends BaseController {
       lmngId = null;
     } else {
       // extra validation (also done in frontend/jquery)
-      if (!LmngUtil.isValidGuid(lmngId)) { 
+      if (!lmngUtil.isValidGuid(lmngId)) {
         model.put("errorMessage", "jsp.lmng_binding_overview.wrong.guid");
         model.put("messageIndex", index);
         return listAllIdps(model);

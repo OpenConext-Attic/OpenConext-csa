@@ -37,8 +37,8 @@ public class IdpLmngListControllerTestSelenium extends SeleniumSupport {
     driver.get(getCsaBaseUrl()); // get homepage
     loginAtMujinaAs(OpenConextOAuthClientMock.Users.CSA_ADMIN); // login
     driver.get(getCsaBaseUrl()+bindingAdminUrl); // get lmng sp admin page
-    WebElement element = driver.findElement(By.id("form-14"));
-    Assert.assertNotNull("Element form-14 should exist (expected 15 visable or invisable rows/forms)", element);
+    WebElement element = driver.findElement(By.id("form-1"));
+    Assert.assertNotNull("Element form-1 should exist (expected 2 visable or invisable rows/forms)", element);
   }
 
   @Test
