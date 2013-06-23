@@ -40,6 +40,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequestMapping(value = "/shopadmin/*")
@@ -111,5 +112,15 @@ public class IdpLnmgListController extends BaseController {
     lmngIdentifierDao.saveOrUpdateLmngIdForIdentityProviderId(idpId, lmngId);
     return listAllIdps(model);
   }
+
+  @RequestMapping(value = "/clean-crm-cache", method = RequestMethod.GET)
+  public RedirectView cleanCrmCache() {
+    log.info("Cleaning CRM cache");
+    licensingService.evictCache();
+    return new RedirectView("all-spslmng.shtml", true);
+  }
+
+
+
 
 }
