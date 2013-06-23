@@ -52,7 +52,7 @@ public class ServicesCache extends AbstractCache {
   }
 
   @Override
-  protected void doInScheduledRefresh() throws Exception {
+  protected void doAsyncScheduleAtFixedRate() throws Exception {
     Map<String, List<Service>> services = service.findAll();
     cache.putAll(services);
   }

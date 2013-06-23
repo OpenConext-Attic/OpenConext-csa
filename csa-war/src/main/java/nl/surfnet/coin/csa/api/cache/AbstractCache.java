@@ -46,23 +46,26 @@ public abstract class AbstractCache implements InitializingBean {
       public void run() {
         LOG.info("Starting refreshing {} cache", getCacheName());
         try {
-            doInScheduledRefresh();
+            doAsyncScheduleAtFixedRate();
         } catch (Throwable t) {
           /*
-           * anti pattern, but:
+           * Looks like anti pattern, but from the docs:
            *
-           * http://stackoverflow.com/questions/637618/how-to-reschedule-a-task-using-a-scheduledexecutorservice
-           * http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/ScheduledExecutorService.html#scheduleAtFixedRate(java.lang.Runnable,%20long,%20long,%20java.util.concurrent.TimeUnit)
+           * "If any execution of the task encounters an exception, subsequent executions are suppressed"
+           *
+           * And we don't want that behaviour
+           *
+           * See http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/ScheduledExecutorService.html#scheduleAtFixedRate(java.lang.Runnable,%20long,%20long,%20java.util.concurrent.TimeUnit)
            */
           LOG.error("Error in the refresh of the cache", t);
         } finally {
           LOG.info("Finished refreshing {} cache", getCacheName());
         }
       }
-    }, delay, duration);
+    }, getDelay(), getDuration());
   }
 
-  protected abstract void doInScheduledRefresh() throws Exception;
+  protected abstract void doAsyncScheduleAtFixedRate() throws Exception;
   protected abstract String getCacheName();
 
   public long getDelay() {

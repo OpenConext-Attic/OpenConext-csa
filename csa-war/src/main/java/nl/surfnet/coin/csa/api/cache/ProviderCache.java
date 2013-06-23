@@ -50,7 +50,7 @@ public class ProviderCache extends AbstractCache {
   }
 
   @Override
-  protected void doInScheduledRefresh() throws Exception {
+  protected void doAsyncScheduleAtFixedRate() throws Exception {
     Set<String> idpIdentifiers = cache.keySet();
     Map<String, List<String>> swap = new HashMap<String, List<String>>();
     for (String idpId : idpIdentifiers) {
