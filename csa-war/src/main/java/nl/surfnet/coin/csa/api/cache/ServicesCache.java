@@ -36,63 +36,29 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Component
-public class ServicesCache implements InitializingBean {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ServicesCache.class);
+public class ServicesCache extends AbstractCache {
 
   @Resource
   private ServicesService service;
-
-  private @Value("${cacheMillisecondsServices}") long duration;
-
-  private @Value("${cacheMillisecondsStartupDelayTime}") long delay;
-
   private ConcurrentHashMap<String, List<Service>> cache = new ConcurrentHashMap<String, List<Service>>();
-
-  private void scheduleRefresh() {
-    Timer timer = new Timer();
-    timer.scheduleAtFixedRate(new TimerTask() {
-      @Override
-      public void run() {
-        LOG.info("Starting refreshing Services cache");
-        try {
-          Map<String, List<Service>> services = service.findAll();
-          cache.putAll(services);
-        } catch (Throwable t) {
-          /*
-           * anti pattern, but:
-           *
-           * http://stackoverflow.com/questions/637618/how-to-reschedule-a-task-using-a-scheduledexecutorservice
-           * http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/ScheduledExecutorService.html#scheduleAtFixedRate(java.lang.Runnable,%20long,%20long,%20java.util.concurrent.TimeUnit)
-           */
-          LOG.error("Error in the refresh of the Services cache", t);
-        }
-        finally {
-          LOG.info("Finished refreshing Services cache");
-        }
-      }
-    }, delay, duration);
-  }
 
   public List<Service> getAllServices(String lang) {
     Assert.isTrue("en".equalsIgnoreCase(lang) || "nl".equalsIgnoreCase(lang), "The only languages supported are 'nl' and 'en'");
     return cache.get(lang);
   }
 
-  @Override
-  public void afterPropertiesSet() throws Exception {
-    scheduleRefresh();
-  }
-
   public void setService(ServicesService service) {
     this.service = service;
   }
 
-  public void setDuration(long duration) {
-    this.duration = duration;
+  @Override
+  protected void doInScheduledRefresh() throws Exception {
+    Map<String, List<Service>> services = service.findAll();
+    cache.putAll(services);
   }
 
-  public void setDelay(long delay) {
-    this.delay = delay;
+  @Override
+  protected String getCacheName() {
+    return "Services Cache";
   }
 }
