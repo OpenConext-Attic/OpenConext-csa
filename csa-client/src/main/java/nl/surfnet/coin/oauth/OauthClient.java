@@ -119,11 +119,11 @@ public abstract class OauthClient {
         accessToken = null;
         return doExchange(url, variables, bodyJson, clazz, false);
       } else {
-        LOG.info("Error during request to CSA. Response body: {}", clientException.getResponseBodyAsString());
+        LOG.info("Error during request to Resource Server {}. Response body: {}", url, clientException.getResponseBodyAsString());
         throw clientException;
       }
     } catch (HttpServerErrorException serverException) {
-      LOG.info("Error during request to CSA. Response body: {}", serverException.getResponseBodyAsString());
+      LOG.info("Error during request to Resource Server {}. Response body: {}", url, serverException.getResponseBodyAsString());
       throw serverException;
     }
 
