@@ -22,10 +22,7 @@ import nl.surfnet.coin.csa.service.IdentityProviderService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -41,6 +38,9 @@ public class ProviderCache extends AbstractCache {
     if (spIdentifiers == null) {
       spIdentifiers = idpService.getLinkedServiceProviderIDs(identityProviderId);
       cache.put(identityProviderId, spIdentifiers);
+    }
+    if (spIdentifiers == null) {
+      spIdentifiers = Collections.emptyList();
     }
     return spIdentifiers;
   }

@@ -20,20 +20,14 @@ package nl.surfnet.coin.csa.api.cache;
 
 import nl.surfnet.coin.csa.api.control.ServicesService;
 import nl.surfnet.coin.csa.model.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 @Component
 public class ServicesCache extends AbstractCache {
@@ -44,7 +38,12 @@ public class ServicesCache extends AbstractCache {
 
   public List<Service> getAllServices(String lang) {
     Assert.isTrue("en".equalsIgnoreCase(lang) || "nl".equalsIgnoreCase(lang), "The only languages supported are 'nl' and 'en'");
-    return cache.get(lang);
+    List<Service> services = cache.get(lang);
+    if (services == null) {
+      LOG.debug("Cache miss for lang '{}', will return empty list", lang);
+      services = Collections.emptyList();
+    }
+    return services;
   }
 
   public void setService(ServicesService service) {

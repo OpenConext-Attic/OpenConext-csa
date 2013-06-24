@@ -278,11 +278,11 @@ public class LmngServiceImpl implements CrmService {
       lmngUtil.writeIO("lmngWsResponseStatus" + status, StringEscapeUtils.unescapeHtml(stringResponse));
     }
 
-    long durationSeconds = (afterCall.getTime() - beforeCall.getTime()) / 1000;
-    log.warn("LMNG proxy webservice called in " + durationSeconds + " seconds. Http response:" + httpresponse);
+    long duration = (afterCall.getTime() - beforeCall.getTime());
+    log.info("LMNG proxy webservice called in {} ms. Http response: {}", duration, httpresponse);
 
     if (status != 200) {
-      log.debug("LMNG webservice response content is:\n" + stringResponse);
+      log.debug("LMNG webservice response content is:\n{}", stringResponse);
       throw new RuntimeException("Invalid response from LMNG webservice. Http response " + httpresponse);
     }
     return stringResponse;
