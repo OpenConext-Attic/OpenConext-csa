@@ -87,7 +87,6 @@ public class Service implements Comparable<Service> {
 
   private ARP arp;
 
-  @JsonIgnore
   private boolean availableForEndUser;
 
   public Service() {

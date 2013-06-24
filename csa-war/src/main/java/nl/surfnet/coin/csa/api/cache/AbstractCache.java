@@ -49,13 +49,10 @@ public abstract class AbstractCache implements InitializingBean {
             doAsyncScheduleAtFixedRate();
         } catch (Throwable t) {
           /*
-           * Looks like anti pattern, but from the docs:
+           * Looks like anti pattern, but otherwise the repeated timer stops. See:
            *
-           * "If any execution of the task encounters an exception, subsequent executions are suppressed"
+           * http://stackoverflow.com/questions/8743027/java-timer-class-timer-tasks-stop-to-execute-if-in-one-of-the-tasks-exception-i
            *
-           * And we don't want that behaviour
-           *
-           * See http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/ScheduledExecutorService.html#scheduleAtFixedRate(java.lang.Runnable,%20long,%20long,%20java.util.concurrent.TimeUnit)
            */
           LOG.error("Error in the refresh of the cache", t);
         } finally {
