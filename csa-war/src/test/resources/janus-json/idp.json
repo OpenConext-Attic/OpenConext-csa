@@ -88,6 +88,50 @@
     "applicationUrl": "https://application_url",
     "appHomeUrl": "https://app_home_url_en",
     "workflowState": "prodaccepted"
+  },
+  {
+    "appEntityId": "http://mock-idp-with-no-sp",
+    "names": {
+      "en": "Lonely IdP (name en)",
+      "nl": "Lonely Idp (name nl)"
+    },
+    "appTitle": "App title",
+    "appIcon": "http://ipsumimage.appspot.com/320x100?l=App Icon",
+    "appDescription": "App description",
+    "appThumbNail": "http://ipsumimage.appspot.com/320x100?l=App Thumbnail",
+    "appLogoUrl": "http://ipsumimage.appspot.com/320x100?l=App Logo",
+    "appHomeUrls": {
+      "en": "https://app_home_url_en",
+      "nl": "https://app_home_url_nl"
+    },
+    "eula": "https://eula_url",
+    "descriptions": {
+      "en": "IdP linked to all SP's (description en)",
+      "nl": "Idp gelinked aan alle SP's (description nl)"
+    },
+    "urls": {
+      "en": "https://url_en",
+      "nl": "https://url_nl"
+    },
+    "contacts": [
+      {
+        "type": "support",
+        "givenName": "supportgiven_name",
+        "surName": "supportsur_name",
+        "emailAddress": "support@email.com",
+        "telephoneNumber": "supporttelephone_number"
+      },
+      {
+        "type": "technical",
+        "givenName": "technicalgiven_name",
+        "surName": "technicalsur_name",
+        "emailAddress": "technical@email.com",
+        "telephoneNumber": "technicaltelephone_number"
+      }
+    ],
+    "applicationUrl": "https://application_url",
+    "appHomeUrl": "https://app_home_url_en",
+    "workflowState": "prodaccepted"
   }
 
 ]

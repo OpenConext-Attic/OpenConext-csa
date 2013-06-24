@@ -160,6 +160,15 @@ public class CsaClientTestIntegration {
   }
 
   @Test
+  public void allInstitutionsIdentityProviders() throws IOException {
+    List<InstitutionIdentityProvider> providers = csaClient.getAllInstitutionIdentityProviders();
+    assertEquals(3, providers.size());
+    for (InstitutionIdentityProvider provider : providers) {
+      assertNotNull(provider.getId());
+    }
+  }
+
+  @Test
   public void serviceForIdp() throws IOException {
     Service service = csaClient.getServiceForIdp("http://mock-idp", 1);
     ARP arp = service.getArp();

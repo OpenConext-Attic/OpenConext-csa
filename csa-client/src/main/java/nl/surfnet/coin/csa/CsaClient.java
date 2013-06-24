@@ -127,6 +127,12 @@ public class CsaClient implements Csa {
   }
 
   @Override
+  public List<InstitutionIdentityProvider> getAllInstitutionIdentityProviders() {
+    return (List<InstitutionIdentityProvider>) oauthClient.exchange(csaBaseLocation + "/api/protected/all-identityproviders.json",
+            InstitutionIdentityProvider[].class);
+  }
+
+  @Override
   public void setCsaBaseLocation(String csaBaseLocation) {
     this.csaBaseLocation = csaBaseLocation;
   }

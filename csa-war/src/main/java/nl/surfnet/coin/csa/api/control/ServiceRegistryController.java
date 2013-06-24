@@ -17,6 +17,7 @@
 package nl.surfnet.coin.csa.api.control;
 
 import nl.surfnet.coin.csa.domain.IdentityProvider;
+import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
 import nl.surfnet.coin.csa.model.InstitutionIdentityProvider;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
 import org.apache.commons.lang.StringUtils;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +63,20 @@ public class ServiceRegistryController extends BaseApiController {
       }
     }
     LOG.debug("Result of call to getIdps with parameter {}: {}", identityProviderId, result);
+    return result;
+  }
+
+  @RequestMapping(method = RequestMethod.GET, value = "/api/protected/all-identityproviders.json")
+  public @ResponseBody
+  List<InstitutionIdentityProvider> getAllIdps(final HttpServletRequest request) throws IOException {
+    LOG.debug("Got request for all identityProviders");
+    verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
+    List<InstitutionIdentityProvider> result = new ArrayList<InstitutionIdentityProvider>();
+    List<IdentityProvider> identityProviders = identityProviderService.getAllIdentityProviders();
+    for (IdentityProvider identityProvider : identityProviders) {
+      result.add(convertIdentityProviderToInstitutionIdentityProvider(identityProvider));
+    }
+    LOG.debug("Finished request for all identityProviders {}", result);
     return result;
   }
 

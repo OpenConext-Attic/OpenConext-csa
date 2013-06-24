@@ -75,5 +75,7 @@ public interface Csa {
 
   List<InstitutionIdentityProvider> getInstitutionIdentityProviders(String identityProviderId);
 
+  List<InstitutionIdentityProvider> getAllInstitutionIdentityProviders();
+
   public void setOauthClient(OauthClient client);
 }
