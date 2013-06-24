@@ -64,6 +64,12 @@ public abstract class AbstractCache implements InitializingBean, DisposableBean 
     }, getDelay(), getDuration());
   }
 
+  @Override
+  public void destroy() throws Exception {
+    LOG.debug("Cancelling timer for {}", getCacheName());
+    timer.cancel();
+  }
+  
   protected abstract void doAsyncScheduleAtFixedRate() throws Exception;
   protected abstract String getCacheName();
 
@@ -83,9 +89,4 @@ public abstract class AbstractCache implements InitializingBean, DisposableBean 
     this.duration = duration;
   }
 
-  @Override
-  public void destroy() throws Exception {
-    LOG.debug("Cancelling timer for {}", getCacheName());
-    timer.cancel();
-  }
 }
