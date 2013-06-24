@@ -45,7 +45,6 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
@@ -261,29 +260,28 @@ public class LmngServiceImpl implements CrmService {
     httppost.setHeader("Content-Type", "application/soap+xml");
     httppost.setEntity(new StringEntity(soapRequest));
 
-    Date beforeCall = new Date();
-    HttpResponse httpresponse = getHttpClient().execute(httppost);
-    Date afterCall = new Date();
+    long beforeCall = System.currentTimeMillis();
+    HttpResponse httpResponse = getHttpClient().execute(httppost);
+    long afterCall = System.currentTimeMillis();
 
-    HttpEntity output = httpresponse.getEntity();
+    HttpEntity httpresponseEntity = httpResponse.getEntity();
 
     // Continue only if we have a successful response (code 200)
-    int status = httpresponse.getStatusLine().getStatusCode();
+    int status = httpResponse.getStatusLine().getStatusCode();
     // Get String representation of response
-    StringWriter writer = new StringWriter();
-    IOUtils.copy(output.getContent(), writer);
-    String stringResponse = writer.toString();
+    String stringResponse = IOUtils.toString(httpresponseEntity.getContent());
+    // Close the entity's InputStream, as prescribed.
+    httpresponseEntity.getContent().close();
 
     if (debug) {
       lmngUtil.writeIO("lmngWsResponseStatus" + status, StringEscapeUtils.unescapeHtml(stringResponse));
     }
 
-    long duration = (afterCall.getTime() - beforeCall.getTime());
-    log.info("LMNG proxy webservice called in {} ms. Http response: {}", duration, httpresponse);
+    log.info("LMNG proxy webservice called in {} ms. Http response: {}", afterCall - beforeCall, httpResponse);
 
     if (status != 200) {
       log.debug("LMNG webservice response content is:\n{}", stringResponse);
-      throw new RuntimeException("Invalid response from LMNG webservice. Http response " + httpresponse);
+      throw new RuntimeException("Invalid response from LMNG webservice. Http response " + httpResponse);
     }
     return stringResponse;
   }
