@@ -53,7 +53,7 @@ import java.util.*;
  * Utility class for LMNG. This class contains some static methods used in the
  * {@link LmngServiceImpl}
  */
-public class LmngUtil {
+public class LmngUtil implements CrmUtil {
 
   private static final Logger log = LoggerFactory.getLogger(LmngUtil.class);
   private static final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis();
@@ -104,7 +104,7 @@ public class LmngUtil {
   /**
    * Parse the result to an article(list)
    */
-  public static List<Article> parseArticlesResult(String webserviceResult, boolean writeResponseToFile)
+  public List<Article> parseArticlesResult(String webserviceResult, boolean writeResponseToFile)
           throws ParserConfigurationException, SAXException, IOException, ParseException {
     List<Article> resultList = new ArrayList<Article>();
 
@@ -141,7 +141,7 @@ public class LmngUtil {
   /**
    * Parse the result to a license(list)
    */
-  public static List<License> parseLicensesResult(String webserviceResult, boolean writeResponseToFile)
+  public List<License> parseLicensesResult(String webserviceResult, boolean writeResponseToFile)
           throws ParserConfigurationException, SAXException, IOException, ParseException {
     List<License> resultList = new ArrayList<License>();
 
@@ -167,7 +167,7 @@ public class LmngUtil {
   /**
    * Parse the result to an account(list)
    */
-  public static List<Account> parseAccountsResult(String webserviceResult, boolean writeResponseToFile)
+  public List<Account> parseAccountsResult(String webserviceResult, boolean writeResponseToFile)
           throws ParserConfigurationException, SAXException, IOException, ParseException {
     List<Account> resultList = new ArrayList<Account>();
 
@@ -191,7 +191,7 @@ public class LmngUtil {
   }
 
 
-  public static String parseResultInstitute(String webserviceResult, boolean writeResponseToFile) throws ParserConfigurationException,
+  public String parseResultInstitute(String webserviceResult, boolean writeResponseToFile) throws ParserConfigurationException,
           SAXException, IOException, ParseException {
     NodeList nodes = parse(webserviceResult, writeResponseToFile);
     String result = null;
@@ -209,7 +209,7 @@ public class LmngUtil {
     return result;
   }
 
-  private static NodeList parse(String webserviceResult, boolean writeResponseToFile) throws ParserConfigurationException, SAXException,
+  private NodeList parse(String webserviceResult, boolean writeResponseToFile) throws ParserConfigurationException, SAXException,
           IOException, ParseException {
 
     DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -238,7 +238,7 @@ public class LmngUtil {
     return null;
   }
 
-  private static Article createArticle(Element resultElement) {
+  private Article createArticle(Element resultElement) {
     Article article = new Article();
     article.setArticleState(getFirstSubElementStringValue(resultElement, FETCH_RESULT_ARTICLE_STATUS));
     article.setDetailLogo(getFirstSubElementStringValue(resultElement, FETCH_RESULT_DETAIL_LOGO));
@@ -271,14 +271,14 @@ public class LmngUtil {
     return article;
   }
 
-  private static Account createAccount(Element element) {
+  private Account createAccount(Element element) {
     String name = getFirstSubElementStringValue(element, "name");
     String status = getFirstSubElementStringValue(element, "statuscode");
     String guid = getFirstSubElementStringValue(element, "accountid");
     return new Account(name, status, guid);
   }
 
-  private static License createLicense(Element resultElement) {
+  private License createLicense(Element resultElement) {
     License license = null;
 
     String licenseNumber = getFirstSubElementStringValue(resultElement, FETCH_RESULT_LICENSE_NUMBER);
@@ -309,7 +309,7 @@ public class LmngUtil {
    * @param subItemName the string of the subelement
    * @return a string representation of the content of the subelement
    */
-  private static String getFirstSubElementStringValue(Element element, String subItemName) {
+  private String getFirstSubElementStringValue(Element element, String subItemName) {
     String result = null;
     NodeList subItemListList = element.getElementsByTagName(subItemName);
     if (subItemListList != null && subItemListList.getLength() > 0) {
@@ -331,7 +331,7 @@ public class LmngUtil {
    * @param filename
    * @param content
    */
-  public static void writeIO(String filename, String content) {
+  public void writeIO(String filename, String content) {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmssS");
     try {
       String fullFileName = System.getProperty("java.io.tmpdir") + filename + "_" + sdf.format(new Date()) + ".xml";
@@ -342,12 +342,12 @@ public class LmngUtil {
     }
   }
 
-  public static boolean isValidGuid(String guid) {
+  public boolean isValidGuid(String guid) {
     return StringUtils.isEmpty(guid) || guid.matches("\\{[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}\\}");
   }
 
 
-  public static String getLmngSoapRequestForIdpAndSp(String institutionId, List<String> serviceIds, Date validOn, String endpoint) throws IOException {
+  public String getLmngSoapRequestForIdpAndSp(String institutionId, List<String> serviceIds, Date validOn, String endpoint) throws IOException {
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     Assert.notNull(validOn);
     Assert.notNull(serviceIds);
@@ -389,7 +389,7 @@ public class LmngUtil {
     return result;
   }
 
-  private static String fillInVariables(String endpoint, String result, String query) {
+  private String fillInVariables(String endpoint, String result, String query) {
     // Insert the query in the envelope and add a UID in the envelope
     result = result.replaceAll(QUERY_PLACEHOLDER, query);
     result = result.replaceAll(ENDPOINT_PLACEHOLDER, endpoint);
@@ -397,7 +397,7 @@ public class LmngUtil {
     return result;
   }
 
-  public static String getLmngSoapRequestForSps(Collection<String> serviceIds, String endpoint) throws IOException {
+  public String getLmngSoapRequestForSps(Collection<String> serviceIds, String endpoint) throws IOException {
     Assert.notNull(serviceIds);
 
     // Get the soap/fetch envelope
@@ -427,7 +427,7 @@ public class LmngUtil {
     return result;
   }
 
-  public static String getLmngSoapRequestForAllAccount(boolean isInstitution, String endpoint) throws IOException {
+  public String getLmngSoapRequestForAllAccount(boolean isInstitution, String endpoint) throws IOException {
     String result = getLmngRequestEnvelope();
     String query = IOUtils.toString(new ClassPathResource(PATH_FETCH_ALL_ACCOUNTS).getInputStream());
     query = query.replaceAll("%IS_INSTITUTION%", (isInstitution ? "1" : "0"));
@@ -436,7 +436,7 @@ public class LmngUtil {
     return result;
   }
 
-  public static String getLmngRequestEnvelope() throws IOException {
+  public String getLmngRequestEnvelope() throws IOException {
     ClassPathResource envelopeResource = new ClassPathResource(PATH_SOAP_FETCH_REQUEST);
     InputStream inputStream = envelopeResource.getInputStream();
     return IOUtils.toString(inputStream);

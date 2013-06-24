@@ -134,12 +134,9 @@ public class ServiceRegistryProviderServiceTest {
   @Test
   public void testNameAttributeRetrieval() {
     JanusRestClientMock janusMock = new JanusRestClientMock();
-    EntityMetadata metadata = janusMock.getMetadataByEntityId("https://rave.beta.surfnet.nl");
-    ServiceProvider spFound = ServiceRegistryProviderService.buildServiceProviderByMetadata(metadata);
-    assertEquals("Braindrops Rave demo portal",spFound.getName());
+    EntityMetadata metadata = janusMock.getMetadataByEntityId("http://mock-sp");
+    ServiceProvider spFound = serviceRegistryProviderService.buildServiceProviderByMetadata(metadata);
+    assertEquals("Populair SP (name en)",spFound.getName());
     
-    metadata = janusMock.getMetadataByEntityId("https://exampleService");
-    spFound = ServiceRegistryProviderService.buildServiceProviderByMetadata(metadata);
-    assertEquals("Service Title:en",spFound.getName());
   }
 }

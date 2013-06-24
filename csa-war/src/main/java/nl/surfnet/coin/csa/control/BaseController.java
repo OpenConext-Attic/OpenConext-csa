@@ -17,11 +17,13 @@
 package nl.surfnet.coin.csa.control;
 
 import nl.surfnet.coin.csa.domain.IdentityProvider;
+
 import nl.surfnet.coin.csa.service.IdentityProviderService;
 import nl.surfnet.coin.csa.util.AjaxResponseException;
 import nl.surfnet.coin.csa.util.SpringSecurity;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.LocaleResolver;
 
@@ -118,6 +120,11 @@ public abstract class BaseController {
    */
   public static final String RAW_ARP_ATTRIBUTES_VISIBLE = "rawArpAttributesVisible";
 
+  /**
+   * Key in which we store the currently selected IdP
+   */
+  protected static final String SELECTED_IDP = "selectedIdp";
+
   @Resource(name = "providerService")
   private IdentityProviderService idpService;
 
@@ -134,31 +141,29 @@ public abstract class BaseController {
     return localeResolver.resolveLocale(request);
   }
 
-  /**
-   * Exposes the requested IdP for use in RequestMapping methods.
-   *
-   * @param idpId   the idp selected in the view
-   * @param request HttpServletRequest, for storing/retrieving the selected idp in the
-   *                http session.
-   * @return the IdentityProvider selected, or null in case of unknown/invalid
-   *         idpId
-   */
-  @ModelAttribute(value = "selectedidp")
-  public IdentityProvider getRequestedIdp(@RequestParam(required = false) String idpId, HttpServletRequest request) {
-    final Object selectedidp = request.getSession().getAttribute("selectedidp");
-    if (idpId == null && selectedidp != null) {
-      return (IdentityProvider) selectedidp;
+  protected IdentityProvider getSelectedIdp(HttpServletRequest request) {
+    final IdentityProvider selectedIdp = (IdentityProvider)  request.getSession().getAttribute(SELECTED_IDP);
+    if (selectedIdp != null) {
+      return selectedIdp;
     }
-    if (idpId == null) {
-      idpId = SpringSecurity.getCurrentUser().getIdp();
-    }
+    return selectProvider(request, SpringSecurity.getCurrentUser().getIdp().getId());
+  }
+
+  protected IdentityProvider switchIdp(HttpServletRequest request, String switchIdpId) {
+    Assert.hasText(switchIdpId);
+    return selectProvider(request, switchIdpId);
+  }
+
+  private IdentityProvider selectProvider(HttpServletRequest request, String idpId) {
+    Assert.hasText(idpId);
     for (IdentityProvider idp : SpringSecurity.getCurrentUser().getInstitutionIdps()) {
       if (idp.getId().equals(idpId)) {
-        request.getSession().setAttribute("selectedidp", idp);
+        request.getSession().setAttribute(SELECTED_IDP, idp);
+        SpringSecurity.getCurrentUser().setIdp(idp);
         return idp;
       }
     }
-    throw new RuntimeException("There is no Selected IdP");
+    throw new RuntimeException(idpId + " is unknown for " + SpringSecurity.getCurrentUser().getUsername());
   }
 
 

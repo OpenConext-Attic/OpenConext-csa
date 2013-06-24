@@ -45,7 +45,7 @@
 <body>
   <script>document.body.className = 'js-loading'</script>
   
-  <spring:url value="/app-overview.shtml" var="homeUrl" htmlEscape="true" />
+  <spring:url value="/shopadmin/all-spslmng.shtml" var="homeUrl" htmlEscape="true" />
 
   <header class="header">
     <a class="logo" href="${homeUrl}"> <img src="<c:url value="/images/surf-conext-logo.png"/>" alt="Surf Conext">

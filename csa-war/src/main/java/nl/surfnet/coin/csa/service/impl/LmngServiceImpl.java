@@ -26,7 +26,6 @@ import nl.surfnet.coin.shared.domain.ErrorMail;
 import nl.surfnet.coin.shared.service.ErrorMessageMailer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -38,6 +37,8 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.CollectionUtils;
 
@@ -66,6 +67,8 @@ public class LmngServiceImpl implements CrmService {
   @Autowired
   private LmngIdentifierDao lmngIdentifierDao;
 
+  private CrmUtil lmngUtil = new LmngUtil();
+
   @Resource(name = "errorMessageMailer")
   private ErrorMessageMailer errorMessageMailer;
 
@@ -74,56 +77,36 @@ public class LmngServiceImpl implements CrmService {
 
   private DefaultHttpClient httpclient;
 
+  @Cacheable(value = "crm")
   @Override
-  public List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier, Date validOn)
+  public List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier)
           throws LmngException {
-    List<License> result = new ArrayList<License>();
-    try {
-      String lmngInstitutionId = IdentityProvider.NONE.equals(identityProvider) ? null : getLmngIdentityId(identityProvider);
-
-      // validation, we need at least one serviceId/articleID and an institution ID (as licenses belong to an institute)
-      if (articleIdentifier == null || StringUtils.isEmpty(lmngInstitutionId)) {
-        return result;
-      }
-
-      List<String> articleIdentifiers = new ArrayList<String>();
-      articleIdentifiers.add(articleIdentifier);
-
-      // get the file with the soap request
-      String soapRequest = LmngUtil.getLmngSoapRequestForIdpAndSp(lmngInstitutionId, articleIdentifiers, validOn, endpoint);
-      if (debug) {
-        LmngUtil.writeIO("lmngRequest", StringEscapeUtils.unescapeHtml(soapRequest));
-      }
-
-      // call the webservice
-      String webserviceResult = getWebServiceResult(soapRequest);
-      // read/parse the XML response to License objects
-      result = LmngUtil.parseLicensesResult(webserviceResult, debug);
-    } catch (Exception e) {
-      String exceptionMessage = "Exception while retrieving licenses" + e.getMessage();
-      log.error(exceptionMessage, e);
-      sendErrorMail(identityProvider, articleIdentifier, e.getMessage(), "getLicensesForIdpAndSp");
-      throw new LmngException(exceptionMessage, e);
-    }
-    return result;
+    List<String> articleIdentifiers = new ArrayList<String>();
+    articleIdentifiers.add(articleIdentifier);
+    return getLicensesForIdpAndSps(identityProvider, articleIdentifiers);
   }
-  
-  public List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers, Date validOn)
+
+  @Cacheable(value = "crm")
+  @Override
+  public List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers)
           throws LmngException {
     List<License> result = new ArrayList<License>();
+    if (CollectionUtils.isEmpty(articleIdentifiers)) {
+      return result;
+    }
     try {
       String lmngInstitutionId = IdentityProvider.NONE.equals(identityProvider) ? null : getLmngIdentityId(identityProvider);
 
       // get the file with the soap request
-      String soapRequest = LmngUtil.getLmngSoapRequestForIdpAndSp(lmngInstitutionId, articleIdentifiers, validOn, endpoint);
+      String soapRequest = lmngUtil.getLmngSoapRequestForIdpAndSp(lmngInstitutionId, articleIdentifiers, new Date(), endpoint);
       if (debug) {
-        LmngUtil.writeIO("lmngRequest", StringEscapeUtils.unescapeHtml(soapRequest));
+        lmngUtil.writeIO("lmngRequest", StringEscapeUtils.unescapeHtml(soapRequest));
       }
 
       // call the webservice
       String webserviceResult = getWebServiceResult(soapRequest);
       // read/parse the XML response to License objects
-      result = LmngUtil.parseLicensesResult(webserviceResult, debug);
+      result = lmngUtil.parseLicensesResult(webserviceResult, debug);
     } catch (Exception e) {
       String exceptionMessage = "Exception while retrieving licenses" + e.getMessage();
       log.error(exceptionMessage, e);
@@ -133,6 +116,7 @@ public class LmngServiceImpl implements CrmService {
     return result;
   }
 
+  @Cacheable(value = "crm")
   @Override
   public List<Article> getArticlesForServiceProviders(List<String> serviceProvidersEntityIds) throws LmngException {
     List<Article> result = new ArrayList<Article>();
@@ -145,15 +129,15 @@ public class LmngServiceImpl implements CrmService {
       }
 
       // get the file with the soap request
-      String soapRequest = LmngUtil.getLmngSoapRequestForSps(serviceIds.keySet(), endpoint);
+      String soapRequest = lmngUtil.getLmngSoapRequestForSps(serviceIds.keySet(), endpoint);
       if (debug) {
-        LmngUtil.writeIO("lmngRequest", StringEscapeUtils.unescapeHtml(soapRequest));
+        lmngUtil.writeIO("lmngRequest", StringEscapeUtils.unescapeHtml(soapRequest));
       }
 
       // call the webservice
       String webserviceResult = getWebServiceResult(soapRequest);
       // read/parse the XML response to License objects
-      List<Article> parsedArticles = LmngUtil.parseArticlesResult(webserviceResult, debug);
+      List<Article> parsedArticles = lmngUtil.parseArticlesResult(webserviceResult, debug);
 
       for (Article article : parsedArticles) {
         article.setServiceProviderEntityId(serviceIds.get(article.getLmngIdentifier()));
@@ -168,26 +152,28 @@ public class LmngServiceImpl implements CrmService {
     return result;
   }
 
+  @Cacheable(value = "crm")
   @Override
   public String getServiceName(String guid) {
     Article article = getService(guid);
     return article == null ? null : article.getArticleName();
   }
-  
+
+  @Cacheable(value = "crm")
   @Override
   public Article getService(final String guid) {
     Article result = null;
     try {
       // get the file with the soap request
-      String soapRequest = LmngUtil.getLmngSoapRequestForSps(Arrays.asList(new String[]{guid}), endpoint);
+      String soapRequest = lmngUtil.getLmngSoapRequestForSps(Arrays.asList(new String[]{guid}), endpoint);
       if (debug) {
-        LmngUtil.writeIO("lmngRequest", StringEscapeUtils.unescapeHtml(soapRequest));
+        lmngUtil.writeIO("lmngRequest", StringEscapeUtils.unescapeHtml(soapRequest));
       }
 
       // call the webservice
       String webserviceResult = getWebServiceResult(soapRequest);
       // read/parse the XML response to License objects
-      List<Article> resultList = LmngUtil.parseArticlesResult(webserviceResult, debug);
+      List<Article> resultList = lmngUtil.parseArticlesResult(webserviceResult, debug);
       if (resultList != null && resultList.size() > 0) {
         result = resultList.get(0);
       }
@@ -203,14 +189,14 @@ public class LmngServiceImpl implements CrmService {
     List<Account> accounts = new ArrayList<Account>();
     try {
       // get the file with the soap request
-      String soapRequest = LmngUtil.getLmngSoapRequestForAllAccount(isInstitution, endpoint);
+      String soapRequest = lmngUtil.getLmngSoapRequestForAllAccount(isInstitution, endpoint);
       if (debug) {
-        LmngUtil.writeIO("lmngRequest", StringEscapeUtils.unescapeHtml(soapRequest));
+        lmngUtil.writeIO("lmngRequest", StringEscapeUtils.unescapeHtml(soapRequest));
       }
       // call the webservice
       String webserviceResult = getWebServiceResult(soapRequest);
       // read/parse the XML response to Account objects
-      accounts = LmngUtil.parseAccountsResult(webserviceResult, debug);
+      accounts = lmngUtil.parseAccountsResult(webserviceResult, debug);
     } catch (Exception e) {
       log.error("Exception while retrieving article/license", e);
       sendErrorMail("n/a", e.getMessage(), "getAccounts");
@@ -219,13 +205,14 @@ public class LmngServiceImpl implements CrmService {
   }
 
   @Override
+  @Cacheable(value = "crm")
   public String getInstitutionName(String guid) {
     String result = null;
     try {
       ClassPathResource queryResource = new ClassPathResource(PATH_FETCH_QUERY_GET_INSTITUTION);
 
       // Get the soap/fetch envelope
-      String soapRequest = LmngUtil.getLmngRequestEnvelope();
+      String soapRequest = lmngUtil.getLmngRequestEnvelope();
 
       InputStream inputStream;
       inputStream = queryResource.getInputStream();
@@ -241,11 +228,11 @@ public class LmngServiceImpl implements CrmService {
       soapRequest = soapRequest.replaceAll(LmngUtil.UID_PLACEHOLDER, UUID.randomUUID().toString());
 
       if (debug) {
-        LmngUtil.writeIO("lmngRequestInstitution", StringEscapeUtils.unescapeHtml(soapRequest));
+        lmngUtil.writeIO("lmngRequestInstitution", StringEscapeUtils.unescapeHtml(soapRequest));
       }
 
       String webserviceResult = getWebServiceResult(soapRequest);
-      result = LmngUtil.parseResultInstitute(webserviceResult, debug);
+      result = lmngUtil.parseResultInstitute(webserviceResult, debug);
     } catch (Exception e) {
       log.error("Exception while retrieving article/license", e);
       sendErrorMail(guid, e.getMessage(), "getInstitutionName");
@@ -267,7 +254,7 @@ public class LmngServiceImpl implements CrmService {
    * @throws UnrecoverableKeyException
    * @throws KeyManagementException
    */
-  private String getWebServiceResult(final String soapRequest) throws ClientProtocolException, IOException, KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
+  protected String getWebServiceResult(final String soapRequest) throws ClientProtocolException, IOException, KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
     log.debug("Calling the LMNG proxy webservice.");
 
     HttpPost httppost = new HttpPost(endpoint);
@@ -288,14 +275,14 @@ public class LmngServiceImpl implements CrmService {
     String stringResponse = writer.toString();
 
     if (debug) {
-      LmngUtil.writeIO("lmngWsResponseStatus" + status, StringEscapeUtils.unescapeHtml(stringResponse));
+      lmngUtil.writeIO("lmngWsResponseStatus" + status, StringEscapeUtils.unescapeHtml(stringResponse));
     }
 
-    long durationSeconds = (afterCall.getTime() - beforeCall.getTime()) / 1000;
-    log.warn("LMNG proxy webservice called in " + durationSeconds + " seconds. Http response:" + httpresponse);
+    long duration = (afterCall.getTime() - beforeCall.getTime());
+    log.info("LMNG proxy webservice called in {} ms. Http response: {}", duration, httpresponse);
 
     if (status != 200) {
-      log.debug("LMNG webservice response content is:\n" + stringResponse);
+      log.debug("LMNG webservice response content is:\n{}", stringResponse);
       throw new RuntimeException("Invalid response from LMNG webservice. Http response " + httpresponse);
     }
     return stringResponse;
@@ -428,7 +415,7 @@ public class LmngServiceImpl implements CrmService {
   @Override
   public String performQuery(String rawQuery) {
     try {
-      String soapRequest = LmngUtil.getLmngRequestEnvelope();
+      String soapRequest = lmngUtil.getLmngRequestEnvelope();
       String query = StringEscapeUtils.escapeHtml(rawQuery);
       soapRequest = soapRequest.replaceAll(LmngUtil.QUERY_PLACEHOLDER, query);
       soapRequest = soapRequest.replaceAll(LmngUtil.ENDPOINT_PLACEHOLDER, endpoint);
@@ -440,4 +427,12 @@ public class LmngServiceImpl implements CrmService {
     }
   }
 
+  @Override
+  @CacheEvict(value = "crm", allEntries = true)
+  public void evictCache() {
+  }
+
+  public void setLmngUtil(CrmUtil lmngUtil) {
+    this.lmngUtil = lmngUtil;
+  }
 }

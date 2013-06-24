@@ -23,6 +23,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.ParserContext;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +66,6 @@ public class ResourceBundleUtils {
 
   @Test
   public void findUsedProperties() throws IOException {
-
     //IOUtils.writeLines(findUnusedKeys(), null, System.out);
   }
 

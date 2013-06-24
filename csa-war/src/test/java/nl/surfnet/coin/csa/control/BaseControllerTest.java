@@ -75,19 +75,9 @@ public class BaseControllerTest {
     IdentityProvider idp2 = new IdentityProvider();
     idp2.setId("idpId_2");
     when(coinUser.getInstitutionIdps()).thenReturn(Arrays.asList(idp1, idp2));
+    when(coinUser.getIdp()).thenReturn(idp2);
 
-    final IdentityProvider identityProvider = baseController.getRequestedIdp("idpId_2", request);
-    assertEquals(idp2, identityProvider);
-  }
-
-  @Test
-  public void testSelectedIdP_alreadySet() throws Exception {
-    IdentityProvider idp2 = new IdentityProvider();
-    idp2.setId("idpId_2");
-    MockHttpServletRequest request = new MockHttpServletRequest();
-    request.getSession().setAttribute("selectedidp", idp2);
-
-    final IdentityProvider identityProvider = baseController.getRequestedIdp(null, request);
+    final IdentityProvider identityProvider = baseController.getSelectedIdp(request);
     assertEquals(idp2, identityProvider);
   }
 

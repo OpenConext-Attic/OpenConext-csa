@@ -16,18 +16,20 @@
 
 package nl.surfnet.coin.csa.api.control;
 
-import static java.util.Collections.sort;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import nl.surfnet.coin.csa.api.cache.ProviderCache;
+import nl.surfnet.coin.csa.api.cache.ServicesCache;
 import nl.surfnet.coin.csa.dao.FacetDao;
 import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
-import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.domain.Screenshot;
 import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
 import nl.surfnet.coin.csa.model.Category;
@@ -51,9 +53,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+
 @Controller
 @RequestMapping
-public class ServicesController extends BaseApiController {
+public class ServicesController extends BaseApiController implements ServicesService {
+
+  @Resource
+  private ServicesCache servicesCache;
+
+  @Resource
+  private ProviderCache providerCache;
 
   private
   @Value("${WEB_APPLICATION_CHANNEL}")
@@ -83,35 +92,32 @@ public class ServicesController extends BaseApiController {
   @Value("${public.api.lmng.guids}")
   private String[] guids;
 
+  @Override
+  public Map<String, List<Service>> findAll() {
+    List<CompoundServiceProvider> allCSPs = compoundSPService.getAllCSPs();
+    List<Service> servicesEn = buildApiServices(allCSPs, "en");
+    List<Service> servicesNl = buildApiServices(allCSPs, "nl");
+    List<Service> crmOnlyServices = getCrmOnlyServices();
+    servicesEn.addAll(crmOnlyServices);
+    servicesNl.addAll(crmOnlyServices);
+    Map<String, List<Service>> result = new HashMap<String, List<Service>>();
+    result.put("en", servicesEn);
+    result.put("nl", servicesNl);
+    return result;
+  }
+
   @RequestMapping(method = RequestMethod.GET, value = "/api/public/services.json")
   public
   @ResponseBody
   List<Service> getPublicServices(@RequestParam(value = "lang", defaultValue = "en") String language) {
-    List<CompoundServiceProvider> csPs = compoundSPService.getAllPublicCSPs();
-    List<Service> result = buildApiServices(csPs, language);
-
-    // add public service from LMNG directly
-    for (String guid : guids) {
-      Article currentArticle = lmngService.getService(guid);
-      Service currentPS = new Service(0L, currentArticle.getServiceDescriptionNl(), currentArticle.getDetailLogo(),
-              null, true, lmngDeepLinkBaseUrl + guid, null);
-      result.add(currentPS);
-    }
-    sort(result);
-    return result;
-  }
-
-  /**
-   * Returns an absolute URL for the given url
-   */
-  private String absoluteUrl(final String relativeUrl) {
-    String result = relativeUrl;
-    if (result != null) {
-      if (result.startsWith("/")) {
-        result = protocol + "://" + hostAndPort + (StringUtils.hasText(contextPath) ? contextPath : "") + result;
+    List<Service> allServices = servicesCache.getAllServices(language);
+    List<Service> publicServices = new ArrayList<Service>();
+    for (Service service : allServices) {
+      if (!service.isAvailableForEndUser()) {
+        publicServices.add(service);
       }
     }
-    return result;
+    return publicServices;
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/services.json")
@@ -120,7 +126,10 @@ public class ServicesController extends BaseApiController {
   List<Service> getProtectedServices(@RequestParam(value = "lang", defaultValue = "en") String language,
                                      final HttpServletRequest request) {
     String ipdEntityId = getIdpEntityIdFromToken(request);
-    return doGetServicesForIdP(language, ipdEntityId);
+    /*
+     * Non-client-credential client where we only return linked services
+     */
+    return doGetServicesForIdP(language, ipdEntityId, false);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/service.json")
@@ -143,7 +152,10 @@ public class ServicesController extends BaseApiController {
           @RequestParam(value = "idpEntityId") String idpEntityId,
           final HttpServletRequest request) {
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
-    return doGetServicesForIdP(language, idpEntityId);
+    /*
+     * Client-credential client where we also return non-linked services (e.g. dashboard functionality)
+     */
+    return doGetServicesForIdP(language, idpEntityId, true);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/services/{serviceId}.json")
@@ -155,26 +167,24 @@ public class ServicesController extends BaseApiController {
           @RequestParam(value = "idpEntityId") String idpEntityId,
           final HttpServletRequest request) {
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
-    IdentityProvider identityProvider = idpService.getIdentityProvider(idpEntityId);
-    CompoundServiceProvider csp = compoundSPService.getCSPById(identityProvider, serviceId, false);
-    return buildApiService(csp, language);
-  }
-
-  private List<Service> doGetServicesForIdP(String language, String ipdEntityId) {
-    IdentityProvider identityProvider = idpService.getIdentityProvider(ipdEntityId);
-    List<CompoundServiceProvider> csPs = compoundSPService.getCSPsByIdp(identityProvider);
-    List<CompoundServiceProvider> scopedSsPs = new ArrayList<CompoundServiceProvider>();
-    /*
-     * We only want the SP's that are currently linked to the IdP, not the also included SP's that are NOT IdP-only
-     */
-    for (CompoundServiceProvider csp : csPs) {
-      if (csp.getServiceProvider().isLinked() && !csp.isHideInProtectedCsa()) {
-        scopedSsPs.add(csp);
+    List<Service> allServices = servicesCache.getAllServices(language);
+    for (Service service : allServices) {
+      if (service.getId() == serviceId) {
+        return service;
       }
     }
-    List<Service> result = buildApiServices(scopedSsPs, language);
+    throw new RuntimeException("Non-existen service ID('" + serviceId + "')");
+  }
 
-    sort(result);
+  private List<Service> doGetServicesForIdP(String language, String idpEntityId, boolean includeNotLinkedSPs) {
+    List<String> serviceProviderIdentifiers = providerCache.getServiceProviderIdentifiers(idpEntityId);
+    List<Service> allServices = servicesCache.getAllServices(language);
+    List<Service> result = new ArrayList<Service>();
+    for (Service service : allServices) {
+      if (serviceProviderIdentifiers.contains(service.getSpEntityId()) || includeNotLinkedSPs) {
+        result.add(service);
+      }
+    }
     return result;
   }
 
@@ -293,6 +303,7 @@ public class ServicesController extends BaseApiController {
     service.setWebsiteUrl(csp.getServiceUrl());
     service.setConnected(csp.getSp().isLinked());
     service.setArp(csp.getSp().getArp());
+    service.setAvailableForEndUser(csp.isAvailableForEndUser());
   }
 
   private Category findCategory(List<Category> categories, Facet facet) {
@@ -302,6 +313,30 @@ public class ServicesController extends BaseApiController {
       }
     }
     return null;
+  }
+
+  /**
+   * Returns an absolute URL for the given url
+   */
+  private String absoluteUrl(final String relativeUrl) {
+    String result = relativeUrl;
+    if (result != null) {
+      if (result.startsWith("/")) {
+        result = protocol + "://" + hostAndPort + (StringUtils.hasText(contextPath) ? contextPath : "") + result;
+      }
+    }
+    return result;
+  }
+
+  private List<Service> getCrmOnlyServices() {
+    List<Service> result = new ArrayList<Service>();
+    for (String guid : guids) {
+      Article currentArticle = lmngService.getService(guid);
+      Service currentPS = new Service(0L, currentArticle.getServiceDescriptionNl(), currentArticle.getDetailLogo(),
+              null, true, lmngDeepLinkBaseUrl + guid, null);
+      result.add(currentPS);
+    }
+    return result;
   }
 
 }

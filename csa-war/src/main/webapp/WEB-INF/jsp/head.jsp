@@ -56,6 +56,11 @@
 
     <nav class="primary-navigation">
       <ul>
+        <li>
+          <a href="<spring:url value="/shopadmin/clean-crm-cache.shtml"/>">
+            <spring:message code="jsp.general.clean.cache" />
+          </a>
+        </li>
         <li class="user">
           <spring:message code="jsp.general.welcome" />
           <span>

@@ -101,7 +101,9 @@ public abstract class OauthClient {
 
     String fullUrl = url;
 
-    LOG.debug("Will send {}-request to {}, with parameters {} and body: {}", method.name(), fullUrl, variables, bodyJson);
+    if (LOG.isTraceEnabled()) {
+      LOG.trace("Will send {}-request to {}, with parameters {} and body: {}", method.name(), fullUrl, variables, bodyJson);
+    }
 
     ResponseEntity<T> response;
 
@@ -117,20 +119,20 @@ public abstract class OauthClient {
         accessToken = null;
         return doExchange(url, variables, bodyJson, clazz, false);
       } else {
-        LOG.info("Error during request to CSA. Response body: {}", clientException.getResponseBodyAsString());
+        LOG.info("Error during request to Resource Server {}. Response body: {}", url, clientException.getResponseBodyAsString());
         throw clientException;
       }
     } catch (HttpServerErrorException serverException) {
-      LOG.info("Error during request to CSA. Response body: {}", serverException.getResponseBodyAsString());
+      LOG.info("Error during request to Resource Server {}. Response body: {}", url, serverException.getResponseBodyAsString());
       throw serverException;
     }
 
 
     T body = response.getBody();
 
-    if (LOG.isDebugEnabled()) {
+    if (LOG.isTraceEnabled()) {
       try {
-        LOG.debug("Response: {}", objectMapper.writeValueAsString(body));
+        LOG.trace("Response: {}", objectMapper.writeValueAsString(body));
       } catch (IOException e) {
         LOG.info("Could not serialize response object for logging: {}", e.getMessage());
       }

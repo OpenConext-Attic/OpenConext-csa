@@ -18,6 +18,7 @@ package nl.surfnet.coin.csa.api.control;
 
 import nl.surfnet.coin.csa.model.*;
 import nl.surfnet.coin.csa.dao.FacetDao;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +36,7 @@ public class TaxonomyApiController extends BaseApiController{
   private FacetDao facetDao;
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/public/taxonomy.json")
+  @Cacheable(value = "csaApi")
   public @ResponseBody
   Taxonomy getTaxonomy(@RequestParam(value = "lang", defaultValue = "en") String language) {
     List<Facet> facets = facetDao.findAll();

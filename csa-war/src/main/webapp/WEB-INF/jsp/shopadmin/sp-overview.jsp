@@ -41,12 +41,8 @@
             <i class="inlinehelp icon-question-sign" data-title="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.idponly" />" data-content="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.idponly.help" />"></i>
           </th>
           <th>
-            <spring:message code="jsp.lmng_binding_overview.idphide"/>
-            <i class="inlinehelp icon-question-sign" data-title="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.idphide" />" data-content="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.idphide.help" />"></i>
-          </th>
-          <th>
-            <spring:message code="jsp.lmng_binding_overview.idphide_protected"/>
-            <i class="inlinehelp icon-question-sign" data-title="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.idphide_protected" />" data-content="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.idphide_protected.help" />"></i>
+            <spring:message code="jsp.lmng_binding_overview.enduser"/>
+            <i class="inlinehelp icon-question-sign" data-title="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.enduser" />" data-content="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.enduser.help" />"></i>
           </th>
           <th>
             <spring:message code="jsp.lmng_binding_overview.lmngid"/>
@@ -98,13 +94,8 @@
               </td>
               <td class="center">
                 <input type="hidden" name="tokencheck" value="<c:out value='${tokencheck}'/>"/>
-                <c:set var="checked" value="${binding.compoundServiceProvider.hideInPublicCsa}"></c:set>
-                <input type="checkbox" name="hideInPublicCsa" value="${checked}" data-compound-service-provider-id="${binding.compoundServiceProvider.id}" ${checked ? 'checked' : ''}>
-              </td>
-              <td class="center">
-                <input type="hidden" name="tokencheck" value="<c:out value='${tokencheck}'/>"/>
-                <c:set var="checked" value="${binding.compoundServiceProvider.hideInProtectedCsa}"></c:set>
-                <input type="checkbox" name="hideInProtectedCsa" value="${checked}" data-compound-service-provider-id="${binding.compoundServiceProvider.id}" ${checked ? 'checked' : ''}>
+                <c:set var="checked" value="${binding.compoundServiceProvider.availableForEndUser}"></c:set>
+                <input type="checkbox" name="availableForEndUser" value="${checked}" data-compound-service-provider-id="${binding.compoundServiceProvider.id}" ${checked ? 'checked' : ''}>
               </td>
               <td>
   			  <form:form id="form-${status.index}" method="post" action="save-splmng.shtml#row${status.index}" style="margin:0" cssClass="lmng-id-edit">

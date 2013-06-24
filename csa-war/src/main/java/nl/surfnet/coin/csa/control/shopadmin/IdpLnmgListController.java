@@ -40,6 +40,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequestMapping(value = "/shopadmin/*")
@@ -54,6 +55,8 @@ public class IdpLnmgListController extends BaseController {
 
   @Autowired
   private LmngIdentifierDao lmngIdentifierDao;
+
+  private LmngUtil lmngUtil = new LmngUtil();
 
   @RequestMapping(value = "/all-idpslmng")
   public ModelAndView listAllIdps(Map<String, Object> model) {
@@ -89,7 +92,7 @@ public class IdpLnmgListController extends BaseController {
       lmngId = null;
     } else {
       // extra validation (also done in frontend/jquery)
-      if (!LmngUtil.isValidGuid(lmngId)) { 
+      if (!lmngUtil.isValidGuid(lmngId)) {
         model.put("errorMessage", "jsp.lmng_binding_overview.wrong.guid");
         model.put("messageIndex", index);
         return listAllIdps(model);
@@ -109,5 +112,15 @@ public class IdpLnmgListController extends BaseController {
     lmngIdentifierDao.saveOrUpdateLmngIdForIdentityProviderId(idpId, lmngId);
     return listAllIdps(model);
   }
+
+  @RequestMapping(value = "/clean-crm-cache", method = RequestMethod.GET)
+  public RedirectView cleanCrmCache() {
+    log.info("Cleaning CRM cache");
+    licensingService.evictCache();
+    return new RedirectView("all-spslmng.shtml", true);
+  }
+
+
+
 
 }
