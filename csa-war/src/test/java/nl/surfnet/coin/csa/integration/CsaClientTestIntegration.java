@@ -200,7 +200,7 @@ public class CsaClientTestIntegration {
   @Test
   public void protectedServices() throws IOException {
     List<Service> protectedServices = csaClient.getProtectedServices();
-    assertEquals(4, protectedServices.size());
+    assertEquals(3, protectedServices.size());
     for (Service service : protectedServices) {
       assertNotNull(service);
     }
