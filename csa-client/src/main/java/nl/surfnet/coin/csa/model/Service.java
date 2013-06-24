@@ -89,6 +89,8 @@ public class Service implements Comparable<Service> {
 
   private boolean availableForEndUser;
 
+  private boolean idpVisibleOnly;
+
   public Service() {
   }
 
@@ -335,5 +337,13 @@ public class Service implements Comparable<Service> {
 
   public void setAvailableForEndUser(boolean availableForEndUser) {
     this.availableForEndUser = availableForEndUser;
+  }
+
+  public boolean isIdpVisibleOnly() {
+    return idpVisibleOnly;
+  }
+
+  public void setIdpVisibleOnly(boolean idpVisibleOnly) {
+    this.idpVisibleOnly = idpVisibleOnly;
   }
 }

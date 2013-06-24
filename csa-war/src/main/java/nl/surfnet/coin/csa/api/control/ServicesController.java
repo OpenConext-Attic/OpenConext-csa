@@ -113,7 +113,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
     List<Service> allServices = servicesCache.getAllServices(language);
     List<Service> publicServices = new ArrayList<Service>();
     for (Service service : allServices) {
-      if (!service.isAvailableForEndUser()) {
+      if (service.isAvailableForEndUser() && !service.isIdpVisibleOnly()) {
         publicServices.add(service);
       }
     }
@@ -181,7 +181,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
     List<Service> allServices = servicesCache.getAllServices(language);
     List<Service> result = new ArrayList<Service>();
     for (Service service : allServices) {
-      if (serviceProviderIdentifiers.contains(service.getSpEntityId()) || includeNotLinkedSPs) {
+      if ((service.isAvailableForEndUser() && serviceProviderIdentifiers.contains(service.getSpEntityId())) || includeNotLinkedSPs) {
         result.add(service);
       }
     }
@@ -271,6 +271,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
       service.setInstitutionDescription(csp.getInstitutionDescriptionEn());
       service.setServiceUrl(csp.getSupportUrlEn());
     } else {
+      service.setDescription(csp.getServiceDescriptionNl());
       service.setEnduserDescription(csp.getEnduserDescriptionNl());
       service.setName(csp.getTitleNl());
       service.setSupportUrl(csp.getSupportUrlNl());
@@ -304,6 +305,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
     service.setConnected(csp.getSp().isLinked());
     service.setArp(csp.getSp().getArp());
     service.setAvailableForEndUser(csp.isAvailableForEndUser());
+    service.setIdpVisibleOnly(csp.getSp().isIdpVisibleOnly());
   }
 
   private Category findCategory(List<Category> categories, Facet facet) {
