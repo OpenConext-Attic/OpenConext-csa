@@ -69,13 +69,16 @@ public class SpLnmgListController extends BaseController {
 
   @RequestMapping(value = "/all-spslmng")
   public ModelAndView listAllSpsLmng(Map<String, Object> model) {
-    List<CompoundServiceProvider> services = compoundSPService.getAllCSPs();
+    //What the heck is this, if removed the code below will find nothing ???
+    //HUH ?!?
+    compoundSPService.getAllCSPs();
 
     List<LmngServiceBinding> lmngServiceBindings = new ArrayList<LmngServiceBinding>();
     for (ServiceProvider serviceProvider : providerService.getAllServiceProviders()) {
       String lmngIdentifier = lmngIdentifierDao.getLmngIdForServiceProviderId(serviceProvider.getId());
       CompoundServiceProvider compoundServiceProvider = compoundServiceProviderDao.findByEntityId(serviceProvider.getId());
       if (compoundServiceProvider != null) {
+        compoundServiceProvider.setServiceProvider(serviceProvider);
         lmngServiceBindings.add(new LmngServiceBinding(lmngIdentifier, serviceProvider, compoundServiceProvider));
       }
     }

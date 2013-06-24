@@ -15,12 +15,55 @@
  */
 package nl.surfnet.coin.csa.domain;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static nl.surfnet.coin.csa.domain.Field.Key.APPSTORE_LOGO;
+import static nl.surfnet.coin.csa.domain.Field.Key.APP_URL;
+import static nl.surfnet.coin.csa.domain.Field.Key.DETAIL_LOGO;
+import static nl.surfnet.coin.csa.domain.Field.Key.ENDUSER_DESCRIPTION_EN;
+import static nl.surfnet.coin.csa.domain.Field.Key.ENDUSER_DESCRIPTION_NL;
+import static nl.surfnet.coin.csa.domain.Field.Key.EULA_URL;
+import static nl.surfnet.coin.csa.domain.Field.Key.INSTITUTION_DESCRIPTION_EN;
+import static nl.surfnet.coin.csa.domain.Field.Key.INSTITUTION_DESCRIPTION_NL;
+import static nl.surfnet.coin.csa.domain.Field.Key.SERVICE_DESCRIPTION_EN;
+import static nl.surfnet.coin.csa.domain.Field.Key.SERVICE_DESCRIPTION_NL;
+import static nl.surfnet.coin.csa.domain.Field.Key.SERVICE_URL;
+import static nl.surfnet.coin.csa.domain.Field.Key.SUPPORT_MAIL;
+import static nl.surfnet.coin.csa.domain.Field.Key.SUPPORT_URL_EN;
+import static nl.surfnet.coin.csa.domain.Field.Key.SUPPORT_URL_NL;
+import static nl.surfnet.coin.csa.domain.Field.Key.TECHNICAL_SUPPORTMAIL;
+import static nl.surfnet.coin.csa.domain.Field.Key.TITLE_EN;
+import static nl.surfnet.coin.csa.domain.Field.Key.TITLE_NL;
+import static org.springframework.util.StringUtils.hasText;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+
 import nl.surfnet.coin.csa.domain.Field.Key;
 import nl.surfnet.coin.csa.domain.Field.Source;
 import nl.surfnet.coin.csa.domain.Provider.Language;
 import nl.surfnet.coin.csa.model.FacetValue;
 import nl.surfnet.coin.csa.model.License;
 import nl.surfnet.coin.shared.domain.DomainObject;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -31,15 +74,6 @@ import org.hibernate.annotations.SortType;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-
-import javax.persistence.*;
-import java.io.IOException;
-import java.util.*;
-
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-import static nl.surfnet.coin.csa.domain.Field.Key.*;
-import static org.springframework.util.StringUtils.hasText;
 
 
 /**
@@ -95,29 +129,30 @@ public class CompoundServiceProvider extends DomainObject {
 
     byte[] appStoreLogoImageBytes = getImageBytesFromClasspath("300x300.png");
     byte[] detailLogoImageBytes = getImageBytesFromClasspath("500x300.png");
-    String todo = null;
 
     CompoundServiceProvider provider = new CompoundServiceProvider();
     provider.setServiceProvider(serviceProvider);
     provider.setArticle(article);
     provider.setAvailableForEndUser(!serviceProvider.isIdpVisibleOnly());
 
+    buildFieldString(Key.TITLE_EN, null, serviceProvider.getName(Language.EN), provider);
+    buildFieldString(Key.TITLE_NL, null, serviceProvider.getName(Language.NL), provider);
     buildFieldImage(Key.APPSTORE_LOGO, null, null, appStoreLogoImageBytes, provider);
-    buildFieldString(Key.APP_URL, null, serviceProvider.getApplicationUrl(), todo, provider);
+    buildFieldString(Key.APP_URL, null, serviceProvider.getApplicationUrl(), provider);
     buildFieldImage(Key.DETAIL_LOGO, article.getDetailLogo(), serviceProvider.getLogoUrl(), detailLogoImageBytes, provider);
-    buildFieldString(Key.ENDUSER_DESCRIPTION_EN, null, serviceProvider.getDescription(Language.EN), todo, provider);
-    buildFieldString(Key.ENDUSER_DESCRIPTION_NL, article.getEndUserDescriptionNl(), serviceProvider.getDescription(Language.NL), todo,
+    buildFieldString(Key.ENDUSER_DESCRIPTION_EN, null, serviceProvider.getDescription(Language.EN), provider);
+    buildFieldString(Key.ENDUSER_DESCRIPTION_NL, article.getEndUserDescriptionNl(), serviceProvider.getDescription(Language.NL),
         provider);
-    buildFieldString(Key.EULA_URL, null, serviceProvider.getEulaURL(), todo, provider);
-    buildFieldString(Key.INSTITUTION_DESCRIPTION_EN, null, null, todo, provider);
-    buildFieldString(Key.INSTITUTION_DESCRIPTION_NL, article.getInstitutionDescriptionNl(), null, todo, provider);
-    buildFieldString(Key.SERVICE_DESCRIPTION_EN, null, serviceProvider.getName(Language.EN), todo, provider);
-    buildFieldString(Key.SERVICE_DESCRIPTION_NL, article.getServiceDescriptionNl(), serviceProvider.getName(Language.NL), todo, provider);
-    buildFieldString(Key.SERVICE_URL, null, getServiceUrl(serviceProvider), todo, provider);
-    buildFieldString(Key.SUPPORT_MAIL, null, getMail(serviceProvider, ContactPersonType.help), todo, provider);
-    buildFieldString(Key.SUPPORT_URL_NL, null, getSupportUrl(serviceProvider, Language.NL), todo, provider);
-    buildFieldString(Key.SUPPORT_URL_EN, null, getSupportUrl(serviceProvider, Language.EN), todo, provider);
-    buildFieldString(Key.TECHNICAL_SUPPORTMAIL, null, getMail(serviceProvider, ContactPersonType.technical), todo, provider);
+    buildFieldString(Key.EULA_URL, null, serviceProvider.getEulaURL(), provider);
+    buildFieldString(Key.INSTITUTION_DESCRIPTION_EN, null, null, provider);
+    buildFieldString(Key.INSTITUTION_DESCRIPTION_NL, article.getInstitutionDescriptionNl(), null, provider);
+    buildFieldString(Key.SERVICE_DESCRIPTION_EN, null, serviceProvider.getName(Language.EN), provider);
+    buildFieldString(Key.SERVICE_DESCRIPTION_NL, article.getServiceDescriptionNl(), serviceProvider.getName(Language.NL), provider);
+    buildFieldString(Key.SERVICE_URL, null, getServiceUrl(serviceProvider), provider);
+    buildFieldString(Key.SUPPORT_MAIL, null, getMail(serviceProvider, ContactPersonType.help), provider);
+    buildFieldString(Key.SUPPORT_URL_NL, null, getSupportUrl(serviceProvider, Language.NL), provider);
+    buildFieldString(Key.SUPPORT_URL_EN, null, getSupportUrl(serviceProvider, Language.EN), provider);
+    buildFieldString(Key.TECHNICAL_SUPPORTMAIL, null, getMail(serviceProvider, ContactPersonType.technical), provider);
 
     return provider;
   }
@@ -170,6 +205,14 @@ public class CompoundServiceProvider extends DomainObject {
     return lmngId;
   }
 
+  public String getTitleNl() {
+    return (String) getFieldValue(TITLE_NL);
+  }
+  
+  public String getTitleEn() {
+    return (String) getFieldValue(TITLE_EN);
+  }
+  
   public String getServiceDescriptionNl() {
     return (String) getFieldValue(SERVICE_DESCRIPTION_NL);
   }
@@ -389,6 +432,10 @@ public class CompoundServiceProvider extends DomainObject {
       return cp != null ? cp.getEmailAddress() : null;
     case EULA_URL:
       return this.serviceProvider.getEulaURL();
+    case TITLE_EN:
+      return null != this.serviceProvider ? this.serviceProvider.getName(Language.EN) : this.serviceProviderEntityId;
+    case TITLE_NL:
+      return null != this.serviceProvider ? this.serviceProvider.getName(Language.NL) : this.serviceProviderEntityId;
     default:
       throw new RuntimeException("SURFConext does not support property: " + key);
     }
@@ -480,14 +527,14 @@ public class CompoundServiceProvider extends DomainObject {
   }
 
 
-  private static void buildFieldString(Key key, String lmng, String surfconext, String distributionChannel, CompoundServiceProvider provider) {
-    FieldString fieldString;
+  private static void buildFieldString(Key key, String lmng, String surfconext, CompoundServiceProvider provider) {
+    FieldString fieldString = null;
     if (hasText(lmng)) {
       fieldString = new FieldString(Source.LMNG, key, null);
     } else if (hasText(surfconext)) {
       fieldString = new FieldString(Source.SURFCONEXT, key, null);
     } else {
-      fieldString = new FieldString(Source.DISTRIBUTIONCHANNEL, key, distributionChannel);
+      fieldString = new FieldString(Source.DISTRIBUTIONCHANNEL, key, null);
     }
     
     updatePossibleFieldOrigin(fieldString);

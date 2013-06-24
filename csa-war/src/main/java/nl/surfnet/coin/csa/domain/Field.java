@@ -131,9 +131,11 @@ public abstract class Field extends DomainObject implements Comparable<Field> {
 
     SUPPORT_URL_EN,
 
-    TECHNICAL_SUPPORTMAIL;
+    TECHNICAL_SUPPORTMAIL,
     
+    TITLE_EN,
     
+    TITLE_NL;
   }
 
   public Source getSource() {
