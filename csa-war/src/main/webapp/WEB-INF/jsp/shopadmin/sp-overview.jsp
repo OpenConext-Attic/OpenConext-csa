@@ -75,18 +75,15 @@
             <tr>
               <td title="${binding.serviceProvider.id} - ${fn:substring(binding.serviceProvider.descriptions[locale.language], 0, 40)}">
                 <a id="row${status.index}"></a>
-                <a href="${detailUrl}"><%-- ${binding.compoundServiceProvider.serviceProviderEntityId}</a> --%>
-                 
-                <c:choose>
-								  <c:when test="${locale.language == 'en'}">
-								    <c:out value="${fn:substring(binding.compoundServiceProvider.titleEn, 0, 40)}" />
-								  </c:when>
-								
-								  <c:when test="${locale.language == 'nl'}">
-								    <c:out value="${fn:substring(binding.compoundServiceProvider.titleNl, 0, 40)}" />
-								  </c:when>
-								</c:choose>
-								
+                <a href="${detailUrl}">
+                  <c:choose>
+                    <c:when test="${locale.language == 'en'}">
+                      <c:out value="${fn:substring(binding.compoundServiceProvider.titleEn, 0, 40)}" />
+                    </c:when>
+                    <c:when test="${locale.language == 'nl'}">
+                      <c:out value="${fn:substring(binding.compoundServiceProvider.titleNl, 0, 40)}" />
+                    </c:when>
+                  </c:choose>
 								</a>
               </td>
               <td class="center">
