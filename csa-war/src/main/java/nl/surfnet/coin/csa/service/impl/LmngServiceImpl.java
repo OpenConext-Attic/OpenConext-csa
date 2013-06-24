@@ -29,7 +29,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
-import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -74,7 +74,14 @@ public class LmngServiceImpl implements CrmService {
   private boolean debug;
   private String endpoint;
 
-  private DefaultHttpClient httpclient;
+  private HttpClient httpclient;
+
+  public LmngServiceImpl() {
+        httpclient = new DefaultHttpClient();
+        httpclient.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
+        httpclient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+        httpclient.getParams().setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, "UTF-8");
+  }
 
   @Cacheable(value = "crm")
   @Override
@@ -246,14 +253,13 @@ public class LmngServiceImpl implements CrmService {
    *
    * @param soapRequest A string representation of the soap request
    * @return an inputstream of the webservice response
-   * @throws ClientProtocolException
    * @throws IOException
    * @throws KeyStoreException
    * @throws NoSuchAlgorithmException
    * @throws UnrecoverableKeyException
    * @throws KeyManagementException
    */
-  protected String getWebServiceResult(final String soapRequest) throws ClientProtocolException, IOException, KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
+  protected String getWebServiceResult(final String soapRequest) throws IOException, KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
     log.debug("Calling the LMNG proxy webservice.");
 
     HttpPost httppost = new HttpPost(endpoint);
@@ -261,8 +267,9 @@ public class LmngServiceImpl implements CrmService {
     httppost.setEntity(new StringEntity(soapRequest));
 
     long beforeCall = System.currentTimeMillis();
-    HttpResponse httpResponse = getHttpClient().execute(httppost);
+    HttpResponse httpResponse = httpclient.execute(httppost);
     long afterCall = System.currentTimeMillis();
+    log.info("LMNG proxy webservice called in {} ms. Http response: {}", afterCall - beforeCall, httpResponse);
 
     HttpEntity httpresponseEntity = httpResponse.getEntity();
 
@@ -270,27 +277,26 @@ public class LmngServiceImpl implements CrmService {
     int status = httpResponse.getStatusLine().getStatusCode();
     // Get String representation of response
     String stringResponse = IOUtils.toString(httpresponseEntity.getContent());
-    // Close the entity's InputStream, as prescribed.
-    httpresponseEntity.getContent().close();
 
     if (debug) {
       lmngUtil.writeIO("lmngWsResponseStatus" + status, StringEscapeUtils.unescapeHtml(stringResponse));
     }
 
-    log.info("LMNG proxy webservice called in {} ms. Http response: {}", afterCall - beforeCall, httpResponse);
 
     if (status != 200) {
       log.debug("LMNG webservice response content is:\n{}", stringResponse);
       throw new RuntimeException("Invalid response from LMNG webservice. Http response " + httpResponse);
     }
+
+    // Close the entity's InputStream, as prescribed.
+    httpresponseEntity.getContent().close();
+
     return stringResponse;
   }
 
   /**
    * Get the LMNG identifier for the given IDP
    *
-   * @param identityProvider
-   * @return
    */
   private String getLmngIdentityId(IdentityProvider identityProvider) {
     // currently institutionId can be null, so check first
@@ -304,7 +310,6 @@ public class LmngServiceImpl implements CrmService {
    * Get the LMNG identifier for the given SP
    *
    * @param serviceProviderEntityId
-   * @return
    */
   private String getLmngServiceId(String serviceProviderEntityId) {
     if (serviceProviderEntityId != null) {
@@ -316,7 +321,6 @@ public class LmngServiceImpl implements CrmService {
   /**
    * Get the LMNG identifiers for the given SP list
    *
-   * @param serviceProvidersEntityIds
    * @return a map with the LMNGID as key and serviceprovider entity ID as value
    */
   private Map<String, String> getLmngServiceIds(List<String> serviceProvidersEntityIds) {
@@ -384,19 +388,6 @@ public class LmngServiceImpl implements CrmService {
       return "UNKNOWN";
     }
   }
-
-  private DefaultHttpClient getHttpClient() throws KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
-    if (httpclient == null) {
-      httpclient = new DefaultHttpClient();
-
-      httpclient.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
-      httpclient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-      httpclient.getParams().setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, "UTF-8");
-    }
-
-    return httpclient;
-  }
-  // GETTERS AND SETTERS BELOW
 
   public void setEndpoint(String endpoint) {
     this.endpoint = endpoint;
