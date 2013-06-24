@@ -66,7 +66,7 @@ public abstract class AbstractCache implements InitializingBean, DisposableBean 
 
   @Override
   public void destroy() throws Exception {
-    LOG.debug("Cancelling timer for {}", getCacheName());
+    LOG.debug("Cancelling timer ({}) for {}", timer.toString(), getCacheName());
     timer.cancel();
   }
   
