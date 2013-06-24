@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import nl.surfnet.coin.csa.api.cache.ProviderCache;
 import nl.surfnet.coin.csa.api.cache.ServicesCache;
-import nl.surfnet.coin.csa.dao.FacetDao;
 import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.csa.domain.Screenshot;
@@ -40,7 +39,6 @@ import nl.surfnet.coin.csa.model.FacetValue;
 import nl.surfnet.coin.csa.model.License;
 import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.service.CrmService;
-import nl.surfnet.coin.csa.service.IdentityProviderService;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -83,11 +81,6 @@ public class ServicesController extends BaseApiController implements ServicesSer
   @Resource
   private CrmService lmngService;
 
-  @Resource
-  private FacetDao facetDao;
-
-  @Resource
-  private IdentityProviderService idpService;
 
   @Value("${public.api.lmng.guids}")
   private String[] guids;

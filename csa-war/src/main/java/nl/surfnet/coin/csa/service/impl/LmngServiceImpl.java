@@ -260,7 +260,7 @@ public class LmngServiceImpl implements CrmService {
    * @throws KeyManagementException
    */
   protected String getWebServiceResult(final String soapRequest) throws IOException, KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
-    log.debug("Calling the LMNG proxy webservice.");
+    log.debug("Calling the LMNG proxy webservice, endpoint: {}", endpoint);
 
     HttpPost httppost = new HttpPost(endpoint);
     httppost.setHeader("Content-Type", "application/soap+xml");
