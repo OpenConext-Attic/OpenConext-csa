@@ -44,7 +44,7 @@ var OAuth = function(opt) {
       + "?"
       + "response_type=token"
       + "&client_id=" + options.clientId
-      + "&scope=" + options.scope
+      + (options.scope ? "&scope=" + options.scope : "")
       + "&state=" + state
       + "&redirect_uri=" + options.redirectUri || context.location
   }

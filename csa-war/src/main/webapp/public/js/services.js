@@ -18,11 +18,9 @@ var services = function() {
 	function getUrlBase() {
 		var url = "";
 		if (window.location['host'] == 'localhost:8282') {
-			url = 'http://';
-			url += window.location['host'];
-			url += '/csa';
+			url = 'http://localhost:8282/csa';
 		} else {
-			url = 'https://csa.test.csa.surfconext.nl';
+			url = 'https://csa.showroom.surfconext.nl';
 		}
 		return url;
 	};
@@ -45,10 +43,9 @@ var services = function() {
 	
 	var auth = new OAuth({
 		  context:window,
-		  scope:"read",
-		  clientId:"cdk_example_gadget_app",
+		  clientId:"csa_example_gadget_app",
 		  redirectUri:baseUrl,
-		  authorizationEndpoint:"https://apis.test.csa.surfconext.nl/oauth2/authorize"
+		  authorizationEndpoint:"https://apis.showroom.surfconext.nl/oauth2/authorize"
 	});
 	
 
@@ -58,7 +55,9 @@ var services = function() {
 	        var services = [];
 	        jq.each(data, function (i, service) {
 	          var serviceItem = '<li>';
-	          serviceItem += "<img class='app-logo' src='" + service.logo_url_service + "'>";
+            if (service.logo_url_service) {
+	            serviceItem += "<img class='app-logo' src='" + service.logo_url_service + "'>";
+            }
 	          serviceItem += "<p>" + service.name + "</p>";
 
 	          if (service.website_service != undefined) {
