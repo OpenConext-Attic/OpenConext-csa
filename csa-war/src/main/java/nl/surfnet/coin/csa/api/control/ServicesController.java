@@ -113,7 +113,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
     List<Service> allServices = servicesCache.getAllServices(language);
     List<Service> publicServices = new ArrayList<Service>();
     for (Service service : allServices) {
-      if (!service.isAvailableForEndUser()) {
+      if (service.isAvailableForEndUser()) {
         publicServices.add(service);
       }
     }
