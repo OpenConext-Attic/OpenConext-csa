@@ -20,12 +20,13 @@ package nl.surfnet.coin.csa.api.cache;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.*;
 
-public abstract class AbstractCache implements InitializingBean {
+public abstract class AbstractCache implements InitializingBean, DisposableBean {
 
   protected static final Logger LOG = LoggerFactory.getLogger(AbstractCache.class);
 
@@ -33,20 +34,21 @@ public abstract class AbstractCache implements InitializingBean {
 
   private @Value("${cacheMillisecondsProviders}") long duration;
 
+  private final Timer timer = new Timer();
+
+
   @Override
   public void afterPropertiesSet() throws Exception {
     this.scheduleRefresh();
   }
 
   private void scheduleRefresh() {
-    Timer timer = new Timer();
-
     timer.scheduleAtFixedRate(new TimerTask() {
       @Override
       public void run() {
         LOG.info("Starting refreshing {} cache", getCacheName());
         try {
-            doAsyncScheduleAtFixedRate();
+          doAsyncScheduleAtFixedRate();
         } catch (Throwable t) {
           /*
            * Looks like anti pattern, but otherwise the repeated timer stops. See:
@@ -79,5 +81,11 @@ public abstract class AbstractCache implements InitializingBean {
 
   public void setDuration(long duration) {
     this.duration = duration;
+  }
+
+  @Override
+  public void destroy() throws Exception {
+    LOG.debug("Cancelling timer for {}", getCacheName());
+    timer.cancel();
   }
 }
