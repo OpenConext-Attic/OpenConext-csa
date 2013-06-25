@@ -16,6 +16,9 @@
 
 package nl.surfnet.coin.csa.domain;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import java.io.Serializable;
 
 /**
@@ -173,4 +176,10 @@ public class Article implements Serializable {
     this.lmngProductIdentifier = lmngProductIdentifier;
   }
 
+  public String toString() {
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+    .append("lmngIdentifier", lmngIdentifier)
+    .append("productName", productName)
+    .toString();
+  }
 }
