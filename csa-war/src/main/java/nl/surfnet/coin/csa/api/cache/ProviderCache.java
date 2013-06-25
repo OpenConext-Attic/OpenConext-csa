@@ -50,7 +50,7 @@ public class ProviderCache extends AbstractCache {
   }
 
   @Override
-  protected void doAsyncScheduleAtFixedRate() throws Exception {
+  protected void doPopulateCache() {
     Set<String> idpIdentifiers = cache.keySet();
     Map<String, List<String>> swap = new HashMap<String, List<String>>();
     for (String idpId : idpIdentifiers) {
@@ -64,10 +64,5 @@ public class ProviderCache extends AbstractCache {
   @Override
   protected String getCacheName() {
     return "Service Registry Cache";
-  }
-
-  @Override
-  public void evict() {
-    cache.clear();
   }
 }

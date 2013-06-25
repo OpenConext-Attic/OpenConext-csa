@@ -46,22 +46,24 @@ public abstract class AbstractCache implements InitializingBean, DisposableBean 
     timer.scheduleAtFixedRate(new TimerTask() {
       @Override
       public void run() {
-        LOG.info("Starting refreshing {} cache", getCacheName());
-        try {
-          doAsyncScheduleAtFixedRate();
-        } catch (Throwable t) {
-          /*
-           * Looks like anti pattern, but otherwise the repeated timer stops. See:
-           *
-           * http://stackoverflow.com/questions/8743027/java-timer-class-timer-tasks-stop-to-execute-if-in-one-of-the-tasks-exception-i
-           *
-           */
-          LOG.error("Error in the refresh of the cache", t);
-        } finally {
-          LOG.info("Finished refreshing {} cache", getCacheName());
-        }
+        populateCache();
       }
     }, getDelay(), getDuration());
+  }
+
+  private void populateCache() {
+    LOG.info("Starting refreshing {} cache", getCacheName());
+    try {
+      doPopulateCache();
+    } catch (Throwable t) {
+      /*
+       * Looks like anti pattern, but otherwise the repeated timer stops. See:
+       * http://stackoverflow.com/questions/8743027/java-timer-class-timer-tasks-stop-to-execute-if-in-one-of-the-tasks-exception-i
+       */
+      LOG.error("Error in the refresh of the cache", t);
+    } finally {
+      LOG.info("Finished refreshing {} cache", getCacheName());
+    }
   }
 
   @Override
@@ -69,10 +71,25 @@ public abstract class AbstractCache implements InitializingBean, DisposableBean 
     LOG.debug("Cancelling timer ({}) for {}", timer.toString(), getCacheName());
     timer.cancel();
   }
-  
-  protected abstract void doAsyncScheduleAtFixedRate() throws Exception;
+
+  /**
+   * Template method that defines how to populate a certain cache
+   */
+  protected abstract void doPopulateCache();
+
   protected abstract String getCacheName();
-  public abstract void evict();
+
+  /**
+   * Evicts the cache (asyncronously), effectively by scheduling a one time populate-job.
+   */
+  public void evict() {
+    timer.schedule(new TimerTask() {
+      @Override
+      public void run() {
+        populateCache();
+      }
+    }, 0L);
+  }
 
   public long getDelay() {
     return delay;

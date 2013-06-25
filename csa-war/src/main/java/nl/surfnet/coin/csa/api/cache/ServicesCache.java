@@ -51,7 +51,7 @@ public class ServicesCache extends AbstractCache {
   }
 
   @Override
-  protected void doAsyncScheduleAtFixedRate() throws Exception {
+  protected void doPopulateCache() {
     Map<String, List<Service>> services = service.findAll();
     cache.putAll(services);
   }
@@ -59,10 +59,5 @@ public class ServicesCache extends AbstractCache {
   @Override
   protected String getCacheName() {
     return "Services Cache";
-  }
-
-  @Override
-  public void evict() {
-    cache.clear();
   }
 }
