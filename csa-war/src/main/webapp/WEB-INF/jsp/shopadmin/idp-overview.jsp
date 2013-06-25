@@ -54,7 +54,7 @@
           <c:if test="${not empty binding.identityProvider.institutionId}">
             <tr>
               <td title="${binding.identityProvider.id} - ${binding.identityProvider.institutionId} - ${fn:substring(binding.identityProvider.descriptions[locale.language], 0, 40)}">
-                <a id="row${status.index}" />
+                <a id="row${status.index}"></a>
                 <tags:providername provider="${binding.identityProvider}"/>
               </td>
               <td class="text-overflow">

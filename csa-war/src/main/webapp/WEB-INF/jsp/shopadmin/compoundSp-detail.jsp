@@ -20,19 +20,15 @@
 <%--@elvariable id="compoundSp" type="nl.surfnet.coin.csa.domain.CompoundServiceProvider"--%>
 
 
-<c:set var="title">
-  <tags:providername provider="${compoundSp.sp}"/>
-</c:set>
-
 <jsp:include page="../head.jsp">
-  <jsp:param name="title" value="${title}"/>
+  <jsp:param name="title" value="${compoundSp.titleEn}"/>
 </jsp:include>
 
 <div class="column-center content-holder no-right-left">
 
 <section>
 
-  <h1>${title}
+  <h1>${compoundSp.titleEn}
     <spring:url value="/app-detail.shtml" var="detailUrl" htmlEscape="true">
       <spring:param name="serviceProviderEntityId" value="${compoundSp.serviceProviderEntityId}" />
     </spring:url>

@@ -14,17 +14,13 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   --%>
-<%@attribute name="provider" description="A Provider object" type="nl.surfnet.coin.csa.domain.Provider"
+<%@attribute name="provider" description="A Provider object" type="nl.surfnet.coin.csa.domain.IdentityProvider"
     required="true" %>
 <%--@elvariable id="locale" type="java.util.Locale"--%>
 <c:choose>
   <%-- Provider with name:en or name:nl in Service Registry --%>
   <c:when test="${not empty provider.names[locale.language]}">
     <c:out value="${provider.names[locale.language]}"/>
-  </c:when>
-  <%-- Provider from SURFfederatie --%>
-  <c:when test="${not empty provider.name}">
-    <c:out value="${provider.name}"/>
   </c:when>
   <%-- Incomplete Provider --%>
   <c:otherwise>

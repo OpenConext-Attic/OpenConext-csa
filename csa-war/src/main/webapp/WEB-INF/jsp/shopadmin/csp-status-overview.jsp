@@ -16,6 +16,7 @@
   limitations under the License.
   --%>
 <spring:message var="title" code="jsp.cspstatus.title"/>
+
 <jsp:include page="../head.jsp">
   <jsp:param name="title" value="${title}"/>
 </jsp:include>
@@ -56,15 +57,12 @@
                   </thead>
                   <tbody>
                     <c:forEach items="${compoundSps}" var="compoundSp">
-                      <spring:url value="/app-detail.shtml" var="detailUrl" htmlEscape="true">
-                        <spring:param name="serviceProviderEntityId" value="${compoundSp.serviceProviderEntityId}" />
-                      </spring:url>
-                      
-                      <c:set var="serviceDescription"><tags:providername provider="${compoundSp.sp}" /></c:set>
+
+                      <c:set var="serviceDescription">${compoundSp.titleEn}</c:set>
                       
                       <tr>
                         <td title="${serviceDescription} - ${compoundSp.sp.id}">
-                          <a href="${detailUrl}"><tags:providername provider="${compoundSp.sp}" /></a>
+                          ${serviceDescription}
                         </td>
 	                        <td>
 	                          <c:choose>
