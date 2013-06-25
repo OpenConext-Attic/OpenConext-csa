@@ -72,6 +72,7 @@ public abstract class AbstractCache implements InitializingBean, DisposableBean 
   
   protected abstract void doAsyncScheduleAtFixedRate() throws Exception;
   protected abstract String getCacheName();
+  public abstract void evict();
 
   public long getDelay() {
     return delay;

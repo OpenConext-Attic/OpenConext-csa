@@ -60,4 +60,9 @@ public class ServicesCache extends AbstractCache {
   protected String getCacheName() {
     return "Services Cache";
   }
+
+  @Override
+  public void evict() {
+    cache.clear();
+  }
 }

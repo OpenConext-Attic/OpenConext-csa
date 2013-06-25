@@ -65,4 +65,9 @@ public class ProviderCache extends AbstractCache {
   protected String getCacheName() {
     return "Service Registry Cache";
   }
+
+  @Override
+  public void evict() {
+    cache.clear();
+  }
 }

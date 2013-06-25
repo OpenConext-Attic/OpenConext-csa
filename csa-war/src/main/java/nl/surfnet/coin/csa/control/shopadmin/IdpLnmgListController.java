@@ -16,14 +16,8 @@
 
 package nl.surfnet.coin.csa.control.shopadmin;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
+import nl.surfnet.coin.csa.api.cache.ProviderCache;
+import nl.surfnet.coin.csa.api.cache.ServicesCache;
 import nl.surfnet.coin.csa.command.LmngIdentityBinding;
 import nl.surfnet.coin.csa.control.BaseController;
 import nl.surfnet.coin.csa.dao.LmngIdentifierDao;
@@ -31,7 +25,6 @@ import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
 import nl.surfnet.coin.csa.service.impl.LmngUtil;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +34,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/shopadmin/*")
@@ -55,6 +55,12 @@ public class IdpLnmgListController extends BaseController {
 
   @Autowired
   private LmngIdentifierDao lmngIdentifierDao;
+
+  @Resource
+  private ServicesCache servicesCache;
+
+  @Resource
+  private ProviderCache providerCache;
 
   private LmngUtil lmngUtil = new LmngUtil();
 
@@ -113,10 +119,12 @@ public class IdpLnmgListController extends BaseController {
     return listAllIdps(model);
   }
 
-  @RequestMapping(value = "/clean-crm-cache", method = RequestMethod.GET)
+  @RequestMapping(value = "/clean-cache", method = RequestMethod.GET)
   public RedirectView cleanCrmCache() {
-    log.info("Cleaning CRM cache");
+    log.info("Cleaning caches");
     licensingService.evictCache();
+    servicesCache.evict();
+    providerCache.evict();
     return new RedirectView("all-spslmng.shtml", true);
   }
 
