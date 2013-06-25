@@ -176,7 +176,11 @@ public abstract class Provider implements Comparable<Provider>, Serializable {
     if (names == null) {
       return getName();
     } else {
-      return null == names.get(language.name().toLowerCase()) ? getName() : names.get(language.name().toLowerCase());
+      if (StringUtils.isBlank(names.get(language.name().toLowerCase()))) {
+        return getName();
+      } else {
+        return names.get(language.name().toLowerCase());       
+      }
     }
   }
 
