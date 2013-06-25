@@ -50,27 +50,27 @@ var services = function() {
 	
 
 	return {
-		displayResult : function(data, htmlElement) {	    
-	    var content = '<section class="services-list"><ul>';
-	        var services = [];
-	        jq.each(data, function (i, service) {
-	          var serviceItem = '<li>';
-            if (service.logo_url_service) {
-	            serviceItem += "<img class='app-logo' src='" + service.logo_url_service + "'>";
-            }
-	          serviceItem += "<p>" + service.name + "</p>";
+        displayResult : function(data, htmlElement) {
+        	var content = '<section class="services-list"><ul>';
+        	var services = [];
+        	jq.each(data, function (i, service) {
+        		var serviceItem = '<li>';
+        		if (service.logoUrl) {
+        			serviceItem += "<img class='app-logo' src='" + service.logoUrl + "'>";
+        		}
+        		serviceItem += "<p>" + service.name + "</p>";
 
-	          if (service.website_service != undefined) {
-	            serviceItem += "<div class='website-service'><a href='" + service.website_service + "' target='_blank'><i class='icon-external-link'></i><span>" + service.website_service + "</span></a></div>";
+	          if (service.websiteUrl != undefined) {
+	            serviceItem += "<div class='website-service'><a href='" + service.websiteUrl + "' target='_blank'><i class='icon-external-link'></i><span>" + service.websiteUrl + "</span></a></div>";
 	          }
-	          var license = (service.surfmarket_url != undefined);
+	          var license = (service.crmUrl != undefined);
 	          var licenseCss = license ? "license" : "no-license";
 	          var title = license ? "Deze dienst heeft een licentieovereenkomst met SURFMarket" : "Deze applicatie is mogelijk ook toegankelijk zonder SURFmarket licentie";
 	          serviceItem += "<div class='" + licenseCss + "'>";
 	          if (license) {
-	            serviceItem += "<a href='" + service.surfmarket_url + "' target='_blank'>";
+	            serviceItem += "<a href='" + service.crmUrl + "' target='_blank'>";
 	          }
-	          serviceItem += "<i title='"+title+"' class='icon-cloud-upload'></i>";
+	          serviceItem += "<i title='"+title+"' class='icon-globe'></i>";
 	          if (license) {
 	            serviceItem += "</a>";
 	          }

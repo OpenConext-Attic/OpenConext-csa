@@ -68,6 +68,7 @@
     <security:intercept-url pattern="/css/**" access="permitAll"/>
     <security:intercept-url pattern="/font/**" access="permitAll"/>
     <security:intercept-url pattern="/images/**" access="permitAll"/>
+    <security:intercept-url pattern="/img/**" access="permitAll"/>
     <security:intercept-url pattern="/public/**" access="permitAll"/>
     <security:intercept-url pattern="/fieldimages/**" access="permitAll"/>
     <security:intercept-url pattern="/js/**" access="permitAll"/>
