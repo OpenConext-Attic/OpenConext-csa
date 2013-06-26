@@ -292,7 +292,6 @@ public class ServicesController extends BaseApiController implements ServicesSer
     service.setLogoUrl(absoluteUrl(csp.getAppStoreLogo()));
     service.setSupportMail(csp.getSupportMail());
     service.setWebsiteUrl(csp.getServiceUrl());
-    service.setConnected(csp.getSp().isLinked());
     service.setArp(csp.getSp().getArp());
     service.setAvailableForEndUser(csp.isAvailableForEndUser());
     service.setIdpVisibleOnly(csp.getSp().isIdpVisibleOnly());
