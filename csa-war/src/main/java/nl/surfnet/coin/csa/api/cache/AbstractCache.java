@@ -28,7 +28,7 @@ import java.util.*;
 
 public abstract class AbstractCache implements InitializingBean, DisposableBean {
 
-  protected static final Logger LOG = LoggerFactory.getLogger(AbstractCache.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AbstractCache.class);
 
   private @Value("${cacheMillisecondsStartupDelayTime}") long delay;
 

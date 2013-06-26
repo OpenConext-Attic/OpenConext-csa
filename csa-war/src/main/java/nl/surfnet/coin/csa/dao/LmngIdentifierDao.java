@@ -16,6 +16,10 @@
 
 package nl.surfnet.coin.csa.dao;
 
+import nl.surfnet.coin.csa.domain.MappingEntry;
+
+import java.util.List;
+
 public interface LmngIdentifierDao {
   
   /**
@@ -48,4 +52,6 @@ public interface LmngIdentifierDao {
    */
   void saveOrUpdateLmngIdForIdentityProviderId(String idpId, String lmngId);
 
+  List<MappingEntry> findAllIdentityProviders();
+  List<MappingEntry> findAllServiceProviders();
 }

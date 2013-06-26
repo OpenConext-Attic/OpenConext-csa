@@ -20,10 +20,14 @@ package nl.surfnet.coin.csa.api.cache;
 
 import nl.surfnet.coin.csa.api.control.ServicesService;
 import nl.surfnet.coin.csa.model.Service;
+import org.apache.commons.lang.SerializationUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +35,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class ServicesCache extends AbstractCache {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ServicesCache.class);
 
   @Resource
   private ServicesService service;
@@ -43,7 +49,9 @@ public class ServicesCache extends AbstractCache {
       LOG.debug("Cache miss for lang '{}', will return empty list", lang);
       services = Collections.emptyList();
     }
-    return services;
+    @SuppressWarnings("unchecked")
+    List<Service> clone = (List<Service>) SerializationUtils.clone(new ArrayList<Service>(services));
+    return clone;
   }
 
   public void setService(ServicesService service) {

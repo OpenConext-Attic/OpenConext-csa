@@ -20,15 +20,16 @@ package nl.surfnet.coin.csa.api.cache;
 
 import nl.surfnet.coin.csa.api.control.ServicesService;
 import nl.surfnet.coin.csa.model.Service;
-import nl.surfnet.coin.csa.service.IdentityProviderService;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -55,6 +56,17 @@ public class ServicesCacheTest {
 
     services = cache.getAllServices("en");
     assertEquals(2, services.size());
+  }
+
+  @Test
+  public void serviceCacheShouldClone() {
+    List<Service> services1 = cache.getAllServices("en");
+
+    Service service1 = services1.get(0);
+    List<Service> services2 = cache.getAllServices("en");
+    Service service2 = services2.get(0);
+    assertEquals("Cloned services should 'be equal'", service1, service2);
+    assertFalse("Clones services should not be ==", service1 == service2);
   }
 
   private Map<String, List<Service>> initServices() {

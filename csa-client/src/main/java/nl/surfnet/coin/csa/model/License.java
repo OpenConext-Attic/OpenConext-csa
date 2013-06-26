@@ -26,6 +26,8 @@ import java.util.List;
  */
 public class License implements Serializable {
 
+  private static final long serialVersionUID = 0L;
+
   /*
    * Optional pattern applied to prevent many, many nullpointer checks and
    * exceptions
