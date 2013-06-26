@@ -97,8 +97,8 @@ public class CrmCache extends AbstractCache {
     }
   }
 
-  public License getLicense(Service service, String idpEntityId) {
-    MappingEntry entry = new MappingEntry(idpEntityId, service.getSpEntityId());
+  public License getLicense(Service service, String idpInstitutionId) {
+    MappingEntry entry = new MappingEntry(idpInstitutionId, service.getSpEntityId());
     return (License) SerializationUtils.clone(licenseCache.get(entry));
   }
 

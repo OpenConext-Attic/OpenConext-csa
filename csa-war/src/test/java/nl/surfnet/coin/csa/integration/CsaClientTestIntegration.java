@@ -155,7 +155,7 @@ public class CsaClientTestIntegration {
     List<InstitutionIdentityProvider> providers = csaClient.getInstitutionIdentityProviders("http://mock-idp");
     assertEquals(2, providers.size());
     for (InstitutionIdentityProvider provider : providers) {
-      assertEquals("institution_id_present", provider.getInstitutionId());
+      assertEquals("mock-institution-id", provider.getInstitutionId());
     }
   }
 
@@ -170,9 +170,11 @@ public class CsaClientTestIntegration {
 
   @Test
   public void serviceForIdp() throws IOException {
-    Service service = csaClient.getServiceForIdp("http://mock-idp", 1);
+    Service service = csaClient.getServiceForIdp("http://mock-idp", 2);
     ARP arp = service.getArp();
     assertNotNull(arp);
+    assertTrue(service.isConnected());
+    assertNotNull(service.getCrmArticle());
   }
 
   @Test

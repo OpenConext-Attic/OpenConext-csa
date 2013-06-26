@@ -39,7 +39,7 @@
         "telephoneNumber": "technicaltelephone_number"
       }
     ],
-    "instutionId": "institution_id_present",
+    "instutionId": "mock-institution-id",
     "applicationUrl": "https://application_url",
     "appHomeUrl": "https://app_home_url_en",
     "workflowState": "prodaccepted"
