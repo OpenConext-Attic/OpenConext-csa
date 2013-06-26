@@ -174,7 +174,9 @@ public class ServicesController extends BaseApiController implements ServicesSer
     List<Service> allServices = servicesCache.getAllServices(language);
     List<Service> result = new ArrayList<Service>();
     for (Service service : allServices) {
-      if ((service.isAvailableForEndUser() && serviceProviderIdentifiers.contains(service.getSpEntityId())) || includeNotLinkedSPs) {
+      boolean isConnected = serviceProviderIdentifiers.contains(service.getSpEntityId());
+      service.setConnected(isConnected);
+      if ((service.isAvailableForEndUser() && isConnected) || includeNotLinkedSPs) {
         result.add(service);
       }
     }

@@ -189,10 +189,15 @@ public class CsaClientTestIntegration {
   public void servicesByIdp() throws IOException {
     List<Service> services = csaClient.getServicesForIdp("http://mock-idp");
     assertEquals(6, services.size());
+    //we need to check if 4 services are connected
+    int connectedCount = 0;
     for (Service service : services) {
       assertNotNull(service);
+      if (service.isConnected()) {
+        ++connectedCount;
+      }
     }
-
+    assertEquals(4, connectedCount);
   }
 
   @Test
