@@ -16,9 +16,6 @@
 
   <properties>
     <jackson.version>1.9.5</jackson.version>
-    <coin-shared.version>3.5.0</coin-shared.version>
-    <apis.version>1.2.3-SNAPSHOT</apis.version>
-    <coin-api.version>3.2.0-SNAPSHOT</coin-api.version>
   </properties>
 
   <dependencies>
@@ -26,19 +23,11 @@
     <dependency>
       <groupId>org.surfnet.coin</groupId>
       <artifactId>coin-shared</artifactId>
-      <version>${coin-shared.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>xml-apis</groupId>
-          <artifactId>xml-apis</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
       <groupId>org.surfnet.coin</groupId>
       <artifactId>coin-api-serviceregistry-client</artifactId>
-      <version>${coin-api.version}</version>
     </dependency>
 
     <dependency>

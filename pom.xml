@@ -36,7 +36,10 @@
   <inceptionYear>2013</inceptionYear>
 
   <packaging>pom</packaging>
-
+  <properties>
+    <coin-api.version>3.6.0</coin-api.version>
+    <coin-shared.version>3.5.0</coin-shared.version>
+  </properties>
   <scm>
     <connection>scm:git:git@github.com:OpenConext/OpenConext-csa.git</connection>
     <url>scm:git:git@github.com:OpenConext/OpenConext-csa.git</url>
@@ -79,4 +82,29 @@
       <url>https://maven.atlassian.com/contrib/</url>
     </repository>
   </repositories>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.surfnet.coin</groupId>
+        <artifactId>coin-api-client</artifactId>
+        <version>${coin-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.surfnet.coin</groupId>
+        <artifactId>coin-api-serviceregistry-client</artifactId>
+        <version>${coin-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.surfnet.coin</groupId>
+        <artifactId>coin-shared</artifactId>
+        <version>${coin-shared.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>
