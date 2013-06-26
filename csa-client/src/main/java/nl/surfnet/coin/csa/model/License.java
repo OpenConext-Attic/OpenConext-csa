@@ -18,7 +18,6 @@ package nl.surfnet.coin.csa.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * License (for software, SaaS, or other) that belongs to an institute, group of
@@ -27,12 +26,6 @@ import java.util.List;
 public class License implements Serializable {
 
   private static final long serialVersionUID = 0L;
-
-  /*
-   * Optional pattern applied to prevent many, many nullpointer checks and
-   * exceptions
-   */
-  public static final List<License> NONE = null;
 
   private Date startDate;
   private Date endDate;

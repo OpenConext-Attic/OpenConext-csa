@@ -27,7 +27,6 @@ import org.codehaus.jackson.type.TypeReference;
 import org.springframework.core.io.ClassPathResource;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,9 +34,6 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 public class LmngServiceMock implements CrmService {
-
-  private boolean debug;
-  private String endpoint;
 
   private ObjectMapper objectMapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
           .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
@@ -47,6 +43,7 @@ public class LmngServiceMock implements CrmService {
   private List<Account> institutions;
   private List<Account> services;
 
+  @SuppressWarnings("unchecked")
   public LmngServiceMock() {
     try {
       TypeReference<List<Article>> articleTypeReference = new TypeReference<List<Article>>() {
@@ -64,7 +61,7 @@ public class LmngServiceMock implements CrmService {
     }
   }
 
-  private Object parseJsonData(TypeReference<? extends Object> typeReference, String jsonFile) {
+  private Object parseJsonData(TypeReference<?> typeReference, String jsonFile) {
     try {
       return objectMapper.readValue(new ClassPathResource(jsonFile).getInputStream(), typeReference);
     } catch (Exception e) {
@@ -73,11 +70,9 @@ public class LmngServiceMock implements CrmService {
   }
 
   public void setDebug(boolean debug) {
-    this.debug = debug;
   }
 
   public void setEndpoint(String endpoint) {
-    this.endpoint = endpoint;
   }
 
 
@@ -119,12 +114,12 @@ public class LmngServiceMock implements CrmService {
 
   @Override
   public List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier) {
-    return Arrays.asList(new License[]{license});
+    return Arrays.asList(license);
   }
 
   @Override
   public List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers) throws LmngException {
-    return Arrays.asList(new License[]{license});
+    return Arrays.asList(license);
   }
 
   @Override

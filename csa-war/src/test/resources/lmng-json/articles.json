@@ -2,7 +2,7 @@
     {
         "serviceDescriptionNl": "Nice SP",
         "institutionDescriptionNl": "Nice SP",
-        "supplierName": "Google",
+        "supplierName": "Nice SP supplier",
         "serviceProviderEntityId": "https://nice_sp",
         "lmngIdentifier" : "{8833CEAE-960C-E211-B6B9-005056950050}",
         "appleAppStoreMedium" : {
@@ -19,7 +19,7 @@
     {
         "serviceDescriptionNl": "Mock SP",
         "institutionDescriptionNl": "Mock SP",
-        "supplierName": "Google",
+        "supplierName": "Mock SP supplier",
         "serviceProviderEntityId": "http://mock-sp",
         "lmngIdentifier" : "{9833CEAE-960C-E213-B6B9-115056950050}",
         "appleAppStoreMedium" : {
