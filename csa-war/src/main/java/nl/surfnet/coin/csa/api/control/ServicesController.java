@@ -166,7 +166,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
         return service;
       }
     }
-    throw new RuntimeException("Non-existen service ID('" + serviceId + "')");
+    throw new RuntimeException("Non-existent service ID('" + serviceId + "')");
   }
 
   private List<Service> doGetServicesForIdP(String language, String idpEntityId, boolean includeNotLinkedSPs) {
