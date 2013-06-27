@@ -85,6 +85,9 @@ public class CrmCache extends AbstractCache {
         String spLmngId = spLmngEntry.getValue();
 
         IdentityProvider idp = new IdentityProvider("dummy", idpInstitutionId, "dummy");
+
+        // FIXME: Get all licenses at once.
+
         List<License> licensesForIdpAndSp = crmService.getLicensesForIdpAndSp(idp, spLmngId);
         if (licensesForIdpAndSp.size() > 1) {
           LOG.info("Unexpected: list of licenses by IdP and SP ({} and {}) is larger than 1: {}", idpInstitutionId, spEntityId, licensesForIdpAndSp.size());
@@ -118,5 +121,13 @@ public class CrmCache extends AbstractCache {
   @Override
   protected String getCacheName() {
     return "CRM Cache";
+  }
+
+  public void setCrmService(CrmService crmService) {
+    this.crmService = crmService;
+  }
+
+  public void setLmngIdentifierDao(LmngIdentifierDao lmngIdentifierDao) {
+    this.lmngIdentifierDao = lmngIdentifierDao;
   }
 }
