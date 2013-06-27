@@ -1,5 +1,5 @@
 #
-# Copyright 2012 SURFnet bv, The Netherlands
+# Copyright 2013 SURFnet bv, The Netherlands
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,27 +17,27 @@
 
 janus.user=??
 janus.secret=??
-janus.uri=https://serviceregistry.acc.surfconext.nl/simplesaml/module.php/janus/services/rest/
+janus.uri=https://serviceregistry.acc.showroom.surfconext.nl/simplesaml/module.php/janus/services/rest/
 
 # "own" database
 coin-csa.jdbc.url=jdbc:mysql://db.acc.surfconext.nl:3306/csa
 coin-csa.jdbc.user=??
 coin-csa.jdbc.password=??
 
-crmServiceClassEndpoint=https\://na.example.org
+crmServiceClassEndpoint=https://crmproxypilot.surfmarket.nl/crmservice.svc
 
 # Email address that recieves error notifications
 coin-errormail-to=coin-logs@list.surfnet.nl
 coin-administrative-email=coin-logs@list.surfnet.nl
 
-wayf.url.metadata=https://engine.acc.surfconext.nl/authentication/idp/metadata
-wayf.url.sso=https://engine.acc.surfconext.nl/authentication/idp/single-sign-on
+wayf.url.metadata=https://engine.acc.showroom.surfconext.nl/authentication/idp/metadata
+wayf.url.sso=https://engine.acc.showroom.surfconext.nl/authentication/idp/single-sign-on
 wayf.certificate=??
 
 ## Properties for opensaml
-ISSUING_ENTITY_ID=https\://csa.acc.surfconext.nl
+ISSUING_ENTITY_ID=https://csa.acc.showroom.surfconext.nl
 
-WEB_APPLICATION_HOST_AND_PORT=csa.acc.surfconext.nl
+WEB_APPLICATION_HOST_AND_PORT=csa.acc.showroom.surfconext.nl
 
 
 jiraBaseUrl=https\://issues.surfnet.nl/jira
@@ -48,13 +48,13 @@ jiraProjectKey=TEST
 # Team id that is used as definition of who is a 'shop manager/shop admin'.
 admin.distribution.channel.teamname=urn\:collab\:group\:dev.surfteams.nl\:nl\:surfnet\:diensten\:csa_shopmanager
 
-api-baseurl=https\://api.acc.surfconext.nl/v1/
-api-consumerkey=https\://csa.acc.surfconext.nl
+api-baseurl=https\://api.acc.showroom.surfconext.nl/v1/
+api-consumerkey=https\://csa.acc.showroom.surfconext.nl
 api-consumersecret=??
-api-callbackuri=https\://csa.acc.surfconext.nl/apiOauthCallback?apiOauthCallback\=true
+api-callbackuri=https\://csa.acc.showroom.surfconext.nl/apiOauthCallback?apiOauthCallback\=true
 
 # Info for communication with the APIS Authorization Server
-adminService.tokenVerificationUrl=https://apis.acc.csa.surfconext.nl/v1/tokeninfo
+adminService.tokenVerificationUrl=https://apis.acc.showroom.surfconext.nl/v1/tokeninfo
 adminService.resourceServerKey=??
 adminService.resourceServerSecret=??
 
