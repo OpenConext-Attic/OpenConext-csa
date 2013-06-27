@@ -89,9 +89,10 @@ public class CrmCache extends AbstractCache {
         if (licensesForIdpAndSp.size() > 1) {
           LOG.info("Unexpected: list of licenses by IdP and SP ({} and {}) is larger than 1: {}", idpInstitutionId, spEntityId, licensesForIdpAndSp.size());
         } else if (licensesForIdpAndSp.size() == 1) {
+          LOG.debug("License found by IdP and SP ({} and {}): {}", idpInstitutionId, spEntityId, licensesForIdpAndSp.get(0));
           licenseCache.put(new MappingEntry(idpInstitutionId, spEntityId), licensesForIdpAndSp.get(0));
         } else {
-          LOG.trace("No result found for licenses by IdP and SP ({} and {})", idpInstitutionId, spEntityId);
+          LOG.debug("No result found for licenses by IdP and SP ({} and {})", idpInstitutionId, spEntityId);
         }
       }
     }
@@ -99,7 +100,9 @@ public class CrmCache extends AbstractCache {
 
   public License getLicense(Service service, String idpInstitutionId) {
     MappingEntry entry = new MappingEntry(idpInstitutionId, service.getSpEntityId());
-    return (License) SerializationUtils.clone(licenseCache.get(entry));
+    License license = licenseCache.get(entry);
+    LOG.debug("Looked for license for service {} and idpInstitutionId {}, and found: {}", service.getSpEntityId(), idpInstitutionId, license);
+    return (License) SerializationUtils.clone(license);
   }
 
   public Article getArticle(Service service) {

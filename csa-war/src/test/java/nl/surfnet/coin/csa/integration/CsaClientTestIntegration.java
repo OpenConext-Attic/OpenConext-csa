@@ -170,11 +170,12 @@ public class CsaClientTestIntegration {
 
   @Test
   public void serviceForIdp() throws IOException {
-    Service service = csaClient.getServiceForIdp("http://mock-idp", 2);
+    Service service = csaClient.getServiceForIdp("http://mock-idp", 1);
     ARP arp = service.getArp();
     assertNotNull(arp);
     assertTrue(service.isConnected());
     assertNotNull(service.getCrmArticle());
+    assertNotNull(service.getLicense());
   }
 
   @Test

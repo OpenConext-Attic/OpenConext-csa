@@ -133,8 +133,13 @@ public class ServicesController extends BaseApiController implements ServicesSer
       @RequestParam(value="spEntityId") String spEntityId,
                                      final HttpServletRequest request) {
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
-    CompoundServiceProvider csp = compoundSPService.getCSPByServiceProviderEntityId(spEntityId);
-    return buildApiService(csp, language);
+    List<Service> allServices = doGetServicesForIdP(language, idpEntityId, true);
+    for (Service service : allServices) {
+      if (service.getSpEntityId().equals(spEntityId)) {
+        return service;
+      }
+    }
+    throw new RuntimeException("Non-existent service by sp entity id '" + spEntityId + "'");
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/idp/services.json")

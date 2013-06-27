@@ -16,15 +16,11 @@
 package nl.surfnet.coin.csa.util;
 
 import nl.surfnet.coin.janus.domain.ARP;
-import nl.surfnet.coin.janus.domain.Contact;
 import nl.surfnet.coin.janus.domain.EntityMetadata;
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -51,7 +47,7 @@ public class JanusRestClientMockTest {
 
     metaData = mock.getMetadataByEntityId(IDP_ENTITY_ID);
     assertEquals(IDP_ENTITY_ID, metaData.getAppEntityId());
-    assertEquals("institution_id_present", metaData.getInstutionId());
+    assertEquals("mock-institution-id", metaData.getInstutionId());
   }
 
   @Test
