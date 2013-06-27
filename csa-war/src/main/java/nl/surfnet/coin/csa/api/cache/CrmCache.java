@@ -102,7 +102,8 @@ public class CrmCache extends AbstractCache {
     MappingEntry entry = new MappingEntry(idpInstitutionId, service.getSpEntityId());
     License license = licenseCache.get(entry);
     LOG.debug("Looked for license for service {} and idpInstitutionId {}, and found: {}", service.getSpEntityId(), idpInstitutionId, license);
-    return (License) SerializationUtils.clone(license);
+    // TODO: return clone.
+    return license;
   }
 
   public Article getArticle(Service service) {
