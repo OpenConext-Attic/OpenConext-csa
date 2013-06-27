@@ -79,7 +79,7 @@ public class CrmCache extends AbstractCache {
     // Nested loop to query the cartesian product of all SPs and all IdPs
     for (MappingEntry idpLmngEntry : idpToLmngId) {
       String idpInstitutionId = idpLmngEntry.getKey();
-      String idpLmngId = idpLmngEntry.getValue(); // Unused, crmService performs the lookup itself.
+      String idpLmngId = idpLmngEntry.getValue(); // FIXME, crmService performs the lookup itself.
       for (MappingEntry spLmngEntry : spToLmngId) {
         String spEntityId = spLmngEntry.getKey();
         String spLmngId = spLmngEntry.getValue();
