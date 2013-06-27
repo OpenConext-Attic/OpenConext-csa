@@ -334,7 +334,7 @@ public class LmngUtil implements CrmUtil {
   public void writeIO(String filename, String content) {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmssS");
     try {
-      String fullFileName = System.getProperty("java.io.tmpdir") + filename + "_" + sdf.format(new Date()) + ".xml";
+      String fullFileName = System.getProperty("java.io.tmpdir") + "/" + filename + "_" + sdf.format(new Date()) + ".xml";
       FileUtils.writeStringToFile(new File(fullFileName), content);
       log.debug("wrote I/O file to " + fullFileName);
     } catch (IOException e) {
