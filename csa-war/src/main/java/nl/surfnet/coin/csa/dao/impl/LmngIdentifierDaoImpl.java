@@ -16,21 +16,20 @@
 
 package nl.surfnet.coin.csa.dao.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.sql.DataSource;
-
 import nl.surfnet.coin.csa.dao.LmngIdentifierDao;
-
+import nl.surfnet.coin.csa.domain.MappingEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * Implementation for the DAO that stores identifiers for identityproviders for both local and LMNG scope.
@@ -122,4 +121,52 @@ public class LmngIdentifierDaoImpl implements LmngIdentifierDao {
     }
   }
 
+  @Override
+  public List<MappingEntry> findAllIdentityProviders() {
+    List<MappingEntry> result = jdbcTemplate.query("SELECT idpId, lmngId FROM ss_idp_lmng_identifiers", new RowMapper<MappingEntry>() {
+
+      @Override
+      public MappingEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return new MappingEntry(rs.getString("idpId"), rs.getString("lmngId"));
+      }
+    });
+    if (result == null) {
+      result = Collections.emptyList();
+    }
+    log.debug("Got {} results when finding all identity providers", result.size());
+    return result;
+
+  }
+
+  @Override
+  public List<MappingEntry> findAllServiceProviders() {
+    List<MappingEntry> result = jdbcTemplate.query("SELECT spId, lmngId FROM ss_sp_lmng_identifiers", new RowMapper<MappingEntry>() {
+
+      @Override
+      public MappingEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return new MappingEntry(rs.getString("spId"), rs.getString("lmngId"));
+      }
+    });
+    if (result == null) {
+      result = Collections.emptyList();
+    }
+    log.debug("Got {} results when finding all service providers", result.size());
+    return result;
+
+  }
+
+  /**
+   * Construct a simple Map from a List of 'Map.Entry''s
+   *
+   * @param list the list to use as input
+   * @param <K> Type of the key of the map
+   * @param <V> Type of the value of the map
+   */
+  public static <K,V> Map<K,V> listOfEntriesToMap(List<Map.Entry<K, V>> list) {
+    Map<K,V> map = new HashMap<K,V>();
+    for (Map.Entry<K,V> e : list) {
+      map.put(e.getKey(), e.getValue());
+    }
+    return map;
+  }
 }

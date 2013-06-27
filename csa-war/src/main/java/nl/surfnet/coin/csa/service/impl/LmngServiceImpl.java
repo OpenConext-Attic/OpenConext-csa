@@ -88,9 +88,7 @@ public class LmngServiceImpl implements CrmService {
   @Override
   public List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier)
           throws LmngException {
-    List<String> articleIdentifiers = new ArrayList<String>();
-    articleIdentifiers.add(articleIdentifier);
-    return getLicensesForIdpAndSps(identityProvider, articleIdentifiers);
+    return getLicensesForIdpAndSps(identityProvider, Arrays.asList(articleIdentifier));
   }
 
   @Cacheable(value = "crm")

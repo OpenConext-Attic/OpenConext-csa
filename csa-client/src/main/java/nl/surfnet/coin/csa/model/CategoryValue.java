@@ -20,7 +20,11 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.springframework.util.Assert;
 
-public class CategoryValue implements Comparable<CategoryValue> {
+import java.io.Serializable;
+
+public class CategoryValue implements Comparable<CategoryValue>, Serializable {
+
+  private static final long serialVersionUID = 0L;
 
   private int count;
 

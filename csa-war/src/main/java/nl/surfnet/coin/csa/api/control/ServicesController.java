@@ -17,50 +17,47 @@
 package nl.surfnet.coin.csa.api.control;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
+import nl.surfnet.coin.csa.api.cache.CrmCache;
 import nl.surfnet.coin.csa.api.cache.ProviderCache;
 import nl.surfnet.coin.csa.api.cache.ServicesCache;
 import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.csa.domain.Screenshot;
 import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
-import nl.surfnet.coin.csa.model.Category;
-import nl.surfnet.coin.csa.model.CategoryValue;
-import nl.surfnet.coin.csa.model.CrmArticle;
-import nl.surfnet.coin.csa.model.Facet;
-import nl.surfnet.coin.csa.model.FacetValue;
-import nl.surfnet.coin.csa.model.License;
-import nl.surfnet.coin.csa.model.Service;
+import nl.surfnet.coin.csa.model.*;
 import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
-
+import nl.surfnet.coin.csa.service.impl.ServiceRegistryProviderService;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Controller
 @RequestMapping
 public class ServicesController extends BaseApiController implements ServicesService {
 
+  private static final Logger LOG = LoggerFactory.getLogger(ServicesController.class);
+
   @Resource
   private ServicesCache servicesCache;
 
   @Resource
   private ProviderCache providerCache;
+
+  @Resource
+  private CrmCache crmCache;
 
   private
   @Value("${WEB_APPLICATION_CHANNEL}")
@@ -81,9 +78,12 @@ public class ServicesController extends BaseApiController implements ServicesSer
   @Resource
   private CrmService lmngService;
 
+  @Resource
+  private ServiceRegistryProviderService srProviderService;
 
   @Value("${public.api.lmng.guids}")
   private String[] guids;
+
 
   @Override
   public Map<String, List<Service>> findAll() {
@@ -133,8 +133,13 @@ public class ServicesController extends BaseApiController implements ServicesSer
       @RequestParam(value="spEntityId") String spEntityId,
                                      final HttpServletRequest request) {
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
-    CompoundServiceProvider csp = compoundSPService.getCSPByServiceProviderEntityId(spEntityId);
-    return buildApiService(csp, language);
+    List<Service> allServices = doGetServicesForIdP(language, idpEntityId, true);
+    for (Service service : allServices) {
+      if (service.getSpEntityId().equals(spEntityId)) {
+        return service;
+      }
+    }
+    throw new RuntimeException("Non-existent service by sp entity id '" + spEntityId + "'");
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/idp/services.json")
@@ -160,7 +165,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
           @RequestParam(value = "idpEntityId") String idpEntityId,
           final HttpServletRequest request) {
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
-    List<Service> allServices = servicesCache.getAllServices(language);
+    List<Service> allServices = doGetServicesForIdP(language, idpEntityId, true);
     for (Service service : allServices) {
       if (service.getId() == serviceId) {
         return service;
@@ -175,8 +180,16 @@ public class ServicesController extends BaseApiController implements ServicesSer
     List<Service> result = new ArrayList<Service>();
     for (Service service : allServices) {
       boolean isConnected = serviceProviderIdentifiers.contains(service.getSpEntityId());
-      service.setConnected(isConnected);
       if ((service.isAvailableForEndUser() && isConnected) || includeNotLinkedSPs) {
+
+        // Weave with 'is connected' from sp/idp matrix cache
+        service.setConnected(isConnected);
+
+        // Weave with article and license cache
+        String institutionId = srProviderService.getIdentityProvider(idpEntityId).getInstitutionId();
+        service.setLicense(crmCache.getLicense(service, institutionId));
+        addArticle(crmCache.getArticle(service), service);
+
         result.add(service);
       }
     }
@@ -202,16 +215,34 @@ public class ServicesController extends BaseApiController implements ServicesSer
   /**
    * Build a Service object based on the given CSP
    */
-  private Service buildApiService(CompoundServiceProvider csp, String language) {
+  public Service buildApiService(CompoundServiceProvider csp, String language) {
     boolean isEn = language.equalsIgnoreCase("en");
 
     Service service = new Service();
     plainProperties(csp, service);
     screenshots(csp, service);
     languageSpecificProperties(csp, isEn, service);
-    crmRelatedProperties(csp, service);
+    addArticle(csp.getArticle(), service);
+    service.setLicense(csp.getLicense());
     categories(csp, service);
     return service;
+  }
+
+  private void addArticle(Article article, Service service) {
+    // CRM-related properties
+    if (article != null && !article.equals(Article.NONE)) {
+      CrmArticle crmArticle = new CrmArticle();
+      crmArticle.setGuid(article.getLmngIdentifier());
+      if (article.getAndroidPlayStoreMedium() != null) {
+        crmArticle.setAndroidPlayStoreUrl(article.getAndroidPlayStoreMedium().getUrl());
+      }
+      if (article.getAppleAppStoreMedium() != null) {
+        crmArticle.setAppleAppStoreUrl(article.getAppleAppStoreMedium().getUrl());
+      }
+      service.setHasCrmLink(true);
+      service.setCrmArticle(crmArticle);
+    }
+
   }
 
   private void categories(CompoundServiceProvider csp, Service service) {
@@ -227,33 +258,6 @@ public class ServicesController extends BaseApiController implements ServicesSer
       category.addCategoryValue(new CategoryValue(facetValue.getValue()));
     }
     service.setCategories(categories);
-  }
-
-  private void crmRelatedProperties(CompoundServiceProvider csp, Service service) {
-    // CRM-related properties
-    if (csp.isArticleAvailable()) {
-      CrmArticle crmArticle = new CrmArticle();
-      crmArticle.setGuid(csp.getArticle().getLmngIdentifier());
-      if (csp.getArticle().getAndroidPlayStoreMedium() != null) {
-        crmArticle.setAndroidPlayStoreUrl(csp.getArticle().getAndroidPlayStoreMedium().getUrl());
-      }
-      if (csp.getArticle().getAppleAppStoreMedium() != null) {
-        crmArticle.setAppleAppStoreUrl(csp.getArticle().getAppleAppStoreMedium().getUrl());
-      }
-      service.setHasCrmLink(true);
-      service.setCrmArticle(crmArticle);
-    }
-
-    // License-related
-    if (csp.isLicenseAvailable()) {
-      License l = new License();
-      l.setEndDate(csp.getLicense().getEndDate());
-      l.setStartDate(csp.getLicense().getStartDate());
-      l.setGroupLicense(csp.getLicense().isGroupLicense());
-      l.setLicenseNumber(csp.getLicense().getLicenseNumber());
-      l.setInstitutionName(csp.getLicense().getInstitutionName());
-      service.setLicense(l);
-    }
   }
 
   private void languageSpecificProperties(CompoundServiceProvider csp, boolean en, Service service) {
@@ -297,7 +301,6 @@ public class ServicesController extends BaseApiController implements ServicesSer
     service.setLogoUrl(absoluteUrl(csp.getAppStoreLogo()));
     service.setSupportMail(csp.getSupportMail());
     service.setWebsiteUrl(csp.getServiceUrl());
-    service.setConnected(csp.getSp().isLinked());
     service.setArp(csp.getSp().getArp());
     service.setAvailableForEndUser(csp.isAvailableForEndUser());
     service.setIdpVisibleOnly(csp.getSp().isIdpVisibleOnly());
@@ -329,9 +332,14 @@ public class ServicesController extends BaseApiController implements ServicesSer
     List<Service> result = new ArrayList<Service>();
     for (String guid : guids) {
       Article currentArticle = lmngService.getService(guid);
-      Service currentPS = new Service(0L, currentArticle.getServiceDescriptionNl(), currentArticle.getDetailLogo(),
-              null, true, lmngDeepLinkBaseUrl + guid, null);
-      result.add(currentPS);
+      if (currentArticle == null) {
+        LOG.info("A GUID has been configured that cannot be found in CRM: {}", guid);
+      } else {
+        Service currentPS = new Service(0L, currentArticle.getServiceDescriptionNl(), currentArticle.getDetailLogo(),
+                null, true, lmngDeepLinkBaseUrl + guid, null);
+        addArticle(currentArticle, currentPS);
+        result.add(currentPS);
+      }
     }
     return result;
   }

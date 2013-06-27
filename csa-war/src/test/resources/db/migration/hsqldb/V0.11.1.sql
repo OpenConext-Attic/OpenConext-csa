@@ -18,3 +18,6 @@ VALUES
 INSERT INTO ss_sp_lmng_identifiers (spId,lmngId)
 VALUES
   ('https://rave.beta.surfnet.nl', '{26FF7404-970C-E211-B6B9-005056950050}');
+  INSERT INTO ss_sp_lmng_identifiers (spId,lmngId)
+VALUES
+  ('http://mock-sp', '{26FF7404-970C-E211-B6B9-005056950050}');

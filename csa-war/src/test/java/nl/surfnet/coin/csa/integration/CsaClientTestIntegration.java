@@ -155,7 +155,7 @@ public class CsaClientTestIntegration {
     List<InstitutionIdentityProvider> providers = csaClient.getInstitutionIdentityProviders("http://mock-idp");
     assertEquals(2, providers.size());
     for (InstitutionIdentityProvider provider : providers) {
-      assertEquals("institution_id_present", provider.getInstitutionId());
+      assertEquals("mock-institution-id", provider.getInstitutionId());
     }
   }
 
@@ -173,6 +173,9 @@ public class CsaClientTestIntegration {
     Service service = csaClient.getServiceForIdp("http://mock-idp", 1);
     ARP arp = service.getArp();
     assertNotNull(arp);
+    assertTrue(service.isConnected());
+    assertNotNull(service.getCrmArticle());
+    assertNotNull(service.getLicense());
   }
 
   @Test
@@ -188,16 +191,23 @@ public class CsaClientTestIntegration {
   @Test
   public void servicesByIdp() throws IOException {
     List<Service> services = csaClient.getServicesForIdp("http://mock-idp");
-    assertEquals(6, services.size());
+    assertEquals(7, services.size());
     //we need to check if 4 services are connected
     int connectedCount = 0;
+    int crmLinked = 0;
     for (Service service : services) {
       assertNotNull(service);
       if (service.isConnected()) {
         ++connectedCount;
       }
+      if (service.isHasCrmLink()) {
+        ++crmLinked;
+      }
+      System.out.println(service.getCrmArticle());
+      System.out.println(service.isHasCrmLink());
     }
     assertEquals(4, connectedCount);
+    assertEquals(4, crmLinked);
   }
 
   @Test

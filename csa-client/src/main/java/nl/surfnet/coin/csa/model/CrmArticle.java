@@ -1,6 +1,10 @@
 package nl.surfnet.coin.csa.model;
 
-public class CrmArticle {
+import java.io.Serializable;
+
+public class CrmArticle implements Serializable {
+
+  private static final long serialVersionUID = 0L;
 
   private String guid;
 

@@ -20,11 +20,13 @@ package nl.surfnet.coin.csa.model;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Category {
+public class Category implements Serializable {
 
+  private static final long serialVersionUID = 0L;
 
   private String name;
   private List<CategoryValue> values;
