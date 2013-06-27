@@ -60,17 +60,24 @@ public class CrmCache extends AbstractCache {
   }
 
   private void populateArticleCache() {
+
     // Here we only have to query the articles that have been mapped to an SP, luckily not the whole CRM database.
     for (MappingEntry spAndLmngId : spToLmngId) {
       String spEntityId = spAndLmngId.getKey();
+      String lmngId = spAndLmngId.getValue();
       List<Article> articlesForServiceProviders = crmService.getArticlesForServiceProviders(Arrays.asList(spEntityId));
 
       // FIXME: Get all articles at once.
 
       if (articlesForServiceProviders.size() > 1) {
         LOG.info("Unexpected: list of articles for SP ({}) is larger than 1: {}", spEntityId, articlesForServiceProviders.size());
-      } else if (articlesForServiceProviders.size() == 1) {
+      }
+
+      if (articlesForServiceProviders.size() >= 1) {
         articleCache.put(spEntityId, articlesForServiceProviders.get(0));
+      } else {
+        LOG.info("No article found for SP {}, with lmng id: {}", spEntityId, lmngId);
+        articleCache.put(spEntityId, null);
       }
     }
   }
