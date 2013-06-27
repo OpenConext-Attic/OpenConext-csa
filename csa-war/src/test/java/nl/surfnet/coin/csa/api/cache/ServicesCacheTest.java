@@ -39,7 +39,7 @@ public class ServicesCacheTest {
   private ServicesService service;
 
   @Test
-  public void testGetServiceProviderIdentifiers() throws Exception {
+  public void getServices() throws Exception {
     //the setup initializes the cache for the first hit
     List<Service> services = cache.getAllServices("en");
     assertEquals(1, services.size());

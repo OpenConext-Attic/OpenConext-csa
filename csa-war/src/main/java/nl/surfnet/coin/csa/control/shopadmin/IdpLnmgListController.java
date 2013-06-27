@@ -16,6 +16,7 @@
 
 package nl.surfnet.coin.csa.control.shopadmin;
 
+import nl.surfnet.coin.csa.api.cache.CrmCache;
 import nl.surfnet.coin.csa.api.cache.ProviderCache;
 import nl.surfnet.coin.csa.api.cache.ServicesCache;
 import nl.surfnet.coin.csa.command.LmngIdentityBinding;
@@ -61,6 +62,9 @@ public class IdpLnmgListController extends BaseController {
 
   @Resource
   private ProviderCache providerCache;
+
+  @Resource
+  private CrmCache crmCache;
 
   private LmngUtil lmngUtil = new LmngUtil();
 
@@ -125,6 +129,7 @@ public class IdpLnmgListController extends BaseController {
     licensingService.evictCache();
     servicesCache.evict();
     providerCache.evict();
+    crmCache.evict();
     return new RedirectView("all-spslmng.shtml", true);
   }
 

@@ -27,7 +27,6 @@ import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
 import nl.surfnet.coin.csa.model.*;
 import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
-import nl.surfnet.coin.csa.service.impl.ServiceRegistryProviderService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,9 +76,6 @@ public class ServicesController extends BaseApiController implements ServicesSer
 
   @Resource
   private CrmService lmngService;
-
-  @Resource
-  private ServiceRegistryProviderService srProviderService;
 
   @Value("${public.api.lmng.guids}")
   private String[] guids;
@@ -180,13 +176,13 @@ public class ServicesController extends BaseApiController implements ServicesSer
     List<Service> result = new ArrayList<Service>();
     for (Service service : allServices) {
       boolean isConnected = serviceProviderIdentifiers.contains(service.getSpEntityId());
-      if ((service.isAvailableForEndUser() && isConnected) || includeNotLinkedSPs) {
+      if ((service.isAvailableForEndUser() && isConnected) || (includeNotLinkedSPs && !service.isIdpVisibleOnly())) {
 
         // Weave with 'is connected' from sp/idp matrix cache
         service.setConnected(isConnected);
 
         // Weave with article and license cache
-        String institutionId = srProviderService.getIdentityProvider(idpEntityId).getInstitutionId();
+        String institutionId = providerCache.getIdentityProvider(idpEntityId).getInstitutionId();
         service.setLicense(crmCache.getLicense(service, institutionId));
         addArticle(crmCache.getArticle(service), service);
 

@@ -29,7 +29,6 @@ import nl.surfnet.coin.janus.domain.EntityMetadata;
 import nl.surfnet.coin.janus.domain.JanusEntity;
 import nl.surfnet.coin.shared.domain.ErrorMail;
 import nl.surfnet.coin.shared.service.ErrorMessageMailer;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,6 @@ import javax.annotation.Resource;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ServiceRegistryProviderService implements ServiceProviderService, IdentityProviderService {

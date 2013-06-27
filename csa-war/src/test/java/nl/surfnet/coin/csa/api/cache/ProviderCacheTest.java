@@ -18,6 +18,7 @@
  */
 package nl.surfnet.coin.csa.api.cache;
 
+import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,8 +28,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.hibernate.validator.util.Contracts.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ProviderCacheTest {
 
@@ -59,6 +62,27 @@ public class ProviderCacheTest {
     assertEquals(2, serviceProviderIdentifiers.size());
   }
 
+  @Test
+  public void testGetIdentityProvider() throws InterruptedException {
+    IdentityProvider idp1 = new IdentityProvider("idp1", "institution", "idp1");
+    IdentityProvider idp2 = new IdentityProvider("idp2", "institution", "idp2");
+    IdentityProvider idp3 = new IdentityProvider("idp3", "institution", "idp3");
+
+    List<IdentityProvider> listWithTwoIdps = Arrays.asList(idp1, idp2);
+    List<IdentityProvider> listWithThreeIdps = Arrays.asList(idp1, idp2, idp3);
+
+    when(service.getAllIdentityProviders()).thenReturn(listWithTwoIdps);
+    Thread.sleep(1250);
+    assertNotNull(cache.getIdentityProvider("idp1"));
+    assertNotNull(cache.getIdentityProvider("idp2"));
+    assertNull(cache.getIdentityProvider("idp3"));
+    when(service.getAllIdentityProviders()).thenReturn(listWithThreeIdps);
+    Thread.sleep(1250);
+    assertNotNull(cache.getIdentityProvider("idp1"));
+    assertNotNull(cache.getIdentityProvider("idp2"));
+    assertNotNull(cache.getIdentityProvider("idp3"));
+  }
+
   private List<String> getSPs() {
     List<String> sps = new ArrayList<String>();
     sps.add("sp1");
@@ -74,5 +98,6 @@ public class ProviderCacheTest {
     cache.setIdpService(service);
 
     cache.afterPropertiesSet();
+    Thread.sleep(100);
   }
 }

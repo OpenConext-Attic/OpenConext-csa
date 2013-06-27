@@ -69,8 +69,9 @@ public class CrmCache extends AbstractCache {
 
       if (articlesForServiceProviders.size() > 1) {
         LOG.info("Unexpected: list of articles for SP ({}) is larger than 1: {}", spEntityId, articlesForServiceProviders.size());
+      } else if (articlesForServiceProviders.size() == 1) {
+        articleCache.put(spEntityId, articlesForServiceProviders.get(0));
       }
-      articleCache.put(spEntityId, articlesForServiceProviders.get(0));
     }
   }
 

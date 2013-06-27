@@ -18,6 +18,7 @@
  */
 package nl.surfnet.coin.csa.api.cache;
 
+import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
 import org.springframework.stereotype.Component;
 
@@ -28,16 +29,25 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class ProviderCache extends AbstractCache {
 
-  private ConcurrentHashMap<String, List<String>> cache = new ConcurrentHashMap<String, List<String>>();
+  /**
+   * This is a lazy-loading cache. Initially, the populateCache() will not do any call to a backend.
+   * Each call to getServiceProvider() first checks the cache. If not found, load lazily and put in cache.
+   * Subsequent populateCache()'s will then only update this already loaded items.
+   */
+  private ConcurrentHashMap<String, List<String>> spIdsCache = new ConcurrentHashMap<String, List<String>>();
+
+
+  private ConcurrentHashMap<String, IdentityProvider> idpCache = new ConcurrentHashMap<String, IdentityProvider>();
 
   @Resource
   private IdentityProviderService idpService;
 
   public List<String> getServiceProviderIdentifiers(String identityProviderId) {
-    List<String> spIdentifiers = cache.get(identityProviderId);
+
+    List<String> spIdentifiers = spIdsCache.get(identityProviderId);
     if (spIdentifiers == null) {
       spIdentifiers = idpService.getLinkedServiceProviderIDs(identityProviderId);
-      cache.put(identityProviderId, spIdentifiers);
+      spIdsCache.put(identityProviderId, spIdentifiers);
     }
     if (spIdentifiers == null) {
       spIdentifiers = Collections.emptyList();
@@ -51,14 +61,32 @@ public class ProviderCache extends AbstractCache {
 
   @Override
   protected void doPopulateCache() {
-    Set<String> idpIdentifiers = cache.keySet();
+    populateSPIds();
+    populateIdps();
+
+  }
+
+  private void populateIdps() {
+    List<IdentityProvider> allIdentityProviders = idpService.getAllIdentityProviders();
+    ConcurrentHashMap<String, IdentityProvider> newIdpCache = new ConcurrentHashMap<String, IdentityProvider>(allIdentityProviders.size());
+    for (IdentityProvider idp : allIdentityProviders) {
+      newIdpCache.put(idp.getId(), idp);
+    }
+    idpCache = newIdpCache;
+  }
+
+  public IdentityProvider getIdentityProvider(String idpEntityId) {
+    return idpCache.get(idpEntityId);
+  }
+
+  private void populateSPIds() {
+    Set<String> idpIdentifiers = spIdsCache.keySet();
     Map<String, List<String>> swap = new HashMap<String, List<String>>();
     for (String idpId : idpIdentifiers) {
       List<String> spIdentifiers = idpService.getLinkedServiceProviderIDs(idpId);
       swap.put(idpId, spIdentifiers);
     }
-    cache.putAll(swap);
-
+    spIdsCache.putAll(swap);
   }
 
   @Override
