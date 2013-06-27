@@ -181,7 +181,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
         // Weave with 'is connected' from sp/idp matrix cache
         service.setConnected(isConnected);
 
-        // Weave with article and license cache
+        // Weave with article and license from caches
         String institutionId = providerCache.getIdentityProvider(idpEntityId).getInstitutionId();
         service.setLicense(crmCache.getLicense(service, institutionId));
         addArticle(crmCache.getArticle(service), service);
