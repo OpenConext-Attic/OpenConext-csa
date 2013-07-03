@@ -135,7 +135,7 @@ public class ServiceRegistryProviderServiceTest {
   public void testNameAttributeRetrieval() {
     JanusRestClientMock janusMock = new JanusRestClientMock();
     EntityMetadata metadata = janusMock.getMetadataByEntityId("http://mock-sp");
-    ServiceProvider spFound = serviceRegistryProviderService.buildServiceProviderByMetadata(metadata);
+    ServiceProvider spFound = serviceRegistryProviderService.buildServiceProviderByMetadata(metadata, true);
     assertEquals("Populair SP (name en)",spFound.getName());
     
   }

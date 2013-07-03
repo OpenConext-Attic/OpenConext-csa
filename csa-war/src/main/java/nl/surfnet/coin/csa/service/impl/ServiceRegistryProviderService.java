@@ -54,7 +54,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
 
   @Override
   public List<ServiceProvider> getAllServiceProviders(String idpId) {
-    List<ServiceProvider> allSPs = getAllServiceProvidersUnfiltered();
+    List<ServiceProvider> allSPs = getAllServiceProvidersUnfiltered(true);
 
     List<String> myLinkedSPs = getLinkedServiceProviderIDs(idpId);
 
@@ -73,8 +73,8 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   }
 
   @Override
-  public List<ServiceProvider> getAllServiceProviders() {
-    return getAllServiceProvidersUnfiltered();
+  public List<ServiceProvider> getAllServiceProviders(boolean includeArps) {
+    return getAllServiceProvidersUnfiltered(includeArps);
   }
 
   @Override
@@ -89,13 +89,13 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
     return spList;
   }
 
-  private List<ServiceProvider> getAllServiceProvidersUnfiltered() {
+  private List<ServiceProvider> getAllServiceProvidersUnfiltered(boolean includeArps) {
     List<ServiceProvider> spList = new ArrayList<ServiceProvider>();
     try {
       final List<EntityMetadata> sps = janusClient.getSpList();
       for (EntityMetadata metadata : sps) {
         if (StringUtils.equals(metadata.getWorkflowState(), IN_PRODUCTION)) {
-          spList.add(buildServiceProviderByMetadata(metadata));
+          spList.add(buildServiceProviderByMetadata(metadata, includeArps));
         }
       }
     } catch (RestClientException e) {
@@ -116,7 +116,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
       }
       // Get the metadata and build a ServiceProvider with this metadata
       EntityMetadata metadata = janusClient.getMetadataByEntityId(spEntityId);
-      final ServiceProvider serviceProvider = buildServiceProviderByMetadata(metadata);
+      final ServiceProvider serviceProvider = buildServiceProviderByMetadata(metadata, true);
 
       // Check if the IdP can connect to this service
       if (idpEntityId != null) {
@@ -140,10 +140,12 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   /**
    * Create a ServiceProvider and inflate it with the given metadata attributes.
    *
+   *
    * @param metadata Janus metadata
+   * @param includeArps
    * @return {@link ServiceProvider}
    */
-  public ServiceProvider buildServiceProviderByMetadata(EntityMetadata metadata) {
+  public ServiceProvider buildServiceProviderByMetadata(EntityMetadata metadata, boolean includeArps) {
     Assert.notNull(metadata, "metadata cannot be null");
     final String appEntityId = metadata.getAppEntityId();
     String name = metadata.getNames().get("en");
@@ -169,9 +171,10 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
       sp.addContactPerson(p);
     }
     // Get the ARP (if there is any)
-    final ARP arp = janusClient.getArp(appEntityId);
-    sp.setArp(arp);
-
+    if (includeArps) {
+      final ARP arp = janusClient.getArp(appEntityId);
+      sp.setArp(arp);
+    }
     return sp;
   }
 

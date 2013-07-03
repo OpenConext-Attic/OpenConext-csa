@@ -56,5 +56,5 @@ public interface ServiceProviderService {
    *
    * @return list of {@link ServiceProvider}
    */
-  List<ServiceProvider> getAllServiceProviders();
+  List<ServiceProvider> getAllServiceProviders(boolean includeArps);
 }

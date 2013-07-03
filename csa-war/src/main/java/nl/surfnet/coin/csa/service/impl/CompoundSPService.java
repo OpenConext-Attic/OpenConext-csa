@@ -54,7 +54,7 @@ public class CompoundSPService {
   private CrmService licensingService;
 
   public List<CompoundServiceProvider> getAllCSPs() {
-    List<ServiceProvider> allServiceProviders = serviceProviderService.getAllServiceProviders();
+    List<ServiceProvider> allServiceProviders = serviceProviderService.getAllServiceProviders(true);
     return getCSPs(null, allServiceProviders);
   }
 
@@ -172,10 +172,21 @@ public class CompoundSPService {
 
     ServiceProvider serviceProvider = serviceProviderService.getServiceProvider(serviceProviderEntityId);
     Assert.notNull(serviceProvider, "No such SP with entityId: " + serviceProviderEntityId);
+    return getCSPByServiceProvider(serviceProvider);
+  }
 
+  /**
+   * Get a CSP by its ServiceProvider
+   *
+   * @param serviceProvider the ServiceProvider
+   * @return
+   */
+  public CompoundServiceProvider getCSPByServiceProvider(ServiceProvider serviceProvider) {
+
+    Assert.notNull(serviceProvider, "ServiceProvider may not be null");
     CompoundServiceProvider compoundServiceProvider = compoundServiceProviderDao.findByEntityId(serviceProvider.getId());
     if (compoundServiceProvider == null) {
-      LOG.debug("No compound Service Provider for SP '{}' yet. Will init one and persist.", serviceProviderEntityId);
+      LOG.debug("No compound Service Provider for SP '{}' yet. Will init one and persist.", serviceProvider.getId());
       compoundServiceProvider = CompoundServiceProvider.builder(serviceProvider, getArticleForSp(serviceProvider));
       compoundServiceProviderDao.saveOrUpdate(compoundServiceProvider);
       LOG.debug("Persisted a CompoundServiceProvider with id {}");
