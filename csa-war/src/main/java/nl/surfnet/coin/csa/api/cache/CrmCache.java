@@ -67,8 +67,6 @@ public class CrmCache extends AbstractCache {
       String lmngId = spAndLmngId.getValue();
       List<Article> articlesForServiceProviders = crmService.getArticlesForServiceProviders(Arrays.asList(spEntityId));
 
-      // FIXME: Get all articles at once.
-
       if (articlesForServiceProviders.size() > 1) {
         LOG.info("Unexpected: list of articles for SP ({}) is larger than 1: {}", spEntityId, articlesForServiceProviders.size());
       }
@@ -87,14 +85,11 @@ public class CrmCache extends AbstractCache {
     // Nested loop to query the cartesian product of all SPs and all IdPs
     for (MappingEntry idpLmngEntry : idpToLmngId) {
       String idpInstitutionId = idpLmngEntry.getKey();
-      String idpLmngId = idpLmngEntry.getValue(); // FIXME, crmService performs the lookup itself.
       for (MappingEntry spLmngEntry : spToLmngId) {
         String spEntityId = spLmngEntry.getKey();
         String spLmngId = spLmngEntry.getValue();
 
         IdentityProvider idp = new IdentityProvider("dummy", idpInstitutionId, "dummy");
-
-        // FIXME: Get all licenses at once.
 
         List<License> licensesForIdpAndSp = crmService.getLicensesForIdpAndSp(idp, spLmngId);
         if (licensesForIdpAndSp.size() > 1) {
@@ -113,7 +108,6 @@ public class CrmCache extends AbstractCache {
     MappingEntry entry = new MappingEntry(idpInstitutionId, service.getSpEntityId());
     License license = licenseCache.get(entry);
     LOG.debug("Looked for license for service {} and idpInstitutionId {}, and found: {}", service.getSpEntityId(), idpInstitutionId, license);
-    // TODO: return clone.
     return license;
   }
 

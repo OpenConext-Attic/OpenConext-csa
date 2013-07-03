@@ -53,6 +53,7 @@ public abstract class AbstractCache implements InitializingBean, DisposableBean 
 
   private void populateCache() {
     LOG.info("Starting refreshing {} cache", getCacheName());
+    long start = System.currentTimeMillis();
     try {
       doPopulateCache();
     } catch (Throwable t) {
@@ -62,7 +63,7 @@ public abstract class AbstractCache implements InitializingBean, DisposableBean 
        */
       LOG.error("Error in the refresh of the cache", t);
     } finally {
-      LOG.info("Finished refreshing {} cache", getCacheName());
+      LOG.info("Finished refreshing {} cache (took {} milliseconds)", getCacheName(), System.currentTimeMillis() - start);
     }
   }
 
