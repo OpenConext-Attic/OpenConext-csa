@@ -54,7 +54,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
 
   @Override
   public List<ServiceProvider> getAllServiceProviders(String idpId) {
-    List<ServiceProvider> allSPs = getAllServiceProvidersUnfiltered(true);
+    List<ServiceProvider> allSPs = getAllServiceProvidersUnfiltered(false);
 
     List<String> myLinkedSPs = getLinkedServiceProviderIDs(idpId);
 
