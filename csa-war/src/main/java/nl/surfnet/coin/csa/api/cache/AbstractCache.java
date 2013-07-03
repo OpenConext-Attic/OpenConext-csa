@@ -80,7 +80,7 @@ public abstract class AbstractCache implements InitializingBean, DisposableBean 
   protected abstract String getCacheName();
 
   /**
-   * Evicts the cache (asyncronously), effectively by scheduling a one time populate-job.
+   * Evicts the cache (asynchronously), effectively by scheduling a one time populate-job.
    */
   public void evict() {
     timer.schedule(new TimerTask() {
