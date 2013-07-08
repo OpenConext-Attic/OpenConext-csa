@@ -24,7 +24,7 @@ coin-csa.jdbc.user=??
 coin-csa.jdbc.password=??
 
 # Example: https://lmng01.dev.coin.surf.net:8444/CrmService.svc
-crmServiceClassEndpoint=https\://na.example.org
+crmServiceClassEndpoint=https\://crmproxy.surfmarket.nl/crmservice.svc
 
 # Email address that recieves error notifications
 coin-errormail-to=coin-logs@list.surfnet.nl
@@ -51,7 +51,7 @@ administration.jira.ticket.enabled=false
 
 
 # Team id that is used as definition of who is a 'shop manager/shop admin'.
-admin.distribution.channel.teamname=urn\:collab\:group\:surfteams.nl\:nl\:surfnet\:diensten\:csa_shopmanager
+admin.distribution.channel.teamname=urn\:collab\:group\:surfteams.nl\:nl\:surfnet\:diensten\:csa_admin
 
 api-baseurl=https\://api.surfconext.nl/v1/
 api-consumerkey=https\://csa.surfconext.nl
@@ -59,6 +59,6 @@ api-consumersecret=??
 api-callbackuri=https\://csa.surfconext.nl/apiOauthCallback?apiOauthCallback\=true
 
 # Info for communication with the APIS Authorization Server
-adminService.tokenVerificationUrl=https://apis.acc.csa.surfconext.nl/v1/tokeninfo
+adminService.tokenVerificationUrl=https\://apis.surfconext.nl/v1/tokeninfo
 adminService.resourceServerKey=??
 adminService.resourceServerSecret=??
