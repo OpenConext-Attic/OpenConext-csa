@@ -55,7 +55,7 @@
   <div class="wrapper has-left">
     <div class="column-center content-wrapper">
 
-      <h1>SURFconext Self service</h1>
+      <h1>CSA</h1>
 
       <c:set var="endUserMessage">
         <c:choose>

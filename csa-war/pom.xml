@@ -46,7 +46,7 @@
     <dumbster.version>1.6</dumbster.version>
     <selenium.version>2.32.0</selenium.version>
     <freemarker.version>[2.3.19,2.4)</freemarker.version>
-    <api-secure.version>1.2.4</api-secure.version>
+    <api-secure.version>1.2.7-SNAPSHOT</api-secure.version>
     <selenium.test.url>http://localhost:8282/csa/</selenium.test.url>
     <jetty.port>8282</jetty.port>
 

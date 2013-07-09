@@ -15,7 +15,7 @@
 #
 
 
-janus.user=??
+janus.user=engineblock
 janus.secret=??
 janus.uri=https\://serviceregistry.acc.surfconext.nl/simplesaml/module.php/janus/services/rest/
 

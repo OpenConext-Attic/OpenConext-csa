@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-janus.user=??
+janus.user=engineblock
 janus.secret=??
 janus.uri=https://serviceregistry.surfconext.nl/simplesaml/module.php/janus/services/rest/
 

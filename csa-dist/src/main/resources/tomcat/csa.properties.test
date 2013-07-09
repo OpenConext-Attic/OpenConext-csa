@@ -15,12 +15,12 @@
 #
 
 
-janus.user=engine
+janus.user=engineblock
 janus.secret=??
 janus.uri=https://serviceregistry.test.surfconext.nl/simplesaml/module.php/janus/services/rest/
 
 # "own" database
-coin-csa.jdbc.url=jdbc\:mysql\://db.dev.surfconext.nl\:3306/csa
+coin-csa.jdbc.url=jdbc\:mysql\://db.test.surfconext.nl\:3306/csa
 coin-csa.jdbc.user=csarw
 coin-csa.jdbc.password=??
 
