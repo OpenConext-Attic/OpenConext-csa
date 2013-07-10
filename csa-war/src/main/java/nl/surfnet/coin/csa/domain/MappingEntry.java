@@ -25,7 +25,7 @@ public class MappingEntry {
 
     MappingEntry that = (MappingEntry) o;
 
-    if (!key.equals(that.key)) return false;
+    if (key != null ? !key.equals(that.key) : that.key != null) return false;
     if (value != null ? !value.equals(that.value) : that.value != null) return false;
 
     return true;
@@ -33,7 +33,7 @@ public class MappingEntry {
 
   @Override
   public int hashCode() {
-    int result = key.hashCode();
+    int result = key != null ? key.hashCode() : 0;
     result = 31 * result + (value != null ? value.hashCode() : 0);
     return result;
   }

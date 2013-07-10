@@ -37,7 +37,7 @@
 
   <packaging>pom</packaging>
   <properties>
-    <coin-api.version>3.6.0</coin-api.version>
+    <coin-api.version>3.6.1</coin-api.version>
     <coin-shared.version>3.5.0</coin-shared.version>
   </properties>
   <scm>
