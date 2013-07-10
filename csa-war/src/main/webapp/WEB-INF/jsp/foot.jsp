@@ -51,6 +51,7 @@
     <script src="<c:url value="/js/jquery/jquery.transit.js"/>"></script>
     <script src="<c:url value="/js/jquery/jquery.tickback.min.js"/>"></script>
     <script src="<c:url value="/js/jquery/select2.js"/>"></script>
+    <script src="<c:url value="/js/jquery/jquery.fixedheadertable.js"/>"></script>
     <script src="<c:url value="/js/main.js"/>"></script>
     <script src="<c:url value="/js/modules/forms.js"/>"></script>
     <script src="<c:url value="/js/modules/gallery.js"/>"></script>

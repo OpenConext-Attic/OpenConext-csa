@@ -31,14 +31,14 @@
     <h1>${title}<i class="inlinehelp icon-question-sign" data-title="${title}" data-placement="bottom" data-content="<spring:message htmlEscape="true" code="jsp.taxonomy.overview.title.help" />"></i></h1>
 
     <div id="csp-taxonomy-overview" class="content csp-taxonomy-overview" data-token-check="${tokencheck}">
-      <table>
+      <table id="csp-taxonomy-overview-table">
         <thead>
           <tr>
           <th class="service">Service</th>
           <c:forEach items="${facets}" var="facet">
             <th class="skew"><span>${facet.name}</span></th>
               <c:forEach items="${facet.facetValues}" var="facetValue">
-                <th class="skew"><div class="fixed-th"><span class="facet-value">${facetValue.value}</span></div></th>
+                <th class="skew"><span class="facet-value">${facetValue.value}</span></th>
               </c:forEach>
           </c:forEach>
           </tr>

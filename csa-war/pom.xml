@@ -465,6 +465,8 @@
                     <jsSourceFile>jquery/jquery.fileupload.js</jsSourceFile>
                     <jsSourceFile>jquery/jquery.iframe-transport.js</jsSourceFile>
                     <jsSourceFile>jquery/select2.js</jsSourceFile>
+                    <jsSourceFile>jquery/jquery.fixedheadertable.js</jsSourceFile>
+
                     <jsSourceFile>jquery/jquery.transit.js</jsSourceFile>
                     <jsSourceFile>jquery/jquery.tickback.min.js</jsSourceFile>
 

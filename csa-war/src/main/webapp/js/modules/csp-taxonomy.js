@@ -49,6 +49,9 @@ app.taxonomy = function () {
 
     noSelection();
 
+    var $table = $('#csp-taxonomy-overview-table');
+    $table.fixedHeader();
+
     $("label[id^='link_facet_value_']").live("click", function () {
       var $elem = $(this);
       var link = $elem.hasClass("link");
