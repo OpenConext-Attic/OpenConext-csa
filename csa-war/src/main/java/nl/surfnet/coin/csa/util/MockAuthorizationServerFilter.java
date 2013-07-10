@@ -21,7 +21,6 @@ package nl.surfnet.coin.csa.util;
 import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
 import org.surfnet.oaaas.auth.AuthorizationServerFilter;
 import org.surfnet.oaaas.auth.principal.AuthenticatedPrincipal;
-import org.surfnet.oaaas.conext.SAMLAuthenticatedPrincipal;
 import org.surfnet.oaaas.model.VerifyTokenResponse;
 
 import javax.servlet.*;
@@ -29,7 +28,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class MockAuthorizationServerFilter implements Filter {
+public class MockAuthorizationServerFilter extends AuthorizationServerFilter {
 
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
@@ -41,7 +40,9 @@ public class MockAuthorizationServerFilter implements Filter {
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-    AuthenticatedPrincipal principal = new SAMLAuthenticatedPrincipal("john.doe", Arrays.asList(new String[]{"user"}), new HashMap<String, String>(), Arrays.asList(new String[]{"csa_shopmanager"}), "http://mock-idp", "John Doe", false);
+    AuthenticatedPrincipal principal = new AuthenticatedPrincipal("john.doe", Arrays.asList("user"), new HashMap<String, String>(), Arrays.asList("csa_shopmanager"), false);
+    principal.addAttribute("IDENTITY_PROVIDER",  "http://mock-idp");
+    principal.addAttribute("DISPLAY_NAME",  "John Doe");
     VerifyTokenResponse tokenResponse = new VerifyTokenResponse(
             "client-name-mocked",
             Arrays.asList(AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_ACTIONS),
@@ -49,5 +50,4 @@ public class MockAuthorizationServerFilter implements Filter {
     request.setAttribute(AuthorizationServerFilter.VERIFY_TOKEN_RESPONSE, tokenResponse);
     chain.doFilter(request, response);
   }
-
 }

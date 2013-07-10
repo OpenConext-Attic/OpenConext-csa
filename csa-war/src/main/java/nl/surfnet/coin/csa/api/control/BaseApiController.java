@@ -24,7 +24,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.surfnet.oaaas.auth.AuthorizationServerFilter;
 import org.surfnet.oaaas.auth.principal.AuthenticatedPrincipal;
-import org.surfnet.oaaas.conext.SAMLAuthenticatedPrincipal;
 import org.surfnet.oaaas.model.VerifyTokenResponse;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +35,11 @@ public abstract class BaseApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(BaseApiController.class);
 
+  /**
+   * Attribute in the VerifyTokenResponse that contains the Identity Provider (its entityId)
+   */
+  public static final String IDENTITY_PROVIDER_ATTRIBUTE = "IDENTITY_PROVIDER";
+
   /*
  * Retrieve IDP Entity ID from the oauth token stored in the request
  *
@@ -43,11 +47,7 @@ public abstract class BaseApiController {
   protected String getIdpEntityIdFromToken(final HttpServletRequest request) {
     VerifyTokenResponse verifyTokenResponse = (VerifyTokenResponse) request.getAttribute(AuthorizationServerFilter.VERIFY_TOKEN_RESPONSE);
     AuthenticatedPrincipal authenticatedPrincipal = verifyTokenResponse.getPrincipal();
-    if (authenticatedPrincipal instanceof SAMLAuthenticatedPrincipal) {
-      SAMLAuthenticatedPrincipal principal = (SAMLAuthenticatedPrincipal) authenticatedPrincipal;
-      return principal.getIdentityProvider();
-    }
-    throw new IllegalArgumentException("Only type of Principal supported is SAMLAuthenticatedPrincipal, not " + authenticatedPrincipal.getClass());
+    return authenticatedPrincipal.getAttribute(IDENTITY_PROVIDER_ATTRIBUTE);
   }
 
   protected void verifyScope(HttpServletRequest request, String scopeRequired) {

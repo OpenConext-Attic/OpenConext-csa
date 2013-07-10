@@ -172,6 +172,12 @@
   </bean>
 
   <bean id="authorizationServerFilter" class="${authorizationServerFilterClass}">
+    <property name="authorizationServerUrl" value="${adminService.tokenVerificationUrl}" />
+    <property name="resourceServerKey" value="${adminService.resourceServerKey}" />
+    <property name="resourceServerSecret" value="${adminService.resourceServerSecret}" />
+    <property name="cacheEnabled" value="${adminService.cacheEnabled}" />
+    <property name="allowCorsRequests" value="${adminService.allowCorsRequests}" />
+    <property name="typeInformationIsIncluded" value="${adminService.jsonTypeInfoIncluded}" />
   </bean>
 
 </beans>

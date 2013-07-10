@@ -67,10 +67,6 @@
       <param-name>targetFilterLifecycle</param-name>
       <param-value>true</param-value>
     </init-param>
-    <init-param>
-      <param-name>apis.application.properties.file</param-name>
-      <param-value>csa.properties</param-value>
-    </init-param>
   </filter>
   
   <filter>
