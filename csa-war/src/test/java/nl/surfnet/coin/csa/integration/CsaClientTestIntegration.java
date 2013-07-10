@@ -191,7 +191,7 @@ public class CsaClientTestIntegration {
   @Test
   public void servicesByIdp() throws IOException {
     List<Service> services = csaClient.getServicesForIdp("http://mock-idp");
-    assertEquals(7, services.size());
+    assertEquals(5, services.size());
     //we need to check if 4 services are connected
     int connectedCount = 0;
     int crmLinked = 0;
@@ -203,10 +203,8 @@ public class CsaClientTestIntegration {
       if (service.isHasCrmLink()) {
         ++crmLinked;
       }
-      System.out.println(service.getCrmArticle());
-      System.out.println(service.isHasCrmLink());
     }
-    assertEquals(4, connectedCount);
+    assertEquals(3, connectedCount);
     assertEquals(4, crmLinked);
   }
 
