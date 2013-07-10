@@ -23,7 +23,7 @@ app.taxonomy = function () {
       });
   }
 
-  var doLink = function(facetValueId, cspId, isLink) {
+  var doLink = function(facetValueId, cspId, isLink, elem) {
     var tokencheck = $('#csp-taxonomy-overview').data('token-check');
     $.ajax("facet-value-csp/" + facetValueId + "/" + cspId + ".shtml?tokencheck=" + tokencheck,
       {
@@ -31,7 +31,9 @@ app.taxonomy = function () {
         data: { value: isLink }
       })
       .done(function (data) {
-        //nice transition??
+        var $mess = $("<span style='color: green;margin-right:5px;'>Ok</span>");
+        elem.parent().prepend($mess);
+        $mess.fadeOut().delay(250);
       })
       .fail(function (data) {
         var $mess = $("<span>" + app.message.i18n('failed.save') + "</span>");
@@ -84,7 +86,8 @@ app.taxonomy = function () {
       var $elem = $(this);
       var facetValueId = $elem.data("facet-value-id");
       var cspId = $elem.data("csp-id");
-      doLink(facetValueId, cspId, $elem.is(':checked')) ;
+      doLink(facetValueId, cspId, $elem.is(':checked'), $elem) ;
+
     });
 
   };

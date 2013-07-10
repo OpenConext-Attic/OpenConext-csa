@@ -20,7 +20,7 @@
 <%--@elvariable id="facet" type="nl.surfnet.coin.csa.model.Facet"--%>
 
 
-<spring:message var="title" code="jsp.taxonomy.title"/>
+<spring:message var="title" code="jsp.taxonomy.overview.title"/>
 <jsp:include page="../head.jsp">
   <jsp:param name="title" value="${title}"/>
 </jsp:include>
@@ -28,6 +28,8 @@
 <div class="column-center content-holder no-right-left">
 
   <section>
+    <h1>${title}<i class="inlinehelp icon-question-sign" data-title="${title}" data-placement="bottom" data-content="<spring:message htmlEscape="true" code="jsp.taxonomy.overview.title.help" />"></i></h1>
+
     <div id="csp-taxonomy-overview" class="content csp-taxonomy-overview" data-token-check="${tokencheck}">
       <table>
         <thead>

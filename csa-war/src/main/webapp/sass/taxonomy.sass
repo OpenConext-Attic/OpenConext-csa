@@ -100,54 +100,42 @@ a.local-link
   height: 480px
 
   table
+    margin-top: 15px
+    width: 100%
+
     thead
-      position: fixed
       background-color: #4FB3CF
 
       th
-        text-align: left
         color: white
 
         &.skew
-          height: 90px
-          width: 41px
-          position: relative
-          vertical-align: bottom
-          padding-left: 1px
-          padding-right: 1px
           border-top: 1px solid #CCCCCC
           color: white
 
           span
-            @include skew(45deg, 0deg)
-            @include rotate(315deg)
-            position: absolute
-            bottom: 15px
-            left: 1px
-            display: inline-block
-            width: 100%
-            text-align: left
+            padding-right: 5px
 
             &.facet-value
               font-size: 12px
+              color: darken(white, 4%)
 
         &.service
           width: 430px
           padding: 5px
 
     tbody
-      margin-top: 92px
-      display: block
+      margin-top: 10px
 
     td
       text-align: center
       vertical-align: middle
       border-top: 1px solid #CCCCCC
-      width: 40px
 
       &.csp-name
         text-align: left
         max-width: 422px
+        width: 422px
         overflow: hidden
         padding: 5px
 

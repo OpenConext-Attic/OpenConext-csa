@@ -32,9 +32,6 @@
     <spring:url value="/app-detail.shtml" var="detailUrl" htmlEscape="true">
       <spring:param name="serviceProviderEntityId" value="${compoundSp.serviceProviderEntityId}" />
     </spring:url>
-    <a href="${detailUrl}">
-      <i class="icon-eye-open" rel="tooltip" title="<spring:message code="jsp.compoundsp_detail.previewlink" />"></i>
-    </a>
     <i class="inlinehelp icon-question-sign" data-title="${title}" data-placement="bottom" data-content="<spring:message htmlEscape="true" code="jsp.compoundsp_detail.title.help" />"></i>
   </h1>
 
