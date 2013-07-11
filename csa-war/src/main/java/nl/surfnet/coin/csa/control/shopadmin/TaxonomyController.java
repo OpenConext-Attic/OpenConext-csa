@@ -69,7 +69,7 @@ public class TaxonomyController extends BaseController {
   @RequestMapping("taxonomy-services-overview.shtml")
   public String getServicesFacetsOverview(ModelMap model) {
     model.addAttribute("facets", facetDao.findAll());
-    model.addAttribute("csps", compoundSPService.getAllCSPs());
+    model.addAttribute("csps", compoundSPService.getAllBareCSPs());
     return "shopadmin/csp-taxonomy-overview";
   }
 

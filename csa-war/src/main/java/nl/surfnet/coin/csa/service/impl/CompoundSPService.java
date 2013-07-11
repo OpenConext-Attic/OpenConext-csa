@@ -58,6 +58,11 @@ public class CompoundSPService {
     return getCSPs(null, allServiceProviders);
   }
 
+  public List<CompoundServiceProvider> getAllBareCSPs() {
+    List<ServiceProvider> allServiceProviders = serviceProviderService.getAllServiceProviders(false);
+    return getCSPs(null, allServiceProviders);
+  }
+
   public List<CompoundServiceProvider> getCSPsByIdp(IdentityProvider identityProvider) {
     if (identityProvider == null) {
       return new ArrayList<CompoundServiceProvider>();

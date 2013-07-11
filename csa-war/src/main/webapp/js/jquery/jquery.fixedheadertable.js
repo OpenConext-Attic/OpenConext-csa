@@ -2,16 +2,7 @@
 
   $.fn.fixedHeader = function () {
 
-    resetWidth = function (widths, elems) {
-      elems.each(function (index) {
-        $(this).width(widths[index]);
-      });
-
-    }
-
-    return this.each(function () {
-      var $table = $(this);
-
+    fixHeader = function ($table) {
       var $headerColumns = $table.find('thead').find('th');
       var widths = [];
       $headerColumns.each(function (index) {
@@ -26,6 +17,22 @@
       var $bodyColumns = $table.find('tbody > tr').first().find('td');
 
       resetWidth(widths, $bodyColumns);
+    }
+
+    resetWidth = function (widths, elems) {
+      elems.each(function (index) {
+        $(this).width(widths[index]);
+      });
+    }
+
+    return this.each(function () {
+      var $table = $(this);
+
+      fixHeader($table);
+
+      $(window).resize(function() {
+        fixHeader($table);
+      });
 
     });
   };
