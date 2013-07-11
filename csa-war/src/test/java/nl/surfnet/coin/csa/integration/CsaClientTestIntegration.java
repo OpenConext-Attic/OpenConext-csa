@@ -58,7 +58,7 @@ public class CsaClientTestIntegration {
    */
   private static LocalTestServer oauth2AuthServer;
 
-  private static CsaClient csaClient;
+  protected static CsaClient csaClient;
 
   @BeforeClass
   public static void beforeClass() throws Exception {
