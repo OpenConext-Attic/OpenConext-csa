@@ -17,6 +17,8 @@
       var $bodyColumns = $table.find('tbody > tr').first().find('td');
 
       resetWidth(widths, $bodyColumns);
+
+      $table.find('tbody').css({ marginTop: $table.find('thead').height() } );
     }
 
     resetWidth = function (widths, elems) {
