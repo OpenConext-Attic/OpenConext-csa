@@ -22,6 +22,7 @@ import nl.surfnet.coin.csa.api.cache.ProviderCache;
 import nl.surfnet.coin.csa.api.cache.ServicesCache;
 import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
+import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.domain.Screenshot;
 import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
 import nl.surfnet.coin.csa.model.*;
@@ -125,9 +126,9 @@ public class ServicesController extends BaseApiController implements ServicesSer
   public
   @ResponseBody
   Service getServiceForSpEntityId(@RequestParam(value = "lang", defaultValue = "en") String language,
-      @RequestParam(value="idpEntityId") String idpEntityId,
-      @RequestParam(value="spEntityId") String spEntityId,
-                                     final HttpServletRequest request) {
+                                  @RequestParam(value = "idpEntityId") String idpEntityId,
+                                  @RequestParam(value = "spEntityId") String spEntityId,
+                                  final HttpServletRequest request) {
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
     List<Service> allServices = doGetServicesForIdP(language, idpEntityId, true);
     for (Service service : allServices) {
@@ -182,7 +183,11 @@ public class ServicesController extends BaseApiController implements ServicesSer
         service.setConnected(isConnected);
 
         // Weave with article and license from caches
-        String institutionId = providerCache.getIdentityProvider(idpEntityId).getInstitutionId();
+        IdentityProvider identityProvider = providerCache.getIdentityProvider(idpEntityId);
+        if (identityProvider == null) {
+          throw new IllegalArgumentException("No IdentityProvider known in SR with name:'" + idpEntityId + "'");
+        }
+        String institutionId = identityProvider.getInstitutionId();
         service.setLicense(crmCache.getLicense(service, institutionId));
         addArticle(crmCache.getArticle(service), service);
 

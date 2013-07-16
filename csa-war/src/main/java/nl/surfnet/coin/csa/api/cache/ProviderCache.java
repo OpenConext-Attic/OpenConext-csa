@@ -76,7 +76,15 @@ public class ProviderCache extends AbstractCache {
   }
 
   public IdentityProvider getIdentityProvider(String idpEntityId) {
-    return idpCache.get(idpEntityId);
+    IdentityProvider identityProvider = idpCache.get(idpEntityId);
+    //kind of bizar, means we have a new IdP in between cache re-populate (happens in theory only and in integration tests)
+    if (identityProvider == null) {
+      identityProvider = idpService.getIdentityProvider(idpEntityId);
+      if (identityProvider != null) {
+        idpCache.put(identityProvider.getId(), identityProvider);
+      }
+    }
+    return identityProvider;
   }
 
   private void populateSPIds() {

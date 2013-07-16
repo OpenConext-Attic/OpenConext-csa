@@ -63,6 +63,17 @@ public class ProviderCacheTest {
   }
 
   @Test
+  public void tesGetIdentityProvider() {
+    String idpEntityId = "unknown-idp";
+    IdentityProvider identityProvider = cache.getIdentityProvider(idpEntityId);
+    assertNull(identityProvider);
+
+    when(service.getIdentityProvider(idpEntityId)).thenReturn(new IdentityProvider(idpEntityId, "institution", "idp1"));
+    identityProvider = cache.getIdentityProvider(idpEntityId);
+    assertNotNull(identityProvider);
+  }
+
+  @Test
   public void testGetIdentityProvider() throws InterruptedException {
     IdentityProvider idp1 = new IdentityProvider("idp1", "institution", "idp1");
     IdentityProvider idp2 = new IdentityProvider("idp2", "institution", "idp2");
