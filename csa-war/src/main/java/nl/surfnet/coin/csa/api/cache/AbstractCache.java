@@ -92,6 +92,13 @@ public abstract class AbstractCache implements InitializingBean, DisposableBean 
     }, 0L);
   }
 
+  /**
+   * Clears the cache (synchronously)
+   */
+  public void evictSynchronously() {
+    populateCache();
+  }
+
   public long getDelay() {
     return delay;
   }

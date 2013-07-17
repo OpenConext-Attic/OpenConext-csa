@@ -115,6 +115,11 @@ public class CsaClient implements Csa {
     return (List<Action>) oauthClient.exchange(csaBaseLocation + "/api/protected/actions.json?idpEntityId={idpEntityId}", variables, Action[].class);
   }
 
+  @Override
+  public void clearProviderCache() {
+    oauthClient.exchange(csaBaseLocation + "/api/protected/cache/clear.json", String.class);
+  }
+
   public Action createAction(Action action) {
     return (Action) oauthClient.exchange(csaBaseLocation + "/api/protected/action.json", action, Action.class);
   }

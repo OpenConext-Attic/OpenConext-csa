@@ -32,6 +32,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -169,6 +170,16 @@ public class ServicesController extends BaseApiController implements ServicesSer
       }
     }
     throw new RuntimeException("Non-existent service ID('" + serviceId + "')");
+  }
+
+  @RequestMapping(method = RequestMethod.GET, value = "/api/protected/cache/clear.json")
+  public
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @ResponseBody
+  void clearCache(final HttpServletRequest request) {
+    verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
+    this.providerCache.evictSynchronously();
+    this.servicesCache.evictSynchronously();
   }
 
   private List<Service> doGetServicesForIdP(String language, String idpEntityId, boolean includeNotLinkedSPs) {

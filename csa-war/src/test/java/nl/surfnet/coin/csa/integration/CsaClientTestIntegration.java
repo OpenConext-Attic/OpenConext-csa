@@ -129,6 +129,14 @@ public class CsaClientTestIntegration {
   }
 
   @Test
+  public void clearCache() throws IOException {
+    csaClient.clearProviderCache();
+    //not much we can assert, except that is still works
+    List<InstitutionIdentityProvider> providers = csaClient.getAllInstitutionIdentityProviders();
+    assertEquals(3, providers.size());
+  }
+
+  @Test
   public void newAction() throws Exception {
     Action action = new Action("jonh.doe", "john.doe@nl", "John Doe", JiraTask.Type.LINKREQUEST, "Body remarks", "http://mock-idp",
             "http://mock-sp", "mock-institution");
