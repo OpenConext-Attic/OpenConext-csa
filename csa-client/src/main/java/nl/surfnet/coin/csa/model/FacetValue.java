@@ -47,6 +47,10 @@ public class FacetValue extends DomainObject implements Comparable<FacetValue> {
     return multilingualString.getValue();
   }
 
+  public String getLocaleValue(String locale) {
+    return multilingualString.getLocaleValue(locale);
+  }
+
   public void setValue(String value) {
     this.multilingualString.setValue(value);
   }

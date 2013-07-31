@@ -178,7 +178,6 @@ public class CsaClient implements Csa {
       }
     }
     return locale != null ? locale.toString() : defaultLocale;
-
   }
 
 }

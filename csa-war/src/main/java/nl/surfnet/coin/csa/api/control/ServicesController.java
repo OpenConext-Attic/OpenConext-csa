@@ -36,13 +36,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Controller
@@ -236,7 +237,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
     languageSpecificProperties(csp, isEn, service);
     addArticle(csp.getArticle(), service);
     service.setLicense(csp.getLicense());
-    categories(csp, service);
+    categories(csp, service, language);
     return service;
   }
 
@@ -257,17 +258,17 @@ public class ServicesController extends BaseApiController implements ServicesSer
 
   }
 
-  private void categories(CompoundServiceProvider csp, Service service) {
-    // Categories
+  private void categories(CompoundServiceProvider csp, Service service, String locale) {
+    // Categories - the category values need to be either in nl or en (as the facet and facet_values are based on the language setting)
     List<Category> categories = new ArrayList<Category>();
     for (FacetValue facetValue : csp.getFacetValues()) {
       Facet facet = facetValue.getFacet();
       Category category = findCategory(categories, facet);
       if (category == null) {
-        category = new Category(facet.getName());
+        category = new Category(facet.getLocaleName(locale));
         categories.add(category);
       }
-      category.addCategoryValue(new CategoryValue(facetValue.getValue()));
+      category.addCategoryValue(new CategoryValue(facetValue.getLocaleValue(locale)));
     }
     service.setCategories(categories);
   }

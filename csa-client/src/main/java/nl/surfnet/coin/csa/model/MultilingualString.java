@@ -81,8 +81,16 @@ public class MultilingualString extends DomainObject {
   }
 
   public String getValue() {
-    Locale locale = getLocale();
-    LocalizedString localizedString = this.localizedStrings.get(locale.toString());
+    String locale = getLocale().toString();
+    return localeString(locale);
+  }
+
+  public String getLocaleValue(String locale) {
+    return localeString(locale);
+  }
+
+  private String localeString(String locale) {
+    LocalizedString localizedString = this.localizedStrings.get(locale);
     if (localizedString == null) {
       localizedString = this.localizedStrings.get(defaultLocale.toString());
     }

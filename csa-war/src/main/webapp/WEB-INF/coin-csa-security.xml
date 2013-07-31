@@ -71,6 +71,7 @@
     <security:intercept-url pattern="/img/**" access="permitAll"/>
     <security:intercept-url pattern="/public/**" access="permitAll"/>
     <security:intercept-url pattern="/fieldimages/**" access="permitAll"/>
+    <security:intercept-url pattern="/screenshots/**" access="permitAll"/>
     <security:intercept-url pattern="/js/**" access="permitAll"/>
     <security:intercept-url pattern="/*.ico" access="permitAll"/>
     <security:intercept-url pattern="/shopadmin/**" access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN')"/>

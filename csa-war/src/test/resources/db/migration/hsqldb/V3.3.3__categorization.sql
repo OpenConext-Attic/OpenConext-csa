@@ -12,6 +12,13 @@ INSERT INTO localized_string (id, multilingual_string_id, VALUE, locale) VALUES 
 INSERT INTO localized_string (id, multilingual_string_id, VALUE, locale) VALUES (5, 5, 'Students', 'en');
 INSERT INTO localized_string (id, multilingual_string_id, VALUE, locale) VALUES (6, 6, 'Researchers', 'en');
 
+INSERT INTO localized_string (id, multilingual_string_id, VALUE, locale) VALUES (7, 1, 'Lokatie', 'nl');
+INSERT INTO localized_string (id, multilingual_string_id, VALUE, locale) VALUES (8, 2, 'Nederland', 'nl');
+INSERT INTO localized_string (id, multilingual_string_id, VALUE, locale) VALUES (9, 3, 'Amerika', 'nl');
+INSERT INTO localized_string (id, multilingual_string_id, VALUE, locale) VALUES (10, 4, 'Doelgroep', 'nl');
+INSERT INTO localized_string (id, multilingual_string_id, VALUE, locale) VALUES (11, 5, 'Studenten', 'nl');
+INSERT INTO localized_string (id, multilingual_string_id, VALUE, locale) VALUES (12, 6, 'Onderzoekers', 'nl');
+
 INSERT INTO facet (id, facet_parent_id, multilingual_string_id) VALUES (1, NULL, 1);
 INSERT INTO facet (id, facet_parent_id, multilingual_string_id) VALUES (2, NULL, 4);
 

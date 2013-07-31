@@ -35,6 +35,7 @@ import org.codehaus.jackson.annotate.JsonMethod;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -90,18 +91,39 @@ public class CsaClientTestIntegration {
     csaClient.setOauthClient(oauthClient);
   }
 
+  @Before
+  public void before() throws Exception {
+    setLanguage("en");
+  }
+
+
   @Test
   public void taxonomy() throws IOException {
+    doTestTaxonomy("Location");
+
+    setLanguage("nl");
+
+    doTestTaxonomy("Lokatie");
+  }
+
+  private void doTestTaxonomy(String facetName) {
     Taxonomy taxonomy = csaClient.getTaxonomy();
     List<Category> categories = taxonomy.getCategories();
     assertEquals(2, categories.size());
     assertEquals(2, categories.get(0).getValues().size());
 
+    boolean facetNameFound = false;
     for (Category category : categories) {
+      if (category.getName().equals(facetName)) {
+        facetNameFound = true;
+      }
       List<CategoryValue> values = category.getValues();
       for (CategoryValue value : values) {
         assertNotNull(value.getCategory());
       }
+    }
+    if (!facetNameFound) {
+      fail();
     }
   }
 
@@ -123,21 +145,18 @@ public class CsaClientTestIntegration {
 
   @Test
   public void getServiceBySpEntityIDranslated() {
-        /*
-     * Set up the Locale in the Request (as Spring does)
-     */
-    HttpServletRequest request = new MockHttpServletRequest();
-    request.setAttribute(DispatcherServlet.LOCALE_RESOLVER_ATTRIBUTE, createLocaleResolver("nl"));
-    ServletRequestAttributes sra = new ServletRequestAttributes(request);
-    RequestContextHolder.setRequestAttributes(sra);
-
+    setLanguage("nl");
     Service service = csaClient.getServiceForIdp("http://mock-idp", "http://mock-sp");
     assertNotNull(service);
     assertEquals("Populaire SP (name nl)", service.getName());
   }
 
-  private LocaleResolver createLocaleResolver(final String language) {
-    return new LocaleResolver() {
+  private void setLanguage(final String language) {
+  /*
+   * Set up the Locale in the Request (as Spring does)
+   */
+    HttpServletRequest request = new MockHttpServletRequest();
+    request.setAttribute(DispatcherServlet.LOCALE_RESOLVER_ATTRIBUTE, new LocaleResolver() {
       @Override
       public Locale resolveLocale(HttpServletRequest request) {
         return new Locale(language);
@@ -145,9 +164,10 @@ public class CsaClientTestIntegration {
       @Override
       public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
       }
-    };
+    });
+    ServletRequestAttributes sra = new ServletRequestAttributes(request);
+    RequestContextHolder.setRequestAttributes(sra);
   }
-
 
   @Test
   public void actions() throws IOException {
