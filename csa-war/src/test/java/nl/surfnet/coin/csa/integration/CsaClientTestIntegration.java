@@ -37,10 +37,18 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.LocaleResolver;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import static junit.framework.Assert.*;
 
@@ -112,6 +120,34 @@ public class CsaClientTestIntegration {
     assertNotNull(service);
     assertEquals("Populair SP (name en)", service.getName());
   }
+
+  @Test
+  public void getServiceBySpEntityIDranslated() {
+        /*
+     * Set up the Locale in the Request (as Spring does)
+     */
+    HttpServletRequest request = new MockHttpServletRequest();
+    request.setAttribute(DispatcherServlet.LOCALE_RESOLVER_ATTRIBUTE, createLocaleResolver("nl"));
+    ServletRequestAttributes sra = new ServletRequestAttributes(request);
+    RequestContextHolder.setRequestAttributes(sra);
+
+    Service service = csaClient.getServiceForIdp("http://mock-idp", "http://mock-sp");
+    assertNotNull(service);
+    assertEquals("Populaire SP (name nl)", service.getName());
+  }
+
+  private LocaleResolver createLocaleResolver(final String language) {
+    return new LocaleResolver() {
+      @Override
+      public Locale resolveLocale(HttpServletRequest request) {
+        return new Locale(language);
+      }
+      @Override
+      public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
+      }
+    };
+  }
+
 
   @Test
   public void actions() throws IOException {

@@ -23,11 +23,12 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 /**
  * Client for the CSA API.
@@ -48,6 +49,8 @@ public class CsaClient implements Csa {
    */
   private String csaBaseLocation;
 
+  private String defaultLocale = "en";
+
   public CsaClient() {
   }
 
@@ -57,28 +60,36 @@ public class CsaClient implements Csa {
 
   @Override
   public List<Service> getPublicServices() {
-    return restoreCategoryReferences((List<Service>) oauthClient.exchange(csaBaseLocation + "/api/public/services.json", Service[].class));
+    return restoreCategoryReferences((List<Service>) oauthClient.exchange(csaBaseLocation + "/api/public/services.json?lang={lang}", getLocaleVariable(), Service[].class));
+  }
+
+  private Map getLocaleVariable() {
+    Map variables = new HashMap<String, String>();
+    variables.put("lang", getLocale());
+    return variables;
   }
 
   @Override
   public List<Service> getProtectedServices() {
-    return restoreCategoryReferences((List<Service>) oauthClient.exchange(csaBaseLocation + "/api/protected/services.json", Service[].class));
+    return restoreCategoryReferences((List<Service>) oauthClient.exchange(csaBaseLocation + "/api/protected/services.json?lang={lang}", getLocaleVariable(), Service[].class));
   }
 
   @Override
   public List<Service> getServicesForIdp(String idpEntityId) {
-    String url = csaBaseLocation + "/api/protected/idp/services.json?idpEntityId={idpEntityId}";
+    String url = csaBaseLocation + "/api/protected/idp/services.json?idpEntityId={idpEntityId}&lang={lang}";
     Map variables = new HashMap<String, String>();
     variables.put("idpEntityId", idpEntityId);
+    variables.put("lang", getLocale());
     return restoreCategoryReferences((List<Service>) oauthClient.exchange(url, variables, Service[].class));
   }
 
   @Override
   public Service getServiceForIdp(String idpEntityId, long serviceId) {
-    String location = csaBaseLocation + "/api/protected/services/{serviceId}.json?idpEntityId={idpEntityId}";
+    String location = csaBaseLocation + "/api/protected/services/{serviceId}.json?idpEntityId={idpEntityId}&lang={lang}";
     Map variables = new HashMap<String, String>();
     variables.put("serviceId", serviceId);
     variables.put("idpEntityId", idpEntityId);
+    variables.put("lang", getLocale());
     Service service = (Service) oauthClient.exchange(location, variables, Service.class);
     service.restoreCategoryReferences();
     return service;
@@ -86,10 +97,11 @@ public class CsaClient implements Csa {
 
   @Override
   public Service getServiceForIdp(String idpEntityId, String spEntityId) {
-    String url = csaBaseLocation + "/api/protected/service.json?idpEntityId={idpEntityId}&spEntityId={spEntityId}";
+    String url = csaBaseLocation + "/api/protected/service.json?idpEntityId={idpEntityId}&spEntityId={spEntityId}&lang={lang}";
     Map variables = new HashMap<String, String>();
     variables.put("idpEntityId", idpEntityId);
     variables.put("spEntityId", spEntityId);
+    variables.put("lang", getLocale());
     Service service = (Service) oauthClient.exchange(url, variables, Service.class);
     service.restoreCategoryReferences();
     return service;
@@ -97,7 +109,7 @@ public class CsaClient implements Csa {
 
   @Override
   public Taxonomy getTaxonomy() {
-    Taxonomy taxonomy = (Taxonomy) oauthClient.exchange(csaBaseLocation + "/api/public/taxonomy.json", Taxonomy.class);
+    Taxonomy taxonomy = (Taxonomy) oauthClient.exchange(csaBaseLocation + "/api/public/taxonomy.json?lang={lang}",getLocaleVariable(), Taxonomy.class);
     List<Category> categories = taxonomy.getCategories();
     for (Category category : categories) {
       List<CategoryValue> values = category.getValues();
@@ -152,4 +164,21 @@ public class CsaClient implements Csa {
     }
     return services;
   }
+
+  /*
+  * Note: this is a deliberate design choice. We want to be able to transparently call Csa services without passing in HttpServletRequest and / or Locale.
+  */
+  private String getLocale() {
+    Locale locale = null;
+    ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+    if (sra != null) {
+      HttpServletRequest request = sra.getRequest();
+      if (request != null) {
+        locale = RequestContextUtils.getLocale(request);
+      }
+    }
+    return locale != null ? locale.toString() : defaultLocale;
+
+  }
+
 }
