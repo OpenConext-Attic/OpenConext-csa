@@ -107,6 +107,8 @@ public abstract class OauthClient {
 
     ResponseEntity<T> response;
 
+    long start = System.currentTimeMillis();
+
     try {
       if (CollectionUtils.isEmpty(variables)) {
         response = restTemplate.exchange(URI.create(fullUrl), method, requestEntity, clazz);
@@ -132,7 +134,7 @@ public abstract class OauthClient {
 
     if (LOG.isTraceEnabled()) {
       try {
-        LOG.trace("Response: {}", objectMapper.writeValueAsString(body));
+        LOG.trace("Response (took {} milliseconds) : {}", System.currentTimeMillis() - start, objectMapper.writeValueAsString(body));
       } catch (IOException e) {
         LOG.info("Could not serialize response object for logging: {}", e.getMessage());
       }
