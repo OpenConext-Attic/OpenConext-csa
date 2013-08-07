@@ -134,7 +134,8 @@ public class JanusRestClientMock implements Janus {
    */
   @Override
   public List<String> getAllowedSps(String idpentityid) {
-    return spsForIdp.get(idpentityid);
+    List<String> allowedSps = spsForIdp.get(idpentityid);
+    return allowedSps != null ? allowedSps : new ArrayList<String>();
   }
 
   /*

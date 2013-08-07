@@ -100,7 +100,11 @@ public class LmngServiceImpl implements CrmService {
       return result;
     }
     try {
-      String lmngInstitutionId = IdentityProvider.NONE.equals(identityProvider) ? null : getLmngIdentityId(identityProvider);
+      String lmngInstitutionId = getLmngIdentityId(identityProvider);
+
+      if (lmngInstitutionId == null || lmngInstitutionId.trim().length() == 0) {
+        return result;
+      }
 
       // get the file with the soap request
       String soapRequest = lmngUtil.getLmngSoapRequestForIdpAndSp(lmngInstitutionId, articleIdentifiers, new Date(), endpoint);
