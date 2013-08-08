@@ -30,13 +30,13 @@ app.table = function() {
 
   var initDataTable = function() {
     jQuery.fn.dataTableExt.oSort['spnames-asc'] = function(x, y) {
-      x = trimmer(x);
-      y = trimmer(y);
+      x = trimmer(x).toLowerCase();
+      y = trimmer(y).toLowerCase();
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     };
     jQuery.fn.dataTableExt.oSort['spnames-desc'] = function(x, y) {
-      x = trimmer(x);
-      y = trimmer(y);
+      x = trimmer(x).toLowerCase();
+      y = trimmer(y).toLowerCase();
       return ((x < y) ? 1 : ((x > y) ? -1 : 0));
     };
 

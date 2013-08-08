@@ -93,4 +93,8 @@ public class License implements Serializable {
     this.groupLicense = groupLicense;
   }
 
+  public boolean isValid() {
+    return endDate == null || endDate.getTime() > System.currentTimeMillis();
+  }
+
 }
