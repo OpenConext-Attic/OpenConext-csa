@@ -81,7 +81,6 @@ public class CrmCache extends AbstractCache {
   }
 
   private void populateLicenseCache() {
-
     // Nested loop to query the cartesian product of all SPs and all IdPs
     for (MappingEntry idpLmngEntry : idpToLmngId) {
       String idpInstitutionId = idpLmngEntry.getKey();
@@ -92,13 +91,15 @@ public class CrmCache extends AbstractCache {
         IdentityProvider idp = new IdentityProvider("dummy", idpInstitutionId, "dummy");
 
         List<License> licensesForIdpAndSp = crmService.getLicensesForIdpAndSp(idp, spLmngId);
-        if (licensesForIdpAndSp.size() > 1) {
-          LOG.warn("Unexpected: list of licenses by IdP and SP ({} and {}) is larger than 1: {}", idpInstitutionId, spEntityId, licensesForIdpAndSp.size());
+        if (licensesForIdpAndSp.size() > 0) {
+          if (licensesForIdpAndSp.size() > 1) {
+            LOG.warn("Unexpected: list of licenses by IdP and SP ({} and {}) is larger than 1: {}", idpInstitutionId, spEntityId, licensesForIdpAndSp.size());
+          }
+          License license = licensesForIdpAndSp.get(0);
+          LOG.debug("License found by IdP and SP ({} and {}): {}", idpInstitutionId, spEntityId, license);
+          licenseCache.put(new MappingEntry(idpInstitutionId, spEntityId), license);
         }
-        if (licensesForIdpAndSp.size() == 1) {
-          LOG.debug("License found by IdP and SP ({} and {}): {}", idpInstitutionId, spEntityId, licensesForIdpAndSp.get(0));
-          licenseCache.put(new MappingEntry(idpInstitutionId, spEntityId), licensesForIdpAndSp.get(0));
-        } else {
+        else {
           LOG.debug("No result found for licenses by IdP and SP ({} and {})", idpInstitutionId, spEntityId);
         }
       }
@@ -113,7 +114,6 @@ public class CrmCache extends AbstractCache {
   }
 
   public Article getArticle(Service service) {
-
     if (service.getSpEntityId() == null) {
       // This happens for 'crm only' services, with no reference to Service Registry's services.
       return null;
