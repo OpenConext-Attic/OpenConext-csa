@@ -39,17 +39,15 @@ public class SerializationTest {
   private ObjectMapper objectMapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
           .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
-
   @Test
   public void service() throws IOException, InvocationTargetException, IllegalAccessException {
     Service service = objectMapper.readValue(new ClassPathResource("json/service.json").getInputStream(), Service.class);
     service.restoreCategoryReferences();
 
-    PropertyDescriptor[] propertyDescriptors = BeanUtils.getPropertyDescriptors(Service.class);
-    for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-      Method readMethod = propertyDescriptor.getReadMethod();
-      Object result = readMethod.invoke(service);
-      assertNotNull(readMethod.getName(), result);
-    }
+    String s = objectMapper.writeValueAsString(service) ;
+    service = objectMapper.readValue(s, Service.class);
+
+    assertTrue(service.getLicense().isValid());
+
   }
 }

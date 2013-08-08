@@ -184,7 +184,12 @@ public class ServicesController extends BaseApiController implements ServicesSer
   }
 
   private List<Service> doGetServicesForIdP(String language, String idpEntityId, boolean includeNotLinkedSPs) {
+    IdentityProvider identityProvider = providerCache.getIdentityProvider(idpEntityId);
+    if (identityProvider == null) {
+      throw new IllegalArgumentException("No IdentityProvider known in SR with name:'" + idpEntityId + "'");
+    }
     List<String> serviceProviderIdentifiers = providerCache.getServiceProviderIdentifiers(idpEntityId);
+
     List<Service> allServices = servicesCache.getAllServices(language);
     List<Service> result = new ArrayList<Service>();
     for (Service service : allServices) {
@@ -195,10 +200,6 @@ public class ServicesController extends BaseApiController implements ServicesSer
         service.setConnected(isConnected);
 
         // Weave with article and license from caches
-        IdentityProvider identityProvider = providerCache.getIdentityProvider(idpEntityId);
-        if (identityProvider == null) {
-          throw new IllegalArgumentException("No IdentityProvider known in SR with name:'" + idpEntityId + "'");
-        }
         String institutionId = identityProvider.getInstitutionId();
         service.setLicense(crmCache.getLicense(service, institutionId));
         addArticle(crmCache.getArticle(service), service);

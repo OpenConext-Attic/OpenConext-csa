@@ -16,6 +16,8 @@
 
 package nl.surfnet.coin.csa.model;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -93,6 +95,7 @@ public class License implements Serializable {
     this.groupLicense = groupLicense;
   }
 
+  @JsonIgnore
   public boolean isValid() {
     return endDate == null || endDate.getTime() > System.currentTimeMillis();
   }

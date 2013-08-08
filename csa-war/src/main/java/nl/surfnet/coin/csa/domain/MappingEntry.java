@@ -1,11 +1,15 @@
 package nl.surfnet.coin.csa.domain;
 
+import org.springframework.util.Assert;
+
 public class MappingEntry {
 
   private String key;
   private String value;
 
   public MappingEntry(String key, String value) {
+    Assert.notNull(key);
+    Assert.notNull(value);
     this.key = key;
     this.value = value;
   }
@@ -20,21 +24,20 @@ public class MappingEntry {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null || !(o instanceof MappingEntry)) {
+      return false;
+    }
 
     MappingEntry that = (MappingEntry) o;
-
-    if (key != null ? !key.equals(that.key) : that.key != null) return false;
-    if (value != null ? !value.equals(that.value) : that.value != null) return false;
-
-    return true;
+    return key.equals(that.key) && value.equals(that.value);
   }
 
   @Override
   public int hashCode() {
-    int result = key != null ? key.hashCode() : 0;
-    result = 31 * result + (value != null ? value.hashCode() : 0);
-    return result;
+    return key.hashCode() ^ value.hashCode();
   }
 }
