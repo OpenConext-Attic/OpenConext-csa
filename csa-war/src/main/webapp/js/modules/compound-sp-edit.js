@@ -89,6 +89,26 @@ app.compoundSpEdit = function() {
     });
 
     $('input.fileinput').fileupload({
+      // Custom handler because fileupload plugin does not honor maxfileSize and acceptedFileTypes options, although they are described in the API docs.
+      // http://stackoverflow.com/questions/17451629/maxfilesize-and-acceptfiletypes-in-blueimp-file-upload-plugin-do-not-work-why
+      add: function(e, data) {
+        var maxFileSize = 1000000;
+        var uploadErrors = [];
+        var acceptFileTypes = /^image\/(gif|jpe?g|png)$/i;
+        if(!acceptFileTypes.test(data.originalFiles[0]['type'])) {
+          uploadErrors.push('Not an accepted file type');
+        }
+        var actualFileSize = data.originalFiles[0]['size'];
+        if(actualFileSize > maxFileSize) {
+          uploadErrors.push('File is too large (' + actualFileSize + " > " + maxFileSize + ")");
+        }
+        if(uploadErrors.length > 0) {
+          $(currentFileuploadForm).prepend(alertDiv("Error uploading file: " + uploadErrors.join(". "), true));
+        } else {
+          data.submit();
+        }
+      },
+
       success: function (imageUrl) {
 
         var form = $(currentFileuploadForm);
@@ -119,6 +139,8 @@ app.compoundSpEdit = function() {
               form.prepend(newimg);
             }
         }
+      }, fail: function(event, data) {
+        $(currentFileuploadForm).prepend(alertDiv("Error uploading file: " + data.errorThrown, true));
       }
     });
 
