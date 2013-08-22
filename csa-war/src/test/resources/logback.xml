@@ -38,6 +38,9 @@
     <logger name="nl.surfnet.coin" level="info" additivity="false">
         <appender-ref ref="console"/>
     </logger>
+    <logger name="nl.surfnet.coin.csa.api" level="debug" additivity="false">
+        <appender-ref ref="console"/>
+    </logger>
     <logger name="nl.surfnet.sab" level="info" additivity="false">
         <appender-ref ref="console"/>
     </logger>

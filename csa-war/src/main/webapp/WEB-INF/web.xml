@@ -39,6 +39,15 @@
   </listener>
 
   <filter>
+    <filter-name>apiLoggingFilter</filter-name>
+    <filter-class>nl.surfnet.coin.csa.filter.LoggingFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>apiLoggingFilter</filter-name>
+    <url-pattern>/api/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
     <filter-name>encodingFilter</filter-name>
     <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
     <init-param>
