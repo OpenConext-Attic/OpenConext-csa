@@ -16,6 +16,7 @@ import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Component
 public class CrmCache extends AbstractCache {
@@ -31,12 +32,12 @@ public class CrmCache extends AbstractCache {
   /**
    * Cache of Licenses, keyed by Entry of Idp institutionId and spEntityId
    */
-  private ConcurrentHashMap<MappingEntry, License> licenseCache = new ConcurrentHashMap<MappingEntry, License>();
+  private ConcurrentMap<MappingEntry, License> licenseCache = new ConcurrentHashMap<MappingEntry, License>();
 
   /**
    * Cache of Articles, keyed by spEntityId
    */
-  private ConcurrentHashMap<String, Article> articleCache = new ConcurrentHashMap<String, Article>();
+  private ConcurrentMap<String, Article> articleCache = new ConcurrentHashMap<String, Article>();
 
   private List<MappingEntry> idpToLmngId;
   private List<MappingEntry> spToLmngId;
@@ -48,8 +49,8 @@ public class CrmCache extends AbstractCache {
   protected void doPopulateCache() {
     synchronized (lock) {
       populateMappings();
-      populateLicenseCache();
-      populateArticleCache();
+      licenseCache = createNewLicensesCache();
+      articleCache = createNewArticleCache();
     }
   }
 
@@ -59,7 +60,8 @@ public class CrmCache extends AbstractCache {
 
   }
 
-  private void populateArticleCache() {
+  private ConcurrentMap<String, Article> createNewArticleCache() {
+    ConcurrentMap<String, Article> newCache = new ConcurrentHashMap<String, Article>();
 
     // Here we only have to query the articles that have been mapped to an SP, luckily not the whole CRM database.
     for (MappingEntry spAndLmngId : spToLmngId) {
@@ -72,15 +74,17 @@ public class CrmCache extends AbstractCache {
       }
 
       if (articlesForServiceProviders.size() >= 1) {
-        articleCache.put(spEntityId, articlesForServiceProviders.get(0));
+        newCache.put(spEntityId, articlesForServiceProviders.get(0));
       } else {
         LOG.info("No article found for SP {}, with lmng id: {}", spEntityId, lmngId);
-        articleCache.put(spEntityId, null);
+        newCache.put(spEntityId, null);
       }
     }
+    return newCache;
   }
 
-  private void populateLicenseCache() {
+  private ConcurrentMap<MappingEntry, License> createNewLicensesCache() {
+    ConcurrentMap<MappingEntry, License> newLicenseCache = new ConcurrentHashMap<MappingEntry, License>();
     // Nested loop to query the cartesian product of all SPs and all IdPs
     for (MappingEntry idpLmngEntry : idpToLmngId) {
       String idpInstitutionId = idpLmngEntry.getKey();
@@ -96,14 +100,17 @@ public class CrmCache extends AbstractCache {
             LOG.warn("Unexpected: list of licenses by IdP and SP ({} and {}) is larger than 1: {}", idpInstitutionId, spEntityId, licensesForIdpAndSp.size());
           }
           License license = licensesForIdpAndSp.get(0);
-          LOG.debug("License found by IdP and SP ({} and {}): {}", idpInstitutionId, spEntityId, license);
-          licenseCache.put(new MappingEntry(idpInstitutionId, spEntityId), license);
+          if (LOG.isTraceEnabled()) {
+            LOG.trace("License found by IdP and SP ({} and {}): {}", idpInstitutionId, spEntityId, license);
+          }
+          newLicenseCache.put(new MappingEntry(idpInstitutionId, spEntityId), license);
         }
         else {
           LOG.debug("No result found for licenses by IdP and SP ({} and {})", idpInstitutionId, spEntityId);
         }
       }
     }
+    return newLicenseCache;
   }
 
   public License getLicense(Service service, String idpInstitutionId) {
