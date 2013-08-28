@@ -97,7 +97,7 @@ public class IdpLnmgListController extends BaseController {
     Integer index = Integer.valueOf(req.getParameter("index"));
 
     String isClearPressed = req.getParameter("clearbutton");
-    if (StringUtils.isNotBlank(isClearPressed)) {
+    if (StringUtils.isBlank(lmngId) || StringUtils.isNotBlank(isClearPressed)) {
       log.debug("Clearing lmng identifier for IdentityProvider with institutionID " + idpId );
       lmngId = null;
     } else {
@@ -117,7 +117,7 @@ public class IdpLnmgListController extends BaseController {
         model.put("messageIndex", index);
       }
 
-      log.debug("Storing lmng identifier " + lmngId + " for IdentityProvider with institutionID " + idpId );
+      log.debug("Storing lmng identifier '" + lmngId + "' for IdentityProvider with institutionID " + idpId );
     }
     lmngIdentifierDao.saveOrUpdateLmngIdForIdentityProviderId(idpId, lmngId);
     return listAllIdps(model);
