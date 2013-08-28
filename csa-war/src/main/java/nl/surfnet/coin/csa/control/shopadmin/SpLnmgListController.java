@@ -88,7 +88,7 @@ public class SpLnmgListController extends BaseController {
     Integer index = Integer.valueOf(req.getParameter("index"));
 
     String isClearPressed = req.getParameter("clearbutton");
-    if (StringUtils.isNotBlank(isClearPressed)) {
+    if (StringUtils.isBlank(lmngId) || StringUtils.isNotBlank(isClearPressed)) {
       log.debug("Clearing lmng identifier for ServiceProvider with ID " + spId);
       lmngId = null;
     } else {
