@@ -92,7 +92,7 @@ public class CrmCache extends AbstractCache {
         String spEntityId = spLmngEntry.getKey();
         String spLmngId = spLmngEntry.getValue();
 
-        IdentityProvider idp = new IdentityProvider("dummy", idpInstitutionId, "dummy");
+        IdentityProvider idp = new IdentityProvider(idpInstitutionId, idpInstitutionId, "dummy");
 
         List<License> licensesForIdpAndSp = crmService.getLicensesForIdpAndSp(idp, spLmngId);
         if (licensesForIdpAndSp.size() > 0) {
