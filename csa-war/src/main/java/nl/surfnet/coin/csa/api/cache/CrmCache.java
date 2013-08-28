@@ -106,7 +106,9 @@ public class CrmCache extends AbstractCache {
           newLicenseCache.put(new MappingEntry(idpInstitutionId, spEntityId), license);
         }
         else {
-          LOG.debug("No result found for licenses by IdP and SP ({} and {})", idpInstitutionId, spEntityId);
+          if (LOG.isTraceEnabled()) {
+            LOG.trace("No result found for licenses by IdP and SP ({} and {})", idpInstitutionId, spEntityId);
+          }
         }
       }
     }
