@@ -137,7 +137,7 @@ app.table = function() {
       },
       aoColumns : [ {
         'sType' : 'spnames'
-      }, null, null, null, null, null ]
+      }, null, null, null, null, null, null ]
     });
 
     $('#csp-statusses-short').dataTable({
