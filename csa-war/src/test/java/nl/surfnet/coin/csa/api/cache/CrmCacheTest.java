@@ -29,11 +29,10 @@ import nl.surfnet.coin.csa.service.CrmService;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -92,6 +91,14 @@ public class CrmCacheTest {
     assertNotNull(article);
   }
 
+  @Test
+  public void noArticleFound() {
+    when(service.getArticlesForServiceProviders(anyListOf(String.class))).thenReturn(Collections.<Article>emptyList());
+    when(dao.findAllServiceProviders()).thenReturn(getProviders("spId"));
+    cache.doPopulateCache();
+    assertNull(cache.getArticle(new Service(1L, "name", "", "", true, "", "spId-0")));
+  }
+
   private License createLicense() {
     Date now = new Date();
     return new License(now, now, "licenseNumber", "institutionName");
@@ -117,5 +124,6 @@ public class CrmCacheTest {
     }
     return identityProviders;
   }
+
 
 }
