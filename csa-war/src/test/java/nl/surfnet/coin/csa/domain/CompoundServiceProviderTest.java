@@ -40,7 +40,7 @@ public class CompoundServiceProviderTest {
   public void testBuilder() {
     ServiceProvider serviceProvider = new ServiceProvider("id");
     serviceProvider.addDescription(Language.EN.name().toLowerCase(), "EN description");
-    serviceProvider.setLogoUrl("http://png");
+    serviceProvider.setLogoUrl(CompoundServiceProvider.SR_DEFAULT_LOGO_VALUE);
 
     Article article = new Article();
 
@@ -50,11 +50,16 @@ public class CompoundServiceProviderTest {
     assertNull(des);
 
     String detailLogo = provider.getDetailLogo();
-    assertEquals("http://png", detailLogo);
+    // looks strange, but corect as we did not save the provider
+    assertEquals("/fieldimages/null.img", detailLogo);
 
     String appLogo = provider.getAppStoreLogo();
-    // looks strange, but corect as we did not save the provider
-    assertEquals("http://png", appLogo);
+    assertEquals("/fieldimages/null.img", appLogo);
+
+    serviceProvider.setLogoUrl("https://static.surfconext.nl/media/idp/windesheim.png");
+    provider = CompoundServiceProvider.builder(serviceProvider, article);
+    appLogo = provider.getAppStoreLogo();
+    assertEquals("https://static.surfconext.nl/media/idp/windesheim.png", appLogo);
 
     des = values.get(Key.ENDUSER_DESCRIPTION_NL);
     assertNull(des);
@@ -73,7 +78,6 @@ public class CompoundServiceProviderTest {
 
     assertTrue(CompoundServiceProvider.isAllowedCombination(Key.SERVICE_DESCRIPTION_NL, Source.DISTRIBUTIONCHANNEL));
     assertTrue(CompoundServiceProvider.isAllowedCombination(Key.SERVICE_DESCRIPTION_NL, Source.DISTRIBUTIONCHANNEL));
-
   }
 
 }

@@ -85,6 +85,8 @@ import org.springframework.util.CollectionUtils;
 @Proxy(lazy = false)
 public class CompoundServiceProvider extends DomainObject {
 
+  public static final String SR_DEFAULT_LOGO_VALUE = "https://.png";
+
   @Transient
   private ServiceProvider serviceProvider;
 
@@ -137,9 +139,9 @@ public class CompoundServiceProvider extends DomainObject {
 
     buildFieldString(Key.TITLE_EN, null, serviceProvider.getName(Language.EN), provider);
     buildFieldString(Key.TITLE_NL, null, serviceProvider.getName(Language.NL), provider);
-    buildFieldImage(Key.APPSTORE_LOGO, null, serviceProvider.getLogoUrl(), appStoreLogoImageBytes, provider);
+    buildFieldImage(Key.APPSTORE_LOGO, null, validSrLogo(serviceProvider.getLogoUrl()), appStoreLogoImageBytes, provider);
     buildFieldString(Key.APP_URL, null, serviceProvider.getApplicationUrl(), provider);
-    buildFieldImage(Key.DETAIL_LOGO, article.getDetailLogo(), serviceProvider.getLogoUrl(), detailLogoImageBytes, provider);
+    buildFieldImage(Key.DETAIL_LOGO, article.getDetailLogo(), validSrLogo(serviceProvider.getLogoUrl()), detailLogoImageBytes, provider);
     buildFieldString(Key.ENDUSER_DESCRIPTION_EN, null, serviceProvider.getDescription(Language.EN), provider);
     buildFieldString(Key.ENDUSER_DESCRIPTION_NL, article.getEndUserDescriptionNl(), serviceProvider.getDescription(Language.NL),
         provider);
@@ -658,6 +660,15 @@ public class CompoundServiceProvider extends DomainObject {
       }
     }
     return StringUtils.join(values, " ");
+  }
+
+  private static String validSrLogo(String appStoreLogo) {
+    // we need to nullify the 'https://.png' value as this is the default value in SR (see module_janus_metadata_fields.php)
+    String result = appStoreLogo;
+    if (StringUtils.isNotBlank(result) && result.equalsIgnoreCase(SR_DEFAULT_LOGO_VALUE)) {
+      result = null;
+    }
+    return result;
   }
 
 }
