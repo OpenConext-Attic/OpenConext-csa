@@ -137,7 +137,7 @@ public class CompoundServiceProvider extends DomainObject {
 
     buildFieldString(Key.TITLE_EN, null, serviceProvider.getName(Language.EN), provider);
     buildFieldString(Key.TITLE_NL, null, serviceProvider.getName(Language.NL), provider);
-    buildFieldImage(Key.APPSTORE_LOGO, null, null, appStoreLogoImageBytes, provider);
+    buildFieldImage(Key.APPSTORE_LOGO, null, serviceProvider.getLogoUrl(), appStoreLogoImageBytes, provider);
     buildFieldString(Key.APP_URL, null, serviceProvider.getApplicationUrl(), provider);
     buildFieldImage(Key.DETAIL_LOGO, article.getDetailLogo(), serviceProvider.getLogoUrl(), detailLogoImageBytes, provider);
     buildFieldString(Key.ENDUSER_DESCRIPTION_EN, null, serviceProvider.getDescription(Language.EN), provider);
@@ -414,6 +414,8 @@ public class CompoundServiceProvider extends DomainObject {
       return this.serviceProvider.getName(Language.NL);
     case SERVICE_DESCRIPTION_EN:
       return this.serviceProvider.getName(Language.EN);
+    case APPSTORE_LOGO:
+        return this.serviceProvider.getLogoUrl();
     case DETAIL_LOGO:
       return this.serviceProvider.getLogoUrl();
     case APP_URL:

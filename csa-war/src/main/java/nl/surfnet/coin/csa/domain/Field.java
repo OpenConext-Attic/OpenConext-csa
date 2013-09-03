@@ -53,7 +53,7 @@ public abstract class Field extends DomainObject implements Comparable<Field> {
   
   @Transient
   private Boolean availableInSurfConext;
-  
+
   @Transient
   private Map<Key, String> technicalOriginsLMNG = new HashMap<Key, String>() {
     {
@@ -81,6 +81,7 @@ public abstract class Field extends DomainObject implements Comparable<Field> {
       put(Key.SUPPORT_URL_EN,               "In Service Registry: url:en");
       put(Key.SUPPORT_MAIL,                 "In Service Registry: contact type support");
       put(Key.TECHNICAL_SUPPORTMAIL,        "In Service Registry: contact type technical");
+      put(Key.APPSTORE_LOGO,                "In Serivce Registry: logo:0:url");
 
     }
   };

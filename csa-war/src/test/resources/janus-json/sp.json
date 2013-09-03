@@ -5,11 +5,11 @@
       "en": "Populair SP (name en)",
       "nl": "Populaire SP (name nl)"
     },
-    "appTitle": "App title",
+    "appTitle": "Avans",
     "appIcon": "http://ipsumimage.appspot.com/320x100?l=App Icon",
     "appDescription": "App description",
     "appThumbNail": "http://ipsumimage.appspot.com/320x100?l=App Thumbnail",
-    "appLogoUrl": "http://ipsumimage.appspot.com/320x100?l=App Logo",
+    "appLogoUrl": "https://static.surfconext.nl/media/idp/avans.png",
     "appHomeUrls": {
       "en": "https://app_home_url_en",
       "nl": "https://app_home_url_nl"
@@ -52,11 +52,11 @@
       "en": "Nice SP (name en)",
       "nl": "Leuke SP (name nl)"
     },
-    "appTitle": "App title",
+    "appTitle": "Driestar",
     "appIcon": "http://ipsumimage.appspot.com/320x100?l=App Icon",
     "appDescription": "App description",
     "appThumbNail": "http://ipsumimage.appspot.com/320x100?l=App Thumbnail",
-    "appLogoUrl": "http://ipsumimage.appspot.com/320x100?l=App Logo",
+    "appLogoUrl": "https://static.surfconext.nl/media/idp/driestar.png",
     "appHomeUrls": {
       "en": "https://app_home_url_en",
       "nl": "https://app_home_url_nl"
@@ -99,11 +99,11 @@
       "en": "Idp Only SP (name en)",
       "nl": "Idp eigen SP (name nl)"
     },
-    "appTitle": "App title",
+    "appTitle": "RU",
     "appIcon": "http://ipsumimage.appspot.com/320x100?l=App Icon",
     "appDescription": "App description",
     "appThumbNail": "http://ipsumimage.appspot.com/320x100?l=App Thumbnail",
-    "appLogoUrl": "http://ipsumimage.appspot.com/320x100?l=App Logo",
+    "appLogoUrl": "https://static.surfconext.nl/media/idp/ru.png",
     "appHomeUrls": {
       "en": "https://app_home_url_en",
       "nl": "https://app_home_url_nl"
@@ -147,11 +147,11 @@
       "en": "SP state acc (name en)",
       "nl": "Idp status acc (name nl)"
     },
-    "appTitle": "App title",
+    "appTitle": "Zeeland",
     "appIcon": "http://ipsumimage.appspot.com/320x100?l=App Icon",
     "appDescription": "App description",
     "appThumbNail": "http://ipsumimage.appspot.com/320x100?l=App Thumbnail",
-    "appLogoUrl": "http://ipsumimage.appspot.com/320x100?l=App Logo",
+    "appLogoUrl": "https://static.surfconext.nl/media/idp/hzeeland.png",
     "appHomeUrls": {
       "en": "https://app_home_url_en",
       "nl": "https://app_home_url_nl"
@@ -192,11 +192,11 @@
       "en": "",
       "nl": ""
     },
-    "appTitle": "App title",
+    "appTitle": "HAN",
     "appIcon": "http://ipsumimage.appspot.com/320x100?l=App Icon",
     "appDescription": "App description",
     "appThumbNail": "http://ipsumimage.appspot.com/320x100?l=App Thumbnail",
-    "appLogoUrl": "http://ipsumimage.appspot.com/320x100?l=App Logo",
+    "appLogoUrl": "https://static.surfconext.nl/media/idp/han.png",
     "appHomeUrls": {
       "en": "https://app_home_url_en",
       "nl": "https://app_home_url_nl"

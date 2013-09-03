@@ -54,7 +54,7 @@ public class CompoundServiceProviderTest {
 
     String appLogo = provider.getAppStoreLogo();
     // looks strange, but corect as we did not save the provider
-    assertEquals("/fieldimages/null.img", appLogo);
+    assertEquals("http://png", appLogo);
 
     des = values.get(Key.ENDUSER_DESCRIPTION_NL);
     assertNull(des);
@@ -64,6 +64,7 @@ public class CompoundServiceProviderTest {
   public void testIsAllowed() {
     assertFalse(CompoundServiceProvider.isAllowedCombination(Key.INSTITUTION_DESCRIPTION_EN, Source.SURFCONEXT));
     assertTrue(CompoundServiceProvider.isAllowedCombination(Key.ENDUSER_DESCRIPTION_NL, Source.SURFCONEXT));
+    assertTrue(CompoundServiceProvider.isAllowedCombination(Key.APPSTORE_LOGO, Source.SURFCONEXT));
 
     assertFalse(CompoundServiceProvider.isAllowedCombination(Key.SERVICE_DESCRIPTION_EN, Source.LMNG));
     assertFalse(CompoundServiceProvider.isAllowedCombination(Key.APPSTORE_LOGO, Source.LMNG));
