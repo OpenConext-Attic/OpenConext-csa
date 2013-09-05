@@ -22,6 +22,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -44,7 +45,7 @@ public abstract class OauthClient {
 
   private static final Logger LOG = LoggerFactory.getLogger(OauthClient.class);
 
-  protected RestTemplate restTemplate = new RestTemplate();
+  protected RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
 
   private String accessToken;
 
