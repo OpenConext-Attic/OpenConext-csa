@@ -57,6 +57,11 @@ public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
    */
   public static final String OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES = "cross-idp-services";
 
+  /**
+   * The OAuth 2.0 scope used for requests that provide statistical information.
+   */
+  public static final String OAUTH_CLIENT_SCOPE_STATISTICS = "statistics";
+
   private static final Logger LOG = LoggerFactory.getLogger(AuthorityScopeInterceptor.class);
 
   private static List<String> TOKEN_CHECK_METHODS = Arrays.asList(new String[] { POST.name(), DELETE.name(), PUT.name() });

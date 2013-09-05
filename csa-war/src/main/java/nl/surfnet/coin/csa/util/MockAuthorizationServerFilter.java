@@ -18,15 +18,23 @@
  */
 package nl.surfnet.coin.csa.util;
 
-import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
-import org.surfnet.oaaas.auth.AuthorizationServerFilter;
-import org.surfnet.oaaas.auth.principal.AuthenticatedPrincipal;
-import org.surfnet.oaaas.model.VerifyTokenResponse;
+import static nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_ACTIONS;
+import static nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES;
+import static nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_STATISTICS;
 
-import javax.servlet.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
+import org.surfnet.oaaas.auth.AuthorizationServerFilter;
+import org.surfnet.oaaas.auth.principal.AuthenticatedPrincipal;
+import org.surfnet.oaaas.model.VerifyTokenResponse;
 
 public class MockAuthorizationServerFilter extends AuthorizationServerFilter {
 
@@ -45,7 +53,7 @@ public class MockAuthorizationServerFilter extends AuthorizationServerFilter {
     principal.addAttribute("DISPLAY_NAME",  "John Doe");
     VerifyTokenResponse tokenResponse = new VerifyTokenResponse(
             "client-name-mocked",
-            Arrays.asList(AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_ACTIONS),
+            Arrays.asList(OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES, OAUTH_CLIENT_SCOPE_ACTIONS, OAUTH_CLIENT_SCOPE_STATISTICS),
             principal, null);
     request.setAttribute(AuthorizationServerFilter.VERIFY_TOKEN_RESPONSE, tokenResponse);
     chain.doFilter(request, response);

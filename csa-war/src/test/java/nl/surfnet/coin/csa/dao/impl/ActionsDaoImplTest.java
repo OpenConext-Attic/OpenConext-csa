@@ -16,9 +16,22 @@
 
 package nl.surfnet.coin.csa.dao.impl;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.hasItems;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+
 import nl.surfnet.coin.csa.dao.ActionsDao;
 import nl.surfnet.coin.csa.model.Action;
 import nl.surfnet.coin.csa.model.JiraTask;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +39,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.hasItems;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:coin-csa-context.xml",
@@ -109,5 +115,21 @@ public class ActionsDaoImplTest {
     final Action after = actionsDao.findAction(id);
     assertThat(after.getStatus(), is(JiraTask.Status.CLOSED));
   }
-
+  
+  @Test
+  public void testFindTodaysAction() {
+    Calendar today = new GregorianCalendar();
+    Action todaysAction = new Action("jiraKey", "userId", "userName", "email", JiraTask.Type.QUESTION, JiraTask.Status.OPEN, "body", "idpId", "spId", "institutionId", today.getTime());
+    actionsDao.saveAction(todaysAction);
+    today.setLenient(true);
+    Date from = today.getTime();
+    today.add(Calendar.SECOND, 1);
+    Date to = today.getTime();
+    List<Action> result = actionsDao.findActionsByDateRange(from, to);
+    assertNotNull(result);
+    assertEquals(todaysAction.getId(), result.get(0).getId());
+    assertEquals(todaysAction.getType(), result.get(0).getType());
+    assertEquals(todaysAction.getBody(), result.get(0).getBody());
+    assertEquals(todaysAction.getInstitutionId(), result.get(0).getInstitutionId());
+  }
 }
