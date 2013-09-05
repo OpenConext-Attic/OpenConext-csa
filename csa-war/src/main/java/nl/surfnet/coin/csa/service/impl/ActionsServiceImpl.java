@@ -16,22 +16,20 @@
 
 package nl.surfnet.coin.csa.service.impl;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import nl.surfnet.coin.csa.domain.CoinUser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import nl.surfnet.coin.csa.dao.impl.ActionsDaoImpl;
+import nl.surfnet.coin.csa.domain.CoinUser;
 import nl.surfnet.coin.csa.model.Action;
 import nl.surfnet.coin.csa.model.JiraTask;
 import nl.surfnet.coin.csa.service.ActionsService;
 import nl.surfnet.coin.csa.service.JiraService;
 import nl.surfnet.coin.csa.service.ServiceProviderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.List;
 
 @Service(value = "actionsService")
 public class ActionsServiceImpl implements ActionsService {
@@ -63,17 +61,20 @@ public class ActionsServiceImpl implements ActionsService {
   public Action registerJiraIssueCreation(Action action) {
     JiraTask task = new JiraTask.Builder()
             .body(action.getUserEmail() + ("\n\n" + action.getBody()))
-            .identityProvider(action.getIdpId()).serviceProvider(action.getSpId())
-            .institution(action.getInstitutionId()).issueType(action.getType())
-            .status(JiraTask.Status.OPEN).build();
-    String issueKey = getJiraKey(action, task);
+            .identityProvider(action.getIdpId())
+            .serviceProvider(action.getSpId())
+            .institution(action.getInstitutionId())
+            .issueType(action.getType())
+            .status(JiraTask.Status.OPEN)
+            .build();
+    String issueKey = registerJiraIssue(action, task);
     action.setJiraKey(issueKey);
     action.setStatus(JiraTask.Status.OPEN);
     actionsDao.saveAction(action);
     return action;
   }
 
-  private String getJiraKey(Action action, JiraTask task) {
+  private String registerJiraIssue(Action action, JiraTask task) {
     String issueKey;
     try {
       issueKey = jiraService.create(task, createUser(action));

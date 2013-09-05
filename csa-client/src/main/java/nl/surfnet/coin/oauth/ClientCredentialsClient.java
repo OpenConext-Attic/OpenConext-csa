@@ -20,6 +20,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 
 import java.net.URI;
@@ -67,6 +68,9 @@ public class ClientCredentialsClient extends OauthClient {
         Map map = response.getBody();
         return (String) map.get("access_token");
       }
+    } catch (HttpStatusCodeException e1) {
+      LOG.error(String.format("HTTP error while obtaining AccessToken. Status: %s %s. Response body: %s", e1.getStatusCode().toString(), e1.getStatusText(), e1.getResponseBodyAsString()));
+      return null;
     } catch (RestClientException e) {
       LOG.error("Error trying to obtain AccessToken", e);
       return null;
