@@ -74,7 +74,6 @@ public class ActionsServiceImpl implements ActionsService {
 
   @Override
   public Action registerAction(Action action) {
-    action.setStatus(JiraTask.Status.OPEN);
     actionsDao.saveAction(action);
     return action;
   }

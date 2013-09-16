@@ -29,7 +29,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     Calendar from = new GregorianCalendar(year, month-1, 1);
     Calendar to = new GregorianCalendar(year, month-1, 1);
     to.add(Calendar.MONTH, 1);
-    LOG.info("returning statistics for {} {} ({} -{})",month, year, from.getTime(), to.getTime());
+    LOG.info("returning statistics for {} {} ({} - {})",month, year, from.getTime(), to.getTime());
     List<Action> actions = actionsDao.findActionsByDateRange(from.getTime(), to.getTime());
     if (null != actions) {
       for (Action a : actions) {

@@ -36,9 +36,9 @@ public class Action {
   private String idpName;
   private String spName;
 
-  private Date requestDate;
+  private Date requestDate = new Date();
   private JiraTask.Type type;
-  private JiraTask.Status status;
+  private JiraTask.Status status = JiraTask.Status.OPEN;
   private String institutionId;
 
   private String subject;

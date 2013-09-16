@@ -16,8 +16,23 @@
 
 package nl.surfnet.coin.csa;
 
-import nl.surfnet.coin.csa.model.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import nl.surfnet.coin.csa.model.Action;
+import nl.surfnet.coin.csa.model.Category;
+import nl.surfnet.coin.csa.model.CategoryValue;
+import nl.surfnet.coin.csa.model.InstitutionIdentityProvider;
+import nl.surfnet.coin.csa.model.Service;
+import nl.surfnet.coin.csa.model.Statistics;
+import nl.surfnet.coin.csa.model.Taxonomy;
 import nl.surfnet.coin.oauth.OauthClient;
+
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -26,9 +41,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 /**
  * Client for the CSA API.
@@ -152,6 +164,14 @@ public class CsaClient implements Csa {
   @Override
   public void setCsaBaseLocation(String csaBaseLocation) {
     this.csaBaseLocation = csaBaseLocation;
+  }
+
+  @Override
+  public Statistics getStatistics(int month, int year) {
+    if (month < 0 || month > 12 || year < 0 ) {
+      throw new IllegalArgumentException("invalid call for statistics with month " + month + " and year " + year);
+    }
+    return (Statistics) oauthClient.exchange(csaBaseLocation + "/api/protected/stats.json?month="+month+"&year="+year, Statistics.class);
   }
 
   public void setOauthClient(OauthClient oauthClient) {

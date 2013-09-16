@@ -21,6 +21,7 @@ package nl.surfnet.coin.csa.integration;
 import nl.surfnet.coin.csa.CsaClient;
 import nl.surfnet.coin.csa.model.*;
 import nl.surfnet.coin.janus.domain.ARP;
+import nl.surfnet.coin.janus.domain.JanusEntity;
 import nl.surfnet.coin.oauth.ClientCredentialsClient;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -48,10 +49,16 @@ import org.springframework.web.servlet.LocaleResolver;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.YEAR;
 import static junit.framework.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class CsaClientTestIntegration {
 
@@ -292,5 +299,58 @@ public class CsaClientTestIntegration {
     }
   }
 
+  @Test
+  public void testStatistics() {
+    GregorianCalendar now = new GregorianCalendar();
+    
+    // before we create any actions we have
+    Statistics before = csaClient.getStatistics(now.get(MONTH) + 1, now.get(YEAR));    
+    assertNotNull(before);
+    
+    //create some actions
+    Action action1 = new Action();
+    action1.setBody("Body");
+    action1.setSpId("http://mock-sp");
+    action1.setIdpId("http://mock-idp");
+    action1.setSubject("subject");
+    action1.setType(JiraTask.Type.LINKREQUEST);
+    action1.setUserEmail("test@integration.nl");
+    action1.setUserId("urn.collab.test.integration");
+    action1.setUserName("urn.collab.test.integration");
+    action1.setInstitutionId("Institute1");
+    csaClient.createAction(action1);
+    
+    Action action2 = new Action();
+    action2.setBody("Body");
+    action2.setSpId("http://mock-sp");
+    action2.setIdpId("http://mock-idp");
+    action2.setSubject("subject");
+    action2.setType(JiraTask.Type.QUESTION);
+    action2.setUserEmail("test@integration.nl");
+    action2.setUserId("urn.collab.test.integration");
+    action2.setUserName("urn.collab.test.integration");
+    action2.setInstitutionId("Institute2");
+    csaClient.createAction(action2);
+    
+    //after the action we have
+    Statistics after = csaClient.getStatistics(now.get(MONTH) + 1, now.get(YEAR));
+    assertNotNull(after);
+    
+    assertTrue("Number of link requests should increase", before.getTotalLinkRequests()+1 == after.getTotalLinkRequests());
+    assertTrue("Number of unlink requests should stay the same", before.getTotalUnlinkRequests() == after.getTotalUnlinkRequests());
+    assertTrue("Number of questions should increase", before.getTotalQuestions()+1 == after.getTotalQuestions());
+    int linkRequestBefore = getCountFromInstituteMap(before.getInstitutionLinkRequests(), "Institute1");
+    int questionBefore = getCountFromInstituteMap(before.getInstitutionQuestions(), "Institute2");
+    assertEquals(new Integer(linkRequestBefore+1), after.getInstitutionLinkRequests().get("Institute1"));
+    assertEquals(new Integer(questionBefore+1), after.getInstitutionQuestions().get("Institute2"));
+  }
+  
+  private int getCountFromInstituteMap(Map<String, Integer> institutemap, String key) {
+    int result = 0;
+    if (null != institutemap.get(key)) {
+      result = institutemap.get(key);
+    }
+    return result;
+  }
 
 }

@@ -19,6 +19,7 @@ package nl.surfnet.coin.csa;
 import nl.surfnet.coin.csa.model.Action;
 import nl.surfnet.coin.csa.model.InstitutionIdentityProvider;
 import nl.surfnet.coin.csa.model.Service;
+import nl.surfnet.coin.csa.model.Statistics;
 import nl.surfnet.coin.csa.model.Taxonomy;
 import nl.surfnet.coin.oauth.OauthClient;
 
@@ -36,7 +37,7 @@ public interface Csa {
   List<Service> getPublicServices();
 
   /**
-   * Get a list oof all protected services scoped by the Idp of the logged in person
+   * Get a list of all protected services scoped by the Idp of the logged in person
    */
   List<Service> getProtectedServices();
 
@@ -66,6 +67,16 @@ public interface Csa {
    * @param location base URL of CSA
    */
   void setCsaBaseLocation(String location);
+  
+  /**
+   * Retrieve statistical information from CSA for the given month and year. Statistical information
+   * consists of the number of questions, link- and unlinkrequests per IDP/SP.
+   * @param month month to retrieve information for (1-12)
+   * @param year the year to retrieve informaiton for
+   * @return the statistics
+   * @see Statistics
+   */
+  Statistics getStatistics(final int month, final int year);
 
   Taxonomy getTaxonomy() ;
 
@@ -79,5 +90,5 @@ public interface Csa {
 
   List<InstitutionIdentityProvider> getAllInstitutionIdentityProviders();
 
-  public void setOauthClient(OauthClient client);
+  void setOauthClient(OauthClient client);
 }

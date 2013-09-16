@@ -60,7 +60,7 @@ public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
   /**
    * The OAuth 2.0 scope used for requests that provide statistical information.
    */
-  public static final String OAUTH_CLIENT_SCOPE_STATISTICS = "statistics";
+  public static final String OAUTH_CLIENT_SCOPE_STATISTICS = "stats";
 
   private static final Logger LOG = LoggerFactory.getLogger(AuthorityScopeInterceptor.class);
 
