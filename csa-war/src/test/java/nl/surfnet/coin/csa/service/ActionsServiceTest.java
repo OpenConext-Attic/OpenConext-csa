@@ -53,7 +53,10 @@ public class  ActionsServiceTest {
     final String idp = "https://mock-idp";
 
     Action action = new Action(null, "userid", "username", "john.doe@nl", JiraTask.Type.QUESTION, JiraTask.Status.OPEN, "body", idp, "sp", "institute-123", new Date());
-    action = actionsService.registerJiraIssueCreation(action);
+    actionsService.registerJiraIssueCreation(action);
+    assertEquals("TASK-0", action.getJiraKey());
+
+    action = actionsService.registerAction(action);
 
     final List<Action> before = actionsService.getActions(idp);
 

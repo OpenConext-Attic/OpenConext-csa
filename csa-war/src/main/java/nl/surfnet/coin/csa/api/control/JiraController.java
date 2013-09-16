@@ -16,10 +16,12 @@
 
 package nl.surfnet.coin.csa.api.control;
 
+import nl.surfnet.coin.csa.dao.impl.ActionsDaoImpl;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.domain.ServiceProvider;
 import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
 import nl.surfnet.coin.csa.model.Action;
+import nl.surfnet.coin.csa.model.JiraTask;
 import nl.surfnet.coin.csa.service.ActionsService;
 import nl.surfnet.coin.csa.service.EmailService;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
@@ -41,7 +43,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping
-public class  JiraController extends BaseApiController {
+public class JiraController extends BaseApiController {
 
 
   private static final Logger LOG = LoggerFactory.getLogger(JiraController.class);
@@ -65,7 +67,8 @@ public class  JiraController extends BaseApiController {
   private boolean createAdministrationJiraTicket;
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/actions.json")
-  public @ResponseBody
+  public
+  @ResponseBody
   List<Action> listActions(@RequestParam(value = "idpEntityId") String idpEntityId, HttpServletRequest request) throws IOException {
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_ACTIONS);
     return actionsService.getActions(idpEntityId);
@@ -81,17 +84,19 @@ public class  JiraController extends BaseApiController {
     IdentityProvider identityProvider = identityProviderService.getIdentityProvider(action.getIdpId());
     action.setSpName(serviceProvider.getName());
     action.setIdpName(identityProvider.getName());
+
     String issueKey = null;
     if (createAdministrationJiraTicket) {
-        action = actionsService.registerJiraIssueCreation(action);
+      actionsService.registerJiraIssueCreation(action);
     }
+    action = actionsService.registerAction(action);
     if (sendAdministrationEmail) {
       sendAdministrationEmail(serviceProvider, identityProvider, issueKey, action);
     }
-  return action ;
+    return action;
   }
 
-  private void sendAdministrationEmail(ServiceProvider serviceProvider,IdentityProvider identityProvider , String issueKey, Action action) {
+  private void sendAdministrationEmail(ServiceProvider serviceProvider, IdentityProvider identityProvider, String issueKey, Action action) {
     String subject = String.format("[Csa (" + getHost() + ") request] %s connection from IdP '%s' to SP '%s' (Issue : %s)",
             action.getType().name(), action.getIdpId(), action.getSpId(), issueKey);
 
@@ -107,7 +112,7 @@ public class  JiraController extends BaseApiController {
     body.append("Request: " + action.getType().name() + "\n");
     body.append("Applicant name: " + action.getUserName() + "\n");
     body.append("Applicant email: " + action.getUserEmail() + " \n");
-    body.append("Mail applicant: mailto:" + action.getUserEmail()+"?CC=surfconext-beheer@surfnet.nl&SUBJECT=["+issueKey+"]%20"+action.getType().name()+"%20to%20"+serviceProvider.getName()+"&BODY=Beste%20" + action.getUserName() + " \n");
+    body.append("Mail applicant: mailto:" + action.getUserEmail() + "?CC=surfconext-beheer@surfnet.nl&SUBJECT=[" + issueKey + "]%20" + action.getType().name() + "%20to%20" + serviceProvider.getName() + "&BODY=Beste%20" + action.getUserName() + " \n");
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:MM");
     body.append("Time: " + sdf.format(new Date()) + "\n");

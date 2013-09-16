@@ -78,8 +78,9 @@ public class V5_0_1__UpdateAppLogoFieldImageFromSr implements JavaMigration {
       if (metadata != null) {
         String appLogoUrl = metadata.getAppLogoUrl();
         if (StringUtils.isNotBlank(appLogoUrl) && !appLogoUrl.equalsIgnoreCase(CompoundServiceProvider.SR_DEFAULT_LOGO_VALUE)) {
-          int update = jdbcTemplate.update("UPDATE field_image SET field_source = " + Field.Source.SURFCONEXT.ordinal() + " WHERE compound_service_provider_id = " + serviceProviderArr[0] + " AND " +
-                  "field_key = " + Field.Key.APPSTORE_LOGO.ordinal());
+          int update = jdbcTemplate.update("UPDATE field_image SET field_source = " + Field.Source.SURFCONEXT.ordinal() +
+                  " WHERE compound_service_provider_id = " + serviceProviderArr[0] +
+                  " AND field_key = " + Field.Key.APPSTORE_LOGO.ordinal());
           LOG.info("Updated {} record in field_image table to use the SURFCONEXT source for the App Store Logo {} for {}", update, appLogoUrl, entityId);
         }
       }

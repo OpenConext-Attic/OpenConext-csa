@@ -58,30 +58,25 @@ public class ActionsServiceImpl implements ActionsService {
   }
 
   @Override
-  public Action registerJiraIssueCreation(Action action) {
+  public void registerJiraIssueCreation(Action action) {
     JiraTask task = new JiraTask.Builder()
             .body(action.getUserEmail() + ("\n\n" + action.getBody()))
-            .identityProvider(action.getIdpId())
-            .serviceProvider(action.getSpId())
-            .institution(action.getInstitutionId())
-            .issueType(action.getType())
-            .status(JiraTask.Status.OPEN)
-            .build();
-    String issueKey = registerJiraIssue(action, task);
-    action.setJiraKey(issueKey);
-    action.setStatus(JiraTask.Status.OPEN);
-    actionsDao.saveAction(action);
-    return action;
-  }
-
-  private String registerJiraIssue(Action action, JiraTask task) {
-    String issueKey;
+            .identityProvider(action.getIdpId()).serviceProvider(action.getSpId())
+            .institution(action.getInstitutionId()).issueType(action.getType())
+            .status(JiraTask.Status.OPEN).build();
     try {
-      issueKey = jiraService.create(task, createUser(action));
+      String jiraKey =  jiraService.create(task, createUser(action));
+      action.setJiraKey(jiraKey);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    return issueKey;
+  }
+
+  @Override
+  public Action registerAction(Action action) {
+    action.setStatus(JiraTask.Status.OPEN);
+    actionsDao.saveAction(action);
+    return action;
   }
 
   private CoinUser createUser(Action action) {

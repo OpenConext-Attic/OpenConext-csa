@@ -38,5 +38,11 @@ public interface ActionsService {
    * Register the creation of a JIRA issue.
    * @param action the original action
    */
-  Action registerJiraIssueCreation(Action action);
+  void registerJiraIssueCreation(Action action);
+
+  /**
+   * Register the creation of an Action
+   * @param action the original action
+   */
+  Action registerAction(Action action);
 }

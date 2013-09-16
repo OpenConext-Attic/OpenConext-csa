@@ -118,6 +118,19 @@ public class CrmCache extends AbstractCache {
   }
 
   public License getLicense(Service service, String idpInstitutionId) {
+    if (service.getSpEntityId() == null || idpInstitutionId == null) {
+      /*
+       * First check:
+       *
+       * If this is the case then the Service is based upon a CRM guid defined in the csa.properties (key=public.api.lmng.guids). It must be displayed in the
+       * services API , however it can't have a license as this is per-sp basis.
+       *
+       * Second check:
+       *
+       * It is possible that in SR there is no registered institutionID for an IdP. This is a misconfiguration, but not something we want to bring to the attention here.
+       */
+      return null;
+    }
     MappingEntry entry = new MappingEntry(idpInstitutionId, service.getSpEntityId());
     License license = licenseCache.get(entry);
     LOG.debug("Looked for license for service {} and idpInstitutionId {}, and found: {}", service.getSpEntityId(), idpInstitutionId, license);
