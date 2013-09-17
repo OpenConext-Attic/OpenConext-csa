@@ -16,20 +16,18 @@
 
 package nl.surfnet.coin.csa.service;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import nl.surfnet.coin.csa.model.Action;
+import nl.surfnet.coin.csa.model.JiraTask;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import nl.surfnet.coin.csa.model.Action;
-import nl.surfnet.coin.csa.model.JiraTask;
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -54,7 +52,7 @@ public class  ActionsServiceTest {
 
     Action action = new Action(null, "userid", "username", "john.doe@nl", JiraTask.Type.QUESTION, JiraTask.Status.OPEN, "body", idp, "sp", "institute-123", new Date());
     actionsService.registerJiraIssueCreation(action);
-    assertEquals("TASK-0", action.getJiraKey());
+    assertEquals("TASK-2", action.getJiraKey());
 
     action = actionsService.registerAction(action);
 
