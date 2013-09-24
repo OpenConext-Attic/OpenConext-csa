@@ -52,7 +52,6 @@ public class  ActionsServiceTest {
 
     Action action = new Action(null, "userid", "username", "john.doe@nl", JiraTask.Type.QUESTION, JiraTask.Status.OPEN, "body", idp, "sp", "institute-123", new Date());
     actionsService.registerJiraIssueCreation(action);
-    assertEquals("TASK-2", action.getJiraKey());
 
     action = actionsService.registerAction(action);
 
