@@ -220,6 +220,18 @@ public class CsaClientTestIntegration {
 
     assertEquals("John Doe", action.getUserName());
   }
+  
+  @Test
+  public void newActionWithoutInstitutionId() throws Exception {
+    Action action = new Action("jonh.doe", "john.doe@nl", "John Doe", JiraTask.Type.LINKREQUEST, "Body remarks", "http://mock-idp",
+            "http://mock-sp", null);
+    try {
+      action = csaClient.createAction(action);
+      fail("should not allow action to be created without institutionId");
+    } catch (Exception e) {
+      //expected
+    }
+  }
 
   @Test
   public void institutionsIdentityProviders() throws IOException {
