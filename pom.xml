@@ -30,7 +30,7 @@
   </parent>
   
   <artifactId>csa-parent</artifactId>
-  <version>3.7.1</version>
+  <version>3.7.2-SNAPSHOT</version>
 
   <name>OpenConext : Cloud Services API</name>
   <inceptionYear>2013</inceptionYear>
