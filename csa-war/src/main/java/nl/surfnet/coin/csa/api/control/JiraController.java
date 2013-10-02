@@ -26,8 +26,6 @@ import nl.surfnet.coin.csa.service.ActionsService;
 import nl.surfnet.coin.csa.service.EmailService;
 import nl.surfnet.coin.csa.service.IdentityProviderService;
 import nl.surfnet.coin.csa.service.ServiceProviderService;
-
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -81,7 +79,6 @@ public class JiraController extends BaseApiController {
   @ResponseBody
   Action newAction(HttpServletRequest request, @RequestBody Action action) throws IOException {
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_ACTIONS);
-    verifyAction(action);
 
     ServiceProvider serviceProvider = serviceProviderService.getServiceProvider(action.getSpId());
     IdentityProvider identityProvider = identityProviderService.getIdentityProvider(action.getIdpId());
@@ -97,12 +94,6 @@ public class JiraController extends BaseApiController {
       sendAdministrationEmail(serviceProvider, identityProvider, issueKey, action);
     }
     return action;
-  }
-  
-  private void verifyAction(final Action action) {
-    if (StringUtils.isEmpty(action.getInstitutionId())) {
-      throw new IllegalArgumentException("institutionId should be filled when creating an action");
-    }
   }
 
   private void sendAdministrationEmail(ServiceProvider serviceProvider, IdentityProvider identityProvider, String issueKey, Action action) {
