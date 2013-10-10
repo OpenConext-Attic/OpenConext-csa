@@ -72,9 +72,13 @@ public class MultilingualString extends DomainObject {
   }
 
   public void addValue(Locale locale, String value) {
-    String localeString = locale.toString();
-    this.localizedStrings.put(localeString, new LocalizedString(localeString, value, this));
+    if (localizedStrings.get(locale.toString()) == null) {
+      this.localizedStrings.put(locale.toString(), new LocalizedString(locale.toString(), value, this));
+    } else {
+      localizedStrings.get(locale.toString()).setValue(value);
+    }
   }
+
 
   public void setValue(String value) {
     this.addValue(defaultLocale, value);

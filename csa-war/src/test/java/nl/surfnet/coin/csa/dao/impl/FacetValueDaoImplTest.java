@@ -18,16 +18,17 @@
  */
 package nl.surfnet.coin.csa.dao.impl;
 
-import nl.surfnet.coin.csa.model.Facet;
-import nl.surfnet.coin.csa.model.FacetValue;
-import nl.surfnet.coin.csa.model.LocalizedString;
 import nl.surfnet.coin.csa.dao.CompoundServiceProviderDao;
 import nl.surfnet.coin.csa.dao.FacetDao;
 import nl.surfnet.coin.csa.dao.FacetValueDao;
+import nl.surfnet.coin.csa.dao.LocalizedStringDao;
 import nl.surfnet.coin.csa.domain.Article;
 import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.csa.domain.InUseFacetValue;
 import nl.surfnet.coin.csa.domain.ServiceProvider;
+import nl.surfnet.coin.csa.model.Facet;
+import nl.surfnet.coin.csa.model.FacetValue;
+import nl.surfnet.coin.csa.model.LocalizedString;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -68,6 +69,9 @@ public class FacetValueDaoImplTest implements LocaleResolver {
 
   @Autowired
   private CompoundServiceProviderDao compoundServiceProviderDao;
+
+  @Autowired
+  private LocalizedStringDao localizedStringDao;
 
   private Locale currentLocale;
 
@@ -188,6 +192,19 @@ public class FacetValueDaoImplTest implements LocaleResolver {
     LocalizedString localizedString = facetValue.getMultilingualString().getLocalizedStrings().get("en");
     assertEquals("cloud", localizedString.getValue());
     assertEquals("cloud", facetValue.getValue());
+  }
+
+  @Test
+  public void deleteOrphanLocalizedStrings() {
+    Facet facet = new Facet();
+    facet.setName("category");
+    facetDao.saveOrUpdate(facet);
+    int localizedStringsCountBefore = localizedStringDao.findAll().size();
+    facet.setName("the new name");
+    facetDao.saveOrUpdate(facet);
+    int localizedStringsCountAfter = localizedStringDao.findAll().size();
+    assertEquals("No more than existing nr of localized strings should be stored when updating existing, orphans should be deleted, ",
+            localizedStringsCountBefore, localizedStringsCountAfter);
   }
 
   private Facet createFacetWithValue() {
