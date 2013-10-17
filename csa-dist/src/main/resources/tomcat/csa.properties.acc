@@ -45,6 +45,10 @@ jiraUsername=test-beheer-rpc
 jiraPassword=??
 jiraProjectKey=TEST
 
+administration.email.enabled=false
+
+administration.jira.ticket.enabled=true
+
 # Team id that is used as definition of who is a 'shop manager/shop admin'.
 admin.distribution.channel.teamname=urn\:collab\:group\:acc.surfteams.nl\:nl\:surfnet\:diensten\:csa_admin
 

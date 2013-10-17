@@ -45,9 +45,9 @@ jiraUsername=??
 jiraPassword=??
 jiraProjectKey=CXT
 
-administration.email.enabled=true
+administration.email.enabled=false
 
-administration.jira.ticket.enabled=false
+administration.jira.ticket.enabled=true
 
 
 # Team id that is used as definition of who is a 'shop manager/shop admin'.
