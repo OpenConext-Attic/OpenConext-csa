@@ -374,9 +374,9 @@ public class CompoundServiceProvider extends DomainObject {
   private Object getSurfConextProperty(Key key) {
     switch (key) {
     case SERVICE_DESCRIPTION_NL:
-      return this.serviceProvider.getName(Language.NL);
+      return this.serviceProvider.getDescription(Language.NL);
     case SERVICE_DESCRIPTION_EN:
-      return this.serviceProvider.getName(Language.EN);
+      return this.serviceProvider.getDescription(Language.EN);
     case APPSTORE_LOGO:
         return this.serviceProvider.getLogoUrl();
     case DETAIL_LOGO:
