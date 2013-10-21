@@ -18,12 +18,11 @@
   <parent>
     <groupId>org.surfnet.coin</groupId>
     <artifactId>csa-parent</artifactId>
-    <version>3.9.0-SNAPSHOT</version>
+    <version>3.10.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.surfnet.coin</groupId>
   <artifactId>csa-war</artifactId>
   <packaging>war</packaging>
   <name>OpenConext : Cloud Services API WAR</name>
@@ -36,17 +35,17 @@
   </repositories>
 
   <properties>
-    <coin-test.version>3.1.0</coin-test.version>
-    <coin-master.test-dependencies.version>3.5.0</coin-master.test-dependencies.version>
+    <coin-test.version>3.10.0-SNAPSHOT</coin-test.version>
+    <coin-master.test-dependencies.version>3.10.0-SNAPSHOT</coin-master.test-dependencies.version>
     <spring-security-opensaml.version>3.2.0</spring-security-opensaml.version>
     <flyway.version>1.5</flyway.version>
     <xstream.version>1.4.2</xstream.version>
     <bonecp.version>0.7.1.RELEASE</bonecp.version>
-    <mujina-idp.version>3.1.0</mujina-idp.version>
+    <mujina-idp.version>3.10.0-SNAPSHOT</mujina-idp.version>
     <dumbster.version>1.6</dumbster.version>
     <selenium.version>2.32.0</selenium.version>
     <freemarker.version>[2.3.19,2.4)</freemarker.version>
-    <api-secure.version>1.3.2</api-secure.version>
+    <api-secure.version>1.3.3</api-secure.version>
     <selenium.test.url>http://localhost:8282/csa/</selenium.test.url>
     <jetty.port>8282</jetty.port>
 

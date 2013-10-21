@@ -10,7 +10,7 @@ create table ss_actions (
   body varchar(4096),
   idp varchar(255),
   sp varchar(255),
-  requestDate timestamp default 'now',
+  requestDate timestamp default CURRENT_TIMESTAMP,
   primary key (id)
 );
 
