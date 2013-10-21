@@ -15,55 +15,12 @@
  */
 package nl.surfnet.coin.csa.domain;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-import static nl.surfnet.coin.csa.domain.Field.Key.APPSTORE_LOGO;
-import static nl.surfnet.coin.csa.domain.Field.Key.APP_URL;
-import static nl.surfnet.coin.csa.domain.Field.Key.DETAIL_LOGO;
-import static nl.surfnet.coin.csa.domain.Field.Key.ENDUSER_DESCRIPTION_EN;
-import static nl.surfnet.coin.csa.domain.Field.Key.ENDUSER_DESCRIPTION_NL;
-import static nl.surfnet.coin.csa.domain.Field.Key.EULA_URL;
-import static nl.surfnet.coin.csa.domain.Field.Key.INSTITUTION_DESCRIPTION_EN;
-import static nl.surfnet.coin.csa.domain.Field.Key.INSTITUTION_DESCRIPTION_NL;
-import static nl.surfnet.coin.csa.domain.Field.Key.SERVICE_DESCRIPTION_EN;
-import static nl.surfnet.coin.csa.domain.Field.Key.SERVICE_DESCRIPTION_NL;
-import static nl.surfnet.coin.csa.domain.Field.Key.SERVICE_URL;
-import static nl.surfnet.coin.csa.domain.Field.Key.SUPPORT_MAIL;
-import static nl.surfnet.coin.csa.domain.Field.Key.SUPPORT_URL_EN;
-import static nl.surfnet.coin.csa.domain.Field.Key.SUPPORT_URL_NL;
-import static nl.surfnet.coin.csa.domain.Field.Key.TECHNICAL_SUPPORTMAIL;
-import static nl.surfnet.coin.csa.domain.Field.Key.TITLE_EN;
-import static nl.surfnet.coin.csa.domain.Field.Key.TITLE_NL;
-import static org.springframework.util.StringUtils.hasText;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
-
 import nl.surfnet.coin.csa.domain.Field.Key;
 import nl.surfnet.coin.csa.domain.Field.Source;
 import nl.surfnet.coin.csa.domain.Provider.Language;
 import nl.surfnet.coin.csa.model.FacetValue;
 import nl.surfnet.coin.csa.model.License;
 import nl.surfnet.coin.shared.domain.DomainObject;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -74,6 +31,15 @@ import org.hibernate.annotations.SortType;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+
+import javax.persistence.*;
+import java.io.IOException;
+import java.util.*;
+
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static nl.surfnet.coin.csa.domain.Field.Key.*;
+import static org.springframework.util.StringUtils.hasText;
 
 
 /**
@@ -148,8 +114,8 @@ public class CompoundServiceProvider extends DomainObject {
     buildFieldString(Key.EULA_URL, null, serviceProvider.getEulaURL(), provider);
     buildFieldString(Key.INSTITUTION_DESCRIPTION_EN, null, null, provider);
     buildFieldString(Key.INSTITUTION_DESCRIPTION_NL, article.getInstitutionDescriptionNl(), null, provider);
-    buildFieldString(Key.SERVICE_DESCRIPTION_EN, null, serviceProvider.getName(Language.EN), provider);
-    buildFieldString(Key.SERVICE_DESCRIPTION_NL, article.getServiceDescriptionNl(), serviceProvider.getName(Language.NL), provider);
+    buildFieldString(Key.SERVICE_DESCRIPTION_EN, null, serviceProvider.getDescription(Language.EN), provider);
+    buildFieldString(Key.SERVICE_DESCRIPTION_NL, article.getServiceDescriptionNl(), serviceProvider.getDescription(Language.NL), provider);
     buildFieldString(Key.SERVICE_URL, null, getServiceUrl(serviceProvider), provider);
     buildFieldString(Key.SUPPORT_MAIL, null, getMail(serviceProvider, ContactPersonType.help), provider);
     buildFieldString(Key.SUPPORT_URL_NL, null, getSupportUrl(serviceProvider, Language.NL), provider);
