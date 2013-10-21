@@ -108,9 +108,8 @@ public class CompoundServiceProvider extends DomainObject {
     buildFieldImage(Key.APPSTORE_LOGO, null, validSrLogo(serviceProvider.getLogoUrl()), appStoreLogoImageBytes, provider);
     buildFieldString(Key.APP_URL, null, serviceProvider.getApplicationUrl(), provider);
     buildFieldImage(Key.DETAIL_LOGO, article.getDetailLogo(), validSrLogo(serviceProvider.getLogoUrl()), detailLogoImageBytes, provider);
-    buildFieldString(Key.ENDUSER_DESCRIPTION_EN, null, serviceProvider.getDescription(Language.EN), provider);
-    buildFieldString(Key.ENDUSER_DESCRIPTION_NL, article.getEndUserDescriptionNl(), serviceProvider.getDescription(Language.NL),
-        provider);
+    buildFieldString(Key.ENDUSER_DESCRIPTION_EN, null, null, provider);
+    buildFieldString(Key.ENDUSER_DESCRIPTION_NL, article.getEndUserDescriptionNl(), null, provider);
     buildFieldString(Key.EULA_URL, null, serviceProvider.getEulaURL(), provider);
     buildFieldString(Key.INSTITUTION_DESCRIPTION_EN, null, null, provider);
     buildFieldString(Key.INSTITUTION_DESCRIPTION_NL, article.getInstitutionDescriptionNl(), null, provider);
@@ -374,10 +373,6 @@ public class CompoundServiceProvider extends DomainObject {
 
   private Object getSurfConextProperty(Key key) {
     switch (key) {
-    case ENDUSER_DESCRIPTION_NL:
-      return this.serviceProvider.getDescription(Language.NL);
-    case ENDUSER_DESCRIPTION_EN:
-      return this.serviceProvider.getDescription(Language.EN);
     case SERVICE_DESCRIPTION_NL:
       return this.serviceProvider.getName(Language.NL);
     case SERVICE_DESCRIPTION_EN:

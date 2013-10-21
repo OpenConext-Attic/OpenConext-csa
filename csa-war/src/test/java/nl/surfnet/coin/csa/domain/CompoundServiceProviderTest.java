@@ -68,7 +68,6 @@ public class CompoundServiceProviderTest {
   @Test
   public void testIsAllowed() {
     assertFalse(CompoundServiceProvider.isAllowedCombination(Key.INSTITUTION_DESCRIPTION_EN, Source.SURFCONEXT));
-    assertTrue(CompoundServiceProvider.isAllowedCombination(Key.ENDUSER_DESCRIPTION_NL, Source.SURFCONEXT));
     assertTrue(CompoundServiceProvider.isAllowedCombination(Key.APPSTORE_LOGO, Source.SURFCONEXT));
 
     assertFalse(CompoundServiceProvider.isAllowedCombination(Key.SERVICE_DESCRIPTION_EN, Source.LMNG));
@@ -78,6 +77,9 @@ public class CompoundServiceProviderTest {
 
     assertTrue(CompoundServiceProvider.isAllowedCombination(Key.SERVICE_DESCRIPTION_NL, Source.DISTRIBUTIONCHANNEL));
     assertTrue(CompoundServiceProvider.isAllowedCombination(Key.SERVICE_DESCRIPTION_NL, Source.DISTRIBUTIONCHANNEL));
+
+    assertFalse(CompoundServiceProvider.isAllowedCombination(Key.ENDUSER_DESCRIPTION_EN, Source.SURFCONEXT));
+    assertFalse(CompoundServiceProvider.isAllowedCombination(Key.ENDUSER_DESCRIPTION_NL, Source.SURFCONEXT));
   }
 
 }
