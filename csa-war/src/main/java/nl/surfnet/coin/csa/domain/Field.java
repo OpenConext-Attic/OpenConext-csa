@@ -15,20 +15,14 @@
  */
 package nl.surfnet.coin.csa.domain;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
-
 import nl.surfnet.coin.shared.domain.DomainObject;
-
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+
+import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Field.java
@@ -69,10 +63,8 @@ public abstract class Field extends DomainObject implements Comparable<Field> {
   private Map<Key, String> technicalOriginsSurfConext = new HashMap<Key, String>() {
     {
       // SURFCONEXT specific values
-      put(Key.SERVICE_DESCRIPTION_NL,       "In Service Registry: names:nl");
-      put(Key.SERVICE_DESCRIPTION_EN,       "In Service Registry: names:en");
-      put(Key.ENDUSER_DESCRIPTION_EN,       "In Service Registry: descriptions:en");
-      put(Key.ENDUSER_DESCRIPTION_NL,       "In Service Registry: descriptions:nl");
+      put(Key.SERVICE_DESCRIPTION_NL,       "In Service Registry: descriptions:nl");
+      put(Key.SERVICE_DESCRIPTION_EN,       "In Service Registry: descriptions:en");
       put(Key.APP_URL,                      "In Service Registry: applicationUrl");
       put(Key.DETAIL_LOGO,                  "In Service Registry: appLogoUrl");
       put(Key.SERVICE_URL,                  "In Service Registry: OrganizationURL");
@@ -82,7 +74,8 @@ public abstract class Field extends DomainObject implements Comparable<Field> {
       put(Key.SUPPORT_MAIL,                 "In Service Registry: contact type support");
       put(Key.TECHNICAL_SUPPORTMAIL,        "In Service Registry: contact type technical");
       put(Key.APPSTORE_LOGO,                "In Serivce Registry: logo:0:url");
-
+      put(Key.TITLE_EN,                           "In Service Registry: names:en");
+      put(Key.TITLE_NL,                           "In Service Registry: names:nl");
     }
   };
 
