@@ -20,13 +20,8 @@ package nl.surfnet.coin.csa.util;
 
 import nl.surfnet.coin.csa.domain.Field;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.ParserContext;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,17 +45,13 @@ public class ResourceBundleUtils {
       KNOWN_MISSING.add("jsp.compoundSp." + key.name());
     }
 
-    KNOWN_MISSING.addAll(Arrays.asList(new String[]{
+    KNOWN_MISSING.addAll(Arrays.asList(
             "jsp.role.information.key.ROLE_DISTRIBUTION_CHANNEL_ADMIN",
             "datatables.sSearch",
             "datatables.sZeroRecords",
             "datatables.sInfo",
             "datatables.sInfoEmpty",
-            "datatables.sInfoFiltered",
-            "LMNG",
-            "SURFCONEXT",
-            "DISTRIBUTIONCHANNEL",
-    }));
+            "datatables.sInfoFiltered"));
 
   }
 

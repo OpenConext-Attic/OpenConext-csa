@@ -1,15 +1,14 @@
 package nl.surfnet.coin.csa.selenium;
 
-import java.util.List;
-
 import nl.surfnet.coin.csa.util.OpenConextOAuthClientMock;
-
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class CompoundSPDetailTestSelenium extends SeleniumSupport {
 
@@ -26,7 +25,7 @@ public class CompoundSPDetailTestSelenium extends SeleniumSupport {
     driver.get(getCsaBaseUrl() + bindingAdminUrl); // get lmng sp admin page
     clickOnPartialLink("Configure sources");
     clickOnPartialLink("URL of the app");
-    clickOnPartialLink("Distribution Channel");
+    clickOnPartialLink("CSA");
 
     List<WebElement> elements = driver.findElements(By.tagName("textarea"));
     for (WebElement element : elements) {

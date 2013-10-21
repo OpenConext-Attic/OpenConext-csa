@@ -98,7 +98,7 @@ public abstract class BaseController {
 
   /**
    * The name of the key under which we store the info if the logged in user is
-   * Distribution Channel Admin (aka God)
+   * CSA Admin (aka God)
    */
   public static final String IS_GOD = "isGod";
 

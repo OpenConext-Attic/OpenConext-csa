@@ -15,22 +15,20 @@
  */
 package nl.surfnet.coin.csa.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-
-import javax.servlet.http.HttpServletRequest;
-
 import nl.surfnet.coin.api.client.OAuthVersion;
 import nl.surfnet.coin.api.client.OpenConextOAuthClient;
 import nl.surfnet.coin.api.client.domain.Email;
 import nl.surfnet.coin.api.client.domain.Group;
 import nl.surfnet.coin.api.client.domain.Group20;
 import nl.surfnet.coin.api.client.domain.Person;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 import static java.util.Arrays.asList;
 
@@ -42,7 +40,7 @@ public class OpenConextOAuthClientMock implements OpenConextOAuthClient, Initial
 
   public enum Users {
     /*
-     * ROLE_DISTRIBUTION_CHANNEL_ADMIN=Distribution Channel Administrator
+     * ROLE_DISTRIBUTION_CHANNEL_ADMIN=CSA Administrator
      */
     CSA_ADMIN("csa_admin"), // admin from surfmarket for csa
 
