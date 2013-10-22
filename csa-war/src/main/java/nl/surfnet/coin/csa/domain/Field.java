@@ -94,6 +94,9 @@ public abstract class Field extends DomainObject implements Comparable<Field> {
     LMNG, SURFCONEXT, DISTRIBUTIONCHANNEL
   }
 
+  /**
+   * These enum values are stored in the database by their ordinal. So be careful not to touch the order of the declaration.
+   */
   public enum Key {
     APPSTORE_LOGO,
 
