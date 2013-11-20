@@ -73,7 +73,12 @@ public class IdpLmngListControllerTestSelenium extends SeleniumSupport {
 
     form.findElement(By.name("submitbutton")).click();
 
-    // page gets refreshed..
+    // page gets refreshed.. let's wait a bit
+    try {
+      Thread.sleep(800);
+    } catch (InterruptedException e) {
+      //ignored
+    }
 
     form = driver.findElement(xpath("//form[@class='lmng-id-edit'][1]"));
     inputLmng = form.findElement(xpath("//input[@name='lmngIdentifier']"));
