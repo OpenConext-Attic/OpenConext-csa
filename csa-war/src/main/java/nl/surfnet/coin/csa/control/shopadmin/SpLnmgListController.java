@@ -16,16 +16,33 @@
 
 package nl.surfnet.coin.csa.control.shopadmin;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import nl.surfnet.coin.csa.command.LmngServiceBinding;
 import nl.surfnet.coin.csa.control.BaseController;
 import nl.surfnet.coin.csa.dao.CompoundServiceProviderDao;
 import nl.surfnet.coin.csa.dao.LmngIdentifierDao;
 import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
+import nl.surfnet.coin.csa.domain.Field;
+import nl.surfnet.coin.csa.domain.FieldImage;
+import nl.surfnet.coin.csa.domain.FieldString;
 import nl.surfnet.coin.csa.domain.ServiceProvider;
 import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.ServiceProviderService;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
 import nl.surfnet.coin.csa.service.impl.LmngUtil;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,12 +54,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import au.com.bytecode.opencsv.CSVWriter;
 
 @Controller
 @RequestMapping(value = "/shopadmin/*")
@@ -69,14 +81,82 @@ public class SpLnmgListController extends BaseController {
 
   @RequestMapping(value = "/all-spslmng")
   public ModelAndView listAllSpsLmng(Map<String, Object> model) {
+    List<LmngServiceBinding> lmngServiceBindings = getAllBindings();
+    model.put("bindings", lmngServiceBindings);
+    return new ModelAndView("shopadmin/sp-overview", model);
+  }
+
+  private List<LmngServiceBinding> getAllBindings() {
     List<LmngServiceBinding> lmngServiceBindings = new ArrayList<LmngServiceBinding>();
     for (ServiceProvider serviceProvider : providerService.getAllServiceProviders(false)) {
       String lmngIdentifier = lmngIdentifierDao.getLmngIdForServiceProviderId(serviceProvider.getId());
       CompoundServiceProvider compoundServiceProvider = compoundSPService.getCSPByServiceProvider(serviceProvider);
       lmngServiceBindings.add(new LmngServiceBinding(lmngIdentifier, serviceProvider, compoundServiceProvider));
     }
-    model.put("bindings", lmngServiceBindings);
-    return new ModelAndView("shopadmin/sp-overview", model);
+    return lmngServiceBindings;
+  }
+  
+  private void writeStringFields(final CSVWriter csvWriter, final LmngServiceBinding binding) {
+    CompoundServiceProvider csp = binding.getCompoundServiceProvider();
+    for (FieldString field : csp.getFields()) {
+      csvWriter.writeNext(new String[]{
+          binding.getServiceProvider().getName(),
+          binding.getLmngIdentifier(),
+          field.getKey().name(),
+          csp.getLmngFieldValues().get(field.getKey()),
+          csp.getSurfConextFieldValues().get(field.getKey()),
+          csp.getDistributionFieldValues().get(field.getKey()),
+          field.getSource().name()
+        });
+    }
+  }
+  
+  private void writeImageFields(final CSVWriter csvWriter, final LmngServiceBinding binding, final HttpServletRequest request) throws URISyntaxException {
+    CompoundServiceProvider csp = binding.getCompoundServiceProvider();
+      for (FieldImage field : csp.getFieldImages()) {
+          csvWriter.writeNext(new String[]{
+              binding.getServiceProvider().getName(),
+              binding.getLmngIdentifier(),
+              field.getKey().name(),
+              csp.getLmngFieldValues().get(field.getKey()),
+              csp.getSurfConextFieldValues().get(field.getKey()),
+              getImageUrlForDistributionChannel(field, request),
+              field.getSource().name()
+          });
+      }
+  }
+  
+  private String getImageUrlForDistributionChannel(final Field field, HttpServletRequest request) throws URISyntaxException {
+    String result = "";
+    URI myUri = new URI(request.getRequestURL().toString());
+    result = myUri.getScheme()+"://"+myUri.getHost()+":"+myUri.getPort()+"/csa/fieldimages/"+field.getId() +".img";
+    return result;
+  }
+  
+  @RequestMapping(value = "/export/csv")
+  public @ResponseBody String exportToCSV(HttpServletRequest request, HttpServletResponse response) throws URISyntaxException {
+    List<LmngServiceBinding> lmngServiceBindings = getAllBindings();
+    StringWriter result = new StringWriter();
+    CSVWriter csvWriter = new CSVWriter(result);
+    //write CSV header
+    csvWriter.writeNext(new String[]{"SP Entity", "CRM GUID", "Field", "CRM value", "SurfConext value", "Distribution Channel Value", "Active Source"});
+    for (LmngServiceBinding binding : lmngServiceBindings) {
+      writeStringFields(csvWriter, binding);
+      writeImageFields(csvWriter, binding, request);
+    }
+    try {
+      csvWriter.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    
+    String csvResult = result.toString();
+    
+    // set content headers for CSV
+    response.setHeader("Content-Disposition", "attachment; filename=\"spEntityExport.csv\"");
+    response.setContentType("text/csv");
+    response.setContentLength(csvResult.length());
+    return csvResult;
   }
 
   @RequestMapping(value = "/save-splmng", method = RequestMethod.POST)

@@ -70,13 +70,23 @@ public class IdpLmngListControllerTestSelenium extends SeleniumSupport {
 
     inputLmng.clear();
     inputLmng.sendKeys(newLmngValue);
-
-    form.findElement(By.name("submitbutton")).click();
-
-    // page gets refreshed.. let's wait a bit
+    
+    /*
+     * Alas we had some problems (sometimes) with this testcase, sometime the AJAX call was
+     * not received and the old value was kept in the field. After multiple tries I've added
+     * two sleeps and be done with it .... GRRR
+     */
     try {
-      Thread.sleep(800);
-    } catch (InterruptedException e) {
+      Thread.sleep(500);
+    }catch(InterruptedException e) {
+      //ignored
+    }
+    
+    form.findElement(By.name("submitbutton")).click();
+    
+    try {
+      Thread.sleep(500);
+    }catch(InterruptedException e) {
       //ignored
     }
 
