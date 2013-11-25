@@ -242,14 +242,13 @@ public class SpLnmgListController extends BaseController {
   }
   
   @RequestMapping(value = "/delete-csp.shtml", method = RequestMethod.POST)
-  public ModelAndView deleteCompoundServiceProvider(@RequestParam("cspId") String postedCspId, Map<String, Object> model) {
+  public void deleteCompoundServiceProvider(@RequestParam("cspId") String postedCspId, HttpServletResponse response) throws IOException {
     log.info("deleting compound service provider with ID " + postedCspId);
     Long cspId = Long.parseLong(postedCspId);
     CompoundServiceProvider csp = compoundServiceProviderDao.findById(cspId);
     compoundServiceProviderDao.delete(csp);
     
-    List<LmngServiceBinding> lmngServiceBindings = getAllBindings();
-    model.put("bindings", lmngServiceBindings);
-    return new ModelAndView("shopadmin/sp-overview", model);
+    //redirect to services page
+    response.sendRedirect("all-spslmng.shtml");
   }
 }
