@@ -241,7 +241,7 @@ public class CsaClientTestIntegration {
 
   @Test
   public void serviceForIdp() throws IOException {
-    Service service = csaClient.getServiceForIdp("http://mock-idp", 1);
+    Service service = csaClient.getServiceForIdp("http://mock-idp", 2);
     ARP arp = service.getArp();
     assertNotNull(arp);
     assertTrue(service.isConnected());
