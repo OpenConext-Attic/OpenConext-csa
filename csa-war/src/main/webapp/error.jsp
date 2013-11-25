@@ -27,15 +27,21 @@
     <title>SURFconext - Cloud Services - An error occurred</title>
 
     <link rel="stylesheet" href="<c:url value="/css/bootstrap-2.0.4.css"/>" />
-    <link rel="stylesheet" href="<c:url value="/css/bootstrap-alert.css"/>" />
     <link rel="stylesheet" href="<c:url value="/css/bootstrap-button.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/bootstrap-datepicker.css"/>" />
     <link rel="stylesheet" href="<c:url value="/css/bootstrap-dropdown.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/bootstrap-form.css"/>" />
     <link rel="stylesheet" href="<c:url value="/css/bootstrap-generic.css"/>" />
     <link rel="stylesheet" href="<c:url value="/css/bootstrap-modal.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/bootstrap-navbar.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/bootstrap-pagination.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/bootstrap-popover.css"/>" />
     <link rel="stylesheet" href="<c:url value="/css/bootstrap-responsive.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/bootstrap-table.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/bootstrap-tooltip.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/component-datatables.css"/>" />
     <link rel="stylesheet" href="<c:url value="/css/font-awesome.css"/>" />
-    <link rel="stylesheet" href="<c:url value="/css/generic.css"/>" />
-    <link rel="stylesheet" href="<c:url value="/css/layout.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/select2.css"/>" />
     <link rel="stylesheet" href="<c:url value="/css/screen.css"/>" />
 
     <!--[if lt IE 9]>

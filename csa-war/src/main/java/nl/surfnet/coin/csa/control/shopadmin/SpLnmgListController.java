@@ -22,8 +22,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +54,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -83,7 +87,39 @@ public class SpLnmgListController extends BaseController {
   public ModelAndView listAllSpsLmng(Map<String, Object> model) {
     List<LmngServiceBinding> lmngServiceBindings = getAllBindings();
     model.put("bindings", lmngServiceBindings);
+    List<LmngServiceBinding> cspOrphans = getOrphans(lmngServiceBindings);
+    model.put("orphans", cspOrphans);
     return new ModelAndView("shopadmin/sp-overview", model);
+  }
+
+  private List<LmngServiceBinding> getOrphans(List<LmngServiceBinding> lmngServiceBindings) {
+    Set<String> spEntitySet = createSpEntitySet(lmngServiceBindings);
+    List<CompoundServiceProvider> csps = compoundServiceProviderDao.findAll();
+    Iterator<CompoundServiceProvider> cspIter = csps.iterator();
+    while (cspIter.hasNext()) {
+      CompoundServiceProvider current = cspIter.next();
+      if (spEntitySet.contains(current.getServiceProviderEntityId())) {
+        cspIter.remove();
+      }
+    }
+    
+    List<LmngServiceBinding> result = new ArrayList<LmngServiceBinding>();
+    if (csps.size() > 0) {
+      for (CompoundServiceProvider current : csps) {
+        result.add(new LmngServiceBinding(current.getLmngId(), current.getServiceProvider(), current));
+      }
+    }
+    return result;
+  }
+
+  private Set<String> createSpEntitySet(List<LmngServiceBinding> lmngServiceBindings) {
+    Set<String> result = new HashSet<>();
+    for (LmngServiceBinding current : lmngServiceBindings) {
+      if (null != current.getCompoundServiceProvider()) {
+        result.add(current.getCompoundServiceProvider().getServiceProviderEntityId());
+      }
+    }
+    return result;
   }
 
   private List<LmngServiceBinding> getAllBindings() {
@@ -203,5 +239,17 @@ public class SpLnmgListController extends BaseController {
     compoundServiceProviderDao.saveOrUpdate(csp);
     log.info("Updated CompoundServiceProvider(" + cspId + ") to be available for end users:" + newValue);
     return "ok";
+  }
+  
+  @RequestMapping(value = "/delete-csp.shtml", method = RequestMethod.POST)
+  public ModelAndView deleteCompoundServiceProvider(@RequestParam("cspId") String postedCspId, Map<String, Object> model) {
+    log.info("deleting compound service provider with ID " + postedCspId);
+    Long cspId = Long.parseLong(postedCspId);
+    CompoundServiceProvider csp = compoundServiceProviderDao.findById(cspId);
+    compoundServiceProviderDao.delete(csp);
+    
+    List<LmngServiceBinding> lmngServiceBindings = getAllBindings();
+    model.put("bindings", lmngServiceBindings);
+    return new ModelAndView("shopadmin/sp-overview", model);
   }
 }

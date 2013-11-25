@@ -14,7 +14,14 @@ app.shopAdmin = function () {
     $("i.inlinehelp").popover({
       'trigger': 'hover',
       'placement': 'top'});
-
+    
+    //confirmation on delete
+    $('p[data-delete-sp]').click(function() {
+    	if (window.confirm("Are you sure?")) {
+          var confirm = $(this).data("delete-sp");
+          $("#"+confirm).submit();
+    	}
+    });
   };
 
   return {
