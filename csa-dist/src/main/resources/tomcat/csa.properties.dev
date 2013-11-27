@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-
+janus.class=nl.surfnet.coin.janus.JanusRestClient
 janus.user=engine
 janus.secret=??
 janus.uri=https\://serviceregistry.dev.surfconext.nl/simplesaml/module.php/janus/services/rest/
