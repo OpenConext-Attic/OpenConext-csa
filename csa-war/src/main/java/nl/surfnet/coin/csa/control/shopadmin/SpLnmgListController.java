@@ -135,8 +135,9 @@ public class SpLnmgListController extends BaseController {
   private void writeStringFields(final CSVWriter csvWriter, final LmngServiceBinding binding) {
     CompoundServiceProvider csp = binding.getCompoundServiceProvider();
     for (FieldString field : csp.getFields()) {
+      String name = null == binding.getServiceProvider() ? binding.getCompoundServiceProvider().getServiceProviderEntityId() : binding.getServiceProvider().getName();
       csvWriter.writeNext(new String[]{
-          binding.getServiceProvider().getName(),
+          name,
           binding.getLmngIdentifier(),
           field.getKey().name(),
           csp.getLmngFieldValues().get(field.getKey()),
@@ -150,8 +151,9 @@ public class SpLnmgListController extends BaseController {
   private void writeImageFields(final CSVWriter csvWriter, final LmngServiceBinding binding, final HttpServletRequest request) throws URISyntaxException {
     CompoundServiceProvider csp = binding.getCompoundServiceProvider();
       for (FieldImage field : csp.getFieldImages()) {
+        String name = null == binding.getServiceProvider() ? binding.getCompoundServiceProvider().getServiceProviderEntityId() : binding.getServiceProvider().getName();
           csvWriter.writeNext(new String[]{
-              binding.getServiceProvider().getName(),
+              name,
               binding.getLmngIdentifier(),
               field.getKey().name(),
               csp.getLmngFieldValues().get(field.getKey()),
@@ -165,21 +167,36 @@ public class SpLnmgListController extends BaseController {
   private String getImageUrlForDistributionChannel(final Field field, HttpServletRequest request) throws URISyntaxException {
     String result = "";
     URI myUri = new URI(request.getRequestURL().toString());
-    result = myUri.getScheme()+"://"+myUri.getHost()+":"+myUri.getPort()+"/csa/fieldimages/"+field.getId() +".img";
+    result += myUri.getScheme()+"://"+myUri.getHost();
+    if (myUri.getPort() > 0) {
+      result += ":"+myUri.getPort();
+    }
+    result += "/csa/fieldimages/"+field.getId() +".img";
     return result;
   }
   
   @RequestMapping(value = "/export/csv")
-  public @ResponseBody String exportToCSV(HttpServletRequest request, HttpServletResponse response) throws URISyntaxException {
-    List<LmngServiceBinding> lmngServiceBindings = getAllBindings();
+  public @ResponseBody String exportToCSV(HttpServletRequest request, HttpServletResponse response, @RequestParam(value="type", required=false) String type) throws URISyntaxException {
     StringWriter result = new StringWriter();
     CSVWriter csvWriter = new CSVWriter(result);
+    List<LmngServiceBinding> lmngServiceBindings = getAllBindings();
     //write CSV header
     csvWriter.writeNext(new String[]{"SP Entity", "CRM GUID", "Field", "CRM value", "SurfConext value", "Distribution Channel Value", "Active Source"});
-    for (LmngServiceBinding binding : lmngServiceBindings) {
-      writeStringFields(csvWriter, binding);
-      writeImageFields(csvWriter, binding, request);
+    
+    if (null == type || type.isEmpty()) {
+      for (LmngServiceBinding binding : lmngServiceBindings) {
+        writeStringFields(csvWriter, binding);
+        writeImageFields(csvWriter, binding, request);
+      }
+    } else if (type != null && type.equalsIgnoreCase("orphans")) {
+      List<LmngServiceBinding> cspOrphans = getOrphans(lmngServiceBindings);
+      for (LmngServiceBinding binding : cspOrphans) {
+        writeStringFields(csvWriter, binding);
+        writeImageFields(csvWriter, binding, request);
+      }
     }
+    
+    // close the CSV writer
     try {
       csvWriter.close();
     } catch (IOException e) {

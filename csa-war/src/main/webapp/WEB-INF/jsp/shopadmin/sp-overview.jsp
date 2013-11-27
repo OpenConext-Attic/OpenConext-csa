@@ -118,6 +118,7 @@
 
       <c:if test="${not empty orphans}">        
       <h1><spring:message code="jsp.lmng_binding_overview.orphan.title"/></h1>
+      <div id="exportCSV"><img src="../images/excel-icon.gif"><a href="export/csv.shtml?type=orphans">Export to CSV</a></div>
       <table id="sp_orphan_table" class="table table-bordered table-striped">
         <thead>
         <tr>
@@ -176,7 +177,6 @@
         </tbody>
         </table>
       </c:if>
-
 
     </div>
   </section>
