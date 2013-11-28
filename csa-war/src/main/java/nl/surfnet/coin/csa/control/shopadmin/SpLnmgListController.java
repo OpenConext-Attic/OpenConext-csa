@@ -40,6 +40,7 @@ import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.csa.domain.Field;
 import nl.surfnet.coin.csa.domain.FieldImage;
 import nl.surfnet.coin.csa.domain.FieldString;
+import nl.surfnet.coin.csa.domain.Screenshot;
 import nl.surfnet.coin.csa.domain.ServiceProvider;
 import nl.surfnet.coin.csa.service.CrmService;
 import nl.surfnet.coin.csa.service.ServiceProviderService;
@@ -136,9 +137,12 @@ public class SpLnmgListController extends BaseController {
     CompoundServiceProvider csp = binding.getCompoundServiceProvider();
     for (FieldString field : csp.getFields()) {
       String name = null == binding.getServiceProvider() ? binding.getCompoundServiceProvider().getServiceProviderEntityId() : binding.getServiceProvider().getName();
+      String idpOnly = null == binding.getServiceProvider() ? "" : Boolean.toString(binding.getServiceProvider().isIdpVisibleOnly()); 
       csvWriter.writeNext(new String[]{
           name,
           binding.getLmngIdentifier(),
+          Boolean.toString(csp.isAvailableForEndUser()),
+          idpOnly,
           field.getKey().name(),
           csp.getLmngFieldValues().get(field.getKey()),
           csp.getSurfConextFieldValues().get(field.getKey()),
@@ -152,14 +156,31 @@ public class SpLnmgListController extends BaseController {
     CompoundServiceProvider csp = binding.getCompoundServiceProvider();
       for (FieldImage field : csp.getFieldImages()) {
         String name = null == binding.getServiceProvider() ? binding.getCompoundServiceProvider().getServiceProviderEntityId() : binding.getServiceProvider().getName();
+        String idpOnly = null == binding.getServiceProvider() ? "" : Boolean.toString(binding.getServiceProvider().isIdpVisibleOnly());
           csvWriter.writeNext(new String[]{
               name,
               binding.getLmngIdentifier(),
+              Boolean.toString(csp.isAvailableForEndUser()),
+              idpOnly,
               field.getKey().name(),
               csp.getLmngFieldValues().get(field.getKey()),
               csp.getSurfConextFieldValues().get(field.getKey()),
               getImageUrlForDistributionChannel(field, request),
               field.getSource().name()
+          });
+      }
+      for (Screenshot current : csp.getScreenShotsImages()) {
+        String name = null == binding.getServiceProvider() ? binding.getCompoundServiceProvider().getServiceProviderEntityId() : binding.getServiceProvider().getName();
+          csvWriter.writeNext(new String[]{
+              name,
+              binding.getLmngIdentifier(),
+              Boolean.toString(csp.isAvailableForEndUser()),
+              Boolean.toString(binding.getServiceProvider().isIdpVisibleOnly()),
+              "_SCREENSHOT_",
+              "",
+              "",
+              getImageUrlForScreenShot(current.getFileUrl(), request),
+              ""
           });
       }
   }
@@ -171,7 +192,18 @@ public class SpLnmgListController extends BaseController {
     if (myUri.getPort() > 0) {
       result += ":"+myUri.getPort();
     }
-    result += "/csa/fieldimages/"+field.getId() +".img";
+    result += "/fieldimages/"+field.getId() +".img";
+    return result;
+  }
+  
+  private String getImageUrlForScreenShot(final String screenshotURL, HttpServletRequest request) throws URISyntaxException {
+    String result = "";
+    URI myUri = new URI(request.getRequestURL().toString());
+    result += myUri.getScheme()+"://"+myUri.getHost();
+    if (myUri.getPort() > 0) {
+      result += ":"+myUri.getPort();
+    }
+    result += screenshotURL;
     return result;
   }
   
@@ -181,7 +213,7 @@ public class SpLnmgListController extends BaseController {
     CSVWriter csvWriter = new CSVWriter(result);
     List<LmngServiceBinding> lmngServiceBindings = getAllBindings();
     //write CSV header
-    csvWriter.writeNext(new String[]{"SP Entity", "CRM GUID", "Field", "CRM value", "SurfConext value", "Distribution Channel Value", "Active Source"});
+    csvWriter.writeNext(new String[]{"SP Entity", "CRM GUID", "available EndUser", "IDP Only Visible", "Field", "CRM value", "SurfConext value", "Distribution Channel Value", "Active Source"});
     
     if (null == type || type.isEmpty()) {
       for (LmngServiceBinding binding : lmngServiceBindings) {
