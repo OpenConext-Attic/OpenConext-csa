@@ -18,34 +18,22 @@ var services = function() {
 	function getUrlBase() {
 		var url = "";
 		if (window.location['host'] == 'localhost:8282') {
-			url = 'http://localhost:8282/csa';
+      // Local development
+			url = "http://localhost:8282/csa";
 		} else {
-			url = 'https://csa.showroom.surfconext.nl';
+			url = 'https://' + window.location.host;
 		}
 		return url;
-	};
-	
-	function getEndpoint(protected) {
-		url = getUrlBase();
-		url += '/api/';
-		if (protected) {
-			url += 'protected';
-		} else {
-			url += 'public';
-		}
-		url += '/services.json';
-		return url;
-	};
-	
-	var publicApiUrl = getEndpoint(false);
-	var protectedApiUrl = getEndpoint(true);
-	var baseUrl = window.location;
-	
+	}
+
+	var publicApiUrl = getUrlBase() + "/api/public/services.json";
+	var protectedApiUrl = getUrlBase() + "/api/protected/services.json";
+
 	var auth = new OAuth({
 		  context:window,
 		  clientId:"csa_example_gadget_app",
-		  redirectUri:baseUrl,
-		  authorizationEndpoint:"https://apis.showroom.surfconext.nl/oauth2/authorize"
+		  redirectUri: window.location,
+		  authorizationEndpoint: "https://" + window.location.host.replace(/^csa\./, "apis.") + "/oauth2/authorize"
 	});
 	
 
