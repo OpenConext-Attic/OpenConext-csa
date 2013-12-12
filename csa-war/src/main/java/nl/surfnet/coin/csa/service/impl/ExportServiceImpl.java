@@ -1,19 +1,17 @@
 package nl.surfnet.coin.csa.service.impl;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.List;
-
+import au.com.bytecode.opencsv.CSVWriter;
 import nl.surfnet.coin.csa.command.LmngServiceBinding;
 import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.csa.domain.FieldImage;
 import nl.surfnet.coin.csa.domain.FieldString;
 import nl.surfnet.coin.csa.domain.Screenshot;
 import nl.surfnet.coin.csa.service.ExportService;
-
 import org.springframework.stereotype.Service;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.List;
 
 @Service(value = "exportService")
 public class ExportServiceImpl implements ExportService {
@@ -81,7 +79,10 @@ public class ExportServiceImpl implements ExportService {
           });
       }
       for (Screenshot current : csp.getScreenShotsImages()) {
-        String name = null == binding.getServiceProvider() ? binding.getCompoundServiceProvider().getServiceProviderEntityId() : binding.getServiceProvider().getName();
+        String name =
+                null == binding.getServiceProvider()
+                ? binding.getCompoundServiceProvider().getServiceProviderEntityId()
+                : binding.getServiceProvider().getName();
           csvWriter.writeNext(new String[]{
               name,
               binding.getLmngIdentifier(),

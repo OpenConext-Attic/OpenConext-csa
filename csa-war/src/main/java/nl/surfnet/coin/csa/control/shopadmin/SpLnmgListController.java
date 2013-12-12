@@ -16,21 +16,6 @@
 
 package nl.surfnet.coin.csa.control.shopadmin;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import nl.surfnet.coin.csa.command.LmngServiceBinding;
 import nl.surfnet.coin.csa.control.BaseController;
 import nl.surfnet.coin.csa.dao.CompoundServiceProviderDao;
@@ -42,18 +27,21 @@ import nl.surfnet.coin.csa.service.ExportService;
 import nl.surfnet.coin.csa.service.ServiceProviderService;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
 import nl.surfnet.coin.csa.service.impl.LmngUtil;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 
 @Controller
 @RequestMapping(value = "/shopadmin/*")
@@ -136,11 +124,13 @@ public class SpLnmgListController extends BaseController {
     List<LmngServiceBinding> lmngServiceBindings = getAllBindings();
     String baseUrl = getBaseUrl(request);
     
-    if (null == type || type.isEmpty()) {
+    if (StringUtils.isEmpty(type)) {
       result = exportService.exportServiceBindingsCsv(lmngServiceBindings, baseUrl);
-    } else if (type != null && type.equalsIgnoreCase("orphans")) {
+    } else if (type.equalsIgnoreCase("orphans")) {
       List<LmngServiceBinding> cspOrphans = getOrphans(lmngServiceBindings);
       result = exportService.exportServiceBindingsCsv(cspOrphans, baseUrl);
+    } else {
+      throw new IllegalArgumentException("Unknown type given: " + type);
     }
     
     // set content headers for CSV
