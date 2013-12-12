@@ -272,7 +272,7 @@ public class LmngServiceImpl implements CrmService {
     long beforeCall = System.currentTimeMillis();
     HttpResponse httpResponse = httpclient.execute(httppost);
     long afterCall = System.currentTimeMillis();
-    log.info("LMNG proxy webservice called in {} ms. Http response: {}", afterCall - beforeCall, httpResponse);
+    log.debug("LMNG proxy webservice called in {} ms. Http response: {}", afterCall - beforeCall, httpResponse);
 
     HttpEntity httpresponseEntity = httpResponse.getEntity();
 

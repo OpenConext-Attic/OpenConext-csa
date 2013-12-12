@@ -1,6 +1,7 @@
 [
     {
         "serviceDescriptionNl": "Nice SP",
+        "productName": "Nice SP",
         "institutionDescriptionNl": "Nice SP",
         "supplierName": "Nice SP supplier",
         "serviceProviderEntityId": "https://nice_sp",
@@ -18,6 +19,7 @@
     },
     {
         "serviceDescriptionNl": "Mock SP",
+        "productName": "Mock SP",
         "institutionDescriptionNl": "Mock SP",
         "supplierName": "Mock SP supplier",
         "serviceProviderEntityId": "http://mock-sp",

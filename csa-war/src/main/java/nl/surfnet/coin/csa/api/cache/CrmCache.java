@@ -70,7 +70,7 @@ public class CrmCache extends AbstractCache {
       List<Article> articlesForServiceProviders = crmService.getArticlesForServiceProviders(Arrays.asList(spEntityId));
 
       if (articlesForServiceProviders.size() > 1) {
-        LOG.info("Unexpected: list of articles for SP ({}) is larger than 1: {}", spEntityId, articlesForServiceProviders.size());
+        LOG.info("Unexpected: list of articles for SP ({}) is larger than 1: {}", spEntityId, articlesForServiceProviders);
         for (Article a : articlesForServiceProviders) {
           LOG.info("Article found: {}", a);
         }

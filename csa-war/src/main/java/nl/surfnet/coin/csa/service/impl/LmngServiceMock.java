@@ -124,7 +124,7 @@ public class LmngServiceMock implements CrmService {
 
   @Override
   public List<Article> getArticlesForServiceProviders(List<String> serviceProviderEntityIds) {
-    return articles;
+    return articles.subList(0, Math.min(articles.size(), serviceProviderEntityIds.size()));
   }
 
 }
