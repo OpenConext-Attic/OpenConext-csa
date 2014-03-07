@@ -77,7 +77,7 @@ public class IdpLmngListControllerTestSelenium extends SeleniumSupport {
      * two sleeps and be done with it .... GRRR
      */
     try {
-      Thread.sleep(500);
+      Thread.sleep(800);
     }catch(InterruptedException e) {
       //ignored
     }
@@ -85,7 +85,7 @@ public class IdpLmngListControllerTestSelenium extends SeleniumSupport {
     form.findElement(By.name("submitbutton")).click();
     
     try {
-      Thread.sleep(500);
+      Thread.sleep(800);
     }catch(InterruptedException e) {
       //ignored
     }
