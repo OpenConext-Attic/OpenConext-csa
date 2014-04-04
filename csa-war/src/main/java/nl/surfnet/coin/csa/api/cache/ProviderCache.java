@@ -91,8 +91,16 @@ public class ProviderCache extends AbstractCache {
     Set<String> idpIdentifiers = spIdsCache.keySet();
     Map<String, List<String>> swap = new HashMap<String, List<String>>();
     for (String idpId : idpIdentifiers) {
-      List<String> spIdentifiers = idpService.getLinkedServiceProviderIDs(idpId);
-      swap.put(idpId, spIdentifiers);
+        List<String> spIdentifiers = idpService.getLinkedServiceProviderIDs(idpId);
+        if (callDelay > 0) {
+            try {
+                Thread.sleep(callDelay);
+            } catch (InterruptedException e) {
+                LOG.error("interrupted while in call delay", e);
+                break;
+            }
+        }
+        swap.put(idpId, spIdentifiers);
     }
     spIdsCache.putAll(swap);
   }

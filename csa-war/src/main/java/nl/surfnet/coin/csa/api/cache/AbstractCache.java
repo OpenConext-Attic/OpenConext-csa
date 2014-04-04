@@ -28,11 +28,13 @@ import java.util.*;
 
 public abstract class AbstractCache implements InitializingBean, DisposableBean {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AbstractCache.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(AbstractCache.class);
 
   private @Value("${cacheMillisecondsStartupDelayTime}") long delay;
 
   private @Value("${cacheMillisecondsServices}") long duration;
+
+  protected @Value("${cacheMillisecondsCallDelay}") long callDelay;
 
   private final Timer timer = new Timer();
 
