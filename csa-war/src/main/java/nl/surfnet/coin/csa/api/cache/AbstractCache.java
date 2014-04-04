@@ -34,7 +34,7 @@ public abstract class AbstractCache implements InitializingBean, DisposableBean 
 
   private @Value("${cacheMillisecondsServices}") long duration;
 
-  protected @Value("${cacheMillisecondsCallDelay") long callDelay;
+  protected @Value("${cacheMillisecondsCallDelay}") long callDelay;
 
   private final Timer timer = new Timer();
 
