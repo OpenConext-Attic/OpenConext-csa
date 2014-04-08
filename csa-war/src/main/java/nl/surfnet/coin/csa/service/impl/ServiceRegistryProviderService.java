@@ -54,7 +54,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
 
   @Override
   public List<ServiceProvider> getAllServiceProviders(String idpId) {
-    List<ServiceProvider> allSPs = getAllServiceProvidersUnfiltered(false);
+    List<ServiceProvider> allSPs = getAllServiceProvidersUnfiltered(false, 0);
 
     List<String> myLinkedSPs = getLinkedServiceProviderIDs(idpId);
 
@@ -74,7 +74,12 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
 
   @Override
   public List<ServiceProvider> getAllServiceProviders(boolean includeArps) {
-    return getAllServiceProvidersUnfiltered(includeArps);
+    return getAllServiceProvidersUnfiltered(includeArps, 0);
+  }
+
+  @Override
+  public List<ServiceProvider> getAllServiceProvidersRateLimited(long rateDelay) {
+    return getAllServiceProvidersUnfiltered(true, rateDelay);
   }
 
   @Override
@@ -89,13 +94,20 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
     return spList;
   }
 
-  private List<ServiceProvider> getAllServiceProvidersUnfiltered(boolean includeArps) {
+  private List<ServiceProvider> getAllServiceProvidersUnfiltered(boolean includeArps, long callDelay) {
     List<ServiceProvider> spList = new ArrayList<ServiceProvider>();
     try {
       final List<EntityMetadata> sps = janusClient.getSpList();
       for (EntityMetadata metadata : sps) {
         if (StringUtils.equals(metadata.getWorkflowState(), IN_PRODUCTION)) {
           spList.add(buildServiceProviderByMetadata(metadata, includeArps));
+          if (callDelay > 0) {
+            try {
+              Thread.sleep(callDelay);
+            } catch (InterruptedException e) {
+              break;
+            }
+          }
         }
       }
     } catch (RestClientException e) {

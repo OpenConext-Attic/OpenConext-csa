@@ -38,7 +38,6 @@ public abstract class AbstractCache implements InitializingBean, DisposableBean 
 
   private final Timer timer = new Timer();
 
-
   @Override
   public void afterPropertiesSet() throws Exception {
     this.scheduleRefresh();
@@ -109,7 +108,15 @@ public abstract class AbstractCache implements InitializingBean, DisposableBean 
     this.delay = delay;
   }
 
-  public long getDuration() {
+  public long getCallDelay() {
+      return callDelay;
+  }
+
+  public void setCallDelay(long callDelay) {
+      this.callDelay = callDelay;
+  }
+
+    public long getDuration() {
     return duration;
   }
 

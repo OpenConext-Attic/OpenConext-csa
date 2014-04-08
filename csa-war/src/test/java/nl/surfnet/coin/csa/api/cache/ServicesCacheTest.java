@@ -30,6 +30,7 @@ import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +47,7 @@ public class ServicesCacheTest {
 
     Map<String, List<Service>> servicesMap = initServices();
     servicesMap.get("en").add(new Service());
-    when(service.findAll()).thenReturn(servicesMap);
+    when(service.findAll(anyLong())).thenReturn(servicesMap);
 
     services = cache.getAllServices("en");
     assertEquals(1, services.size());
@@ -85,12 +86,13 @@ public class ServicesCacheTest {
   public void setUp() throws Exception {
     cache = new ServicesCache();
     cache.setDelay(0);
+    cache.setCallDelay(0L);
     cache.setDuration(1000);
     service = mock(ServicesService.class);
     cache.setService(service);
 
     Map<String, List<Service>> servicesMap = initServices();
-    when(service.findAll()).thenReturn(servicesMap);
+    when(service.findAll(anyLong())).thenReturn(servicesMap);
 
     cache.afterPropertiesSet();
 

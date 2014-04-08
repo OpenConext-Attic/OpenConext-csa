@@ -24,5 +24,7 @@ import java.util.Map;
 
 public interface ServicesService {
 
+  Map<String, List<Service>> findAll(long rateLimit);
+
   Map<String, List<Service>> findAll();
 }

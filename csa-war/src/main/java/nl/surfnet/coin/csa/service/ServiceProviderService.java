@@ -57,4 +57,6 @@ public interface ServiceProviderService {
    * @return list of {@link ServiceProvider}
    */
   List<ServiceProvider> getAllServiceProviders(boolean includeArps);
+
+  List<ServiceProvider> getAllServiceProvidersRateLimited(long rateDelay);
 }

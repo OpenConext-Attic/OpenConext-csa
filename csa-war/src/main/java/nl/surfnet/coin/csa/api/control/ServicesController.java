@@ -85,8 +85,8 @@ public class ServicesController extends BaseApiController implements ServicesSer
 
 
   @Override
-  public Map<String, List<Service>> findAll() {
-    List<CompoundServiceProvider> allCSPs = compoundSPService.getAllCSPs();
+  public Map<String, List<Service>> findAll(long callDelay) {
+    List<CompoundServiceProvider> allCSPs = compoundSPService.getAllCSPs(callDelay);
     List<Service> servicesEn = buildApiServices(allCSPs, "en");
     List<Service> servicesNl = buildApiServices(allCSPs, "nl");
     List<Service> crmOnlyServices = getCrmOnlyServices();
@@ -96,6 +96,11 @@ public class ServicesController extends BaseApiController implements ServicesSer
     result.put("en", servicesEn);
     result.put("nl", servicesNl);
     return result;
+  }
+
+  @Override
+  public Map<String, List<Service>> findAll() {
+    return findAll(0L);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/public/services.json")

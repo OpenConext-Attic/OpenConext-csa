@@ -60,7 +60,7 @@ public class ServicesCache extends AbstractCache {
 
   @Override
   protected void doPopulateCache() {
-    Map<String, List<Service>> services = service.findAll();
+    Map<String, List<Service>> services = service.findAll(callDelay);
     cache.clear();
     cache.putAll(services);
   }

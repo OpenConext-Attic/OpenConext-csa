@@ -54,7 +54,16 @@ public class CompoundSPService {
   private CrmService licensingService;
 
   public List<CompoundServiceProvider> getAllCSPs() {
-    List<ServiceProvider> allServiceProviders = serviceProviderService.getAllServiceProviders(true);
+    return getAllCSPs(0);
+  }
+
+  public List<CompoundServiceProvider> getAllCSPs(long callDelay) {
+    List<ServiceProvider> allServiceProviders;
+    if (callDelay > 0) {
+      allServiceProviders = serviceProviderService.getAllServiceProvidersRateLimited(callDelay);
+    } else {
+      allServiceProviders = serviceProviderService.getAllServiceProviders(true);
+    }
     return getCSPs(null, allServiceProviders);
   }
 
