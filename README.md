@@ -33,3 +33,7 @@ To run locally:
     cd coin-csa-war
     mvn jetty:run
 
+
+There is an [outstanding issue](https://cwiki.apache.org/confluence/display/MAVEN/AetherClassNotFound). If you don't want to downgrade maven (using brew) then you can manually compile the css:
+
+    compass compile src/main/webapp src/main/webapp/sass/screen.sass && cp src/main/webapp/css/screen.css target/csa-war-4.0.2-SNAPSHOT/css/sreen.css
