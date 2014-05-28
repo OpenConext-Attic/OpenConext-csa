@@ -70,7 +70,7 @@ public class CspStatusController extends BaseController {
   }
 
   private ModelAndView statusOverview(IdentityProvider selectedidp) {
-    Map<String, Object> model = new HashMap<String, Object>();
+    Map<String, Object> model = new HashMap<>();
     List<CompoundServiceProvider> services = compoundSPService.getCSPsByIdp(selectedidp);
     model.put(COMPOUND_SPS, services);
     model.put("filteredIdp", selectedidp.getId());

@@ -19,24 +19,8 @@ package nl.surfnet.coin.csa.control.shopadmin;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-
-import nl.surfnet.coin.csa.control.BaseController;
-import nl.surfnet.coin.csa.dao.CompoundServiceProviderDao;
-import nl.surfnet.coin.csa.dao.FieldImageDao;
-import nl.surfnet.coin.csa.dao.FieldStringDao;
-import nl.surfnet.coin.csa.dao.ScreenshotDao;
-import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
-import nl.surfnet.coin.csa.domain.Field;
-import nl.surfnet.coin.csa.domain.Field.Source;
-import nl.surfnet.coin.csa.domain.FieldImage;
-import nl.surfnet.coin.csa.domain.FieldString;
-import nl.surfnet.coin.csa.domain.Screenshot;
-import nl.surfnet.coin.csa.service.ServiceProviderService;
-import nl.surfnet.coin.csa.service.impl.CompoundSPService;
-import nl.surfnet.coin.csa.util.AjaxResponseException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +34,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+
+import nl.surfnet.coin.csa.control.BaseController;
+import nl.surfnet.coin.csa.dao.CompoundServiceProviderDao;
+import nl.surfnet.coin.csa.dao.FieldImageDao;
+import nl.surfnet.coin.csa.dao.FieldStringDao;
+import nl.surfnet.coin.csa.dao.ScreenshotDao;
+import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
+import nl.surfnet.coin.csa.domain.Field;
+import nl.surfnet.coin.csa.domain.Field.Source;
+import nl.surfnet.coin.csa.domain.FieldImage;
+import nl.surfnet.coin.csa.domain.FieldString;
+import nl.surfnet.coin.csa.domain.Screenshot;
+import nl.surfnet.coin.csa.service.impl.CompoundSPService;
+import nl.surfnet.coin.csa.util.AjaxResponseException;
 
 @Controller
 @RequestMapping(value = "/shopadmin/*")
@@ -83,12 +81,11 @@ public class SpLmngDataBindingController extends BaseController {
 
   @RequestMapping(value = "/compoundSp-update", method = RequestMethod.POST, params = "usethis=usethis-image")
   public @ResponseBody
-  String updateImageField(@RequestParam(value = "fieldId") Long fieldId, @RequestParam(value = "value", required = false) String value,
-      @RequestParam(value = "source") Source source) {
+  String updateImageField(@RequestParam(value = "fieldId") Long fieldId, @RequestParam(value = "source") Source source) {
     FieldImage fieldImage = fieldImageDao.findById(fieldId);
     validateCombination(source, fieldImage);
     fieldImage.setSource(source);
-    fieldImageDao.saveOrUpdate((FieldImage) fieldImage);
+    fieldImageDao.saveOrUpdate(fieldImage);
     return source.name();
   }
 
@@ -102,7 +99,7 @@ public class SpLmngDataBindingController extends BaseController {
     if (StringUtils.hasText(useThis)) {
       field.setSource(source);
     }
-    fieldStringDao.saveOrUpdate((FieldString) field);
+    fieldStringDao.saveOrUpdate(field);
     return source.name();
   }
 
