@@ -18,11 +18,21 @@
  */
 package nl.surfnet.coin.csa.integration;
 
-import nl.surfnet.coin.csa.CsaClient;
-import nl.surfnet.coin.csa.model.*;
-import nl.surfnet.coin.janus.domain.ARP;
-import nl.surfnet.coin.janus.domain.JanusEntity;
-import nl.surfnet.coin.oauth.ClientCredentialsClient;
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.YEAR;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -31,11 +41,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.localserver.LocalTestServer;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
-import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonMethod;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,39 +51,29 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.YEAR;
-import static junit.framework.Assert.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import nl.surfnet.coin.csa.CsaClient;
+import nl.surfnet.coin.csa.model.Action;
+import nl.surfnet.coin.csa.model.Category;
+import nl.surfnet.coin.csa.model.CategoryValue;
+import nl.surfnet.coin.csa.model.InstitutionIdentityProvider;
+import nl.surfnet.coin.csa.model.JiraTask;
+import nl.surfnet.coin.csa.model.Service;
+import nl.surfnet.coin.csa.model.Statistics;
+import nl.surfnet.coin.csa.model.Taxonomy;
+import nl.surfnet.coin.janus.domain.ARP;
+import nl.surfnet.coin.oauth.ClientCredentialsClient;
 
 public class CsaClientTestIntegration {
 
-  private static String endpoint = "http://localhost:8282/csa";
+  private static final String endpoint = "http://localhost:8282/csa";
 
   private static String answer = "{\"scope\":\"something\",\"access_token\":\"3fc6a956-a414-4f4b-a280-65cfbeb9ba2a\",\"token_type\":\"bearer\",\"expires_in\":0}";
-
-  private static ObjectMapper mapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-          .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL).setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
-
-  /*
-   * We need to mock the authorization server response for an client credentials access token
-   */
-  private static LocalTestServer oauth2AuthServer;
 
   protected static CsaClient csaClient;
 
   @BeforeClass
   public static void beforeClass() throws Exception {
-    oauth2AuthServer = new LocalTestServer(null, null);
+    LocalTestServer oauth2AuthServer = new LocalTestServer(null, null);
     oauth2AuthServer.start();
     oauth2AuthServer.register("/oauth2/token", new HttpRequestHandler() {
       @Override
@@ -282,7 +277,7 @@ public class CsaClientTestIntegration {
   @Test
   public void servicesByIdpForNonExistent() {
     try {
-      List<Service> services = csaClient.getServicesForIdp("http://i-don't-exist");
+      csaClient.getServicesForIdp("http://i-don't-exist");
       fail();
     } catch (HttpClientErrorException e) {
       assertEquals(409, e.getStatusCode().value());

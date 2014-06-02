@@ -58,10 +58,10 @@ public class CrmCacheTest {
     when(dao.findAllIdentityProviders()).thenReturn(getIdentityProviders());
     when(dao.findAllServiceProviders()).thenReturn(getServiceProviders());
 
-    List<License> licenses = new ArrayList<License>();
+    List<License> licenses = new ArrayList<>();
     licenses.add(createLicense());
     when(service.getLicensesForIdpAndSp(any(IdentityProvider.class), anyString())).thenReturn(licenses);
-    List<Article> articles = new ArrayList();
+    List<Article> articles = new ArrayList<>();
     articles.add(createArticle());
 
     when(service.getArticlesForServiceProviders(anyListOf(String.class))).thenReturn(articles);
@@ -105,8 +105,7 @@ public class CrmCacheTest {
   }
 
   private Article createArticle() {
-    Article article = new Article("lmngIdentifier");
-    return article;
+    return new Article("lmngIdentifier");
   }
 
   private List<MappingEntry> getIdentityProviders() {
@@ -118,7 +117,7 @@ public class CrmCacheTest {
   }
 
   private List<MappingEntry> getProviders(final String providerType) {
-    List<MappingEntry> identityProviders = new ArrayList<MappingEntry>();
+    List<MappingEntry> identityProviders = new ArrayList<>();
     for (int i = 0; i < 3; i++) {
       identityProviders.add(new MappingEntry(providerType + "-" + i, "lmngId-" + i));
     }
