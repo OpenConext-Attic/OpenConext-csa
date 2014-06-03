@@ -95,7 +95,7 @@ public class LmngServiceImpl implements CrmService {
   @Override
   public List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers)
           throws LmngException {
-    List<License> result = new ArrayList<License>();
+    List<License> result = new ArrayList<>();
     if (CollectionUtils.isEmpty(articleIdentifiers)) {
       return result;
     }
@@ -128,7 +128,7 @@ public class LmngServiceImpl implements CrmService {
   @Cacheable(value = "crm")
   @Override
   public List<Article> getArticlesForServiceProviders(List<String> serviceProvidersEntityIds) throws LmngException {
-    List<Article> result = new ArrayList<Article>();
+    List<Article> result = new ArrayList<>();
     try {
       Map<String, String> serviceIds = getLmngServiceIds(serviceProvidersEntityIds);
 
@@ -174,7 +174,7 @@ public class LmngServiceImpl implements CrmService {
     Article result = null;
     try {
       // get the file with the soap request
-      String soapRequest = lmngUtil.getLmngSoapRequestForSps(Arrays.asList(new String[]{guid}), endpoint);
+      String soapRequest = lmngUtil.getLmngSoapRequestForSps(Arrays.asList(guid), endpoint);
       if (debug) {
         lmngUtil.writeIO("lmngRequest", StringEscapeUtils.unescapeHtml(soapRequest));
       }
@@ -195,7 +195,7 @@ public class LmngServiceImpl implements CrmService {
 
   @Override
   public List<Account> getAccounts(boolean isInstitution) {
-    List<Account> accounts = new ArrayList<Account>();
+    List<Account> accounts = new ArrayList<>();
     try {
       // get the file with the soap request
       String soapRequest = lmngUtil.getLmngSoapRequestForAllAccount(isInstitution, endpoint);
@@ -311,8 +311,6 @@ public class LmngServiceImpl implements CrmService {
 
   /**
    * Get the LMNG identifier for the given SP
-   *
-   * @param serviceProviderEntityId
    */
   private String getLmngServiceId(String serviceProviderEntityId) {
     if (serviceProviderEntityId != null) {
@@ -327,7 +325,7 @@ public class LmngServiceImpl implements CrmService {
    * @return a map with the LMNGID as key and serviceprovider entity ID as value
    */
   private Map<String, String> getLmngServiceIds(List<String> serviceProvidersEntityIds) {
-    Map<String, String> result = new HashMap<String, String>();
+    Map<String, String> result = new HashMap<>();
     for (String spId : serviceProvidersEntityIds) {
       String serviceId = getLmngServiceId(spId);
       if (serviceId != null) {
