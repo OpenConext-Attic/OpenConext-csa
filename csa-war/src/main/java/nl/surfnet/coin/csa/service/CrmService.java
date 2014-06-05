@@ -16,7 +16,6 @@
 
 package nl.surfnet.coin.csa.service;
 
-import java.util.Date;
 import java.util.List;
 
 import nl.surfnet.coin.csa.domain.Account;
