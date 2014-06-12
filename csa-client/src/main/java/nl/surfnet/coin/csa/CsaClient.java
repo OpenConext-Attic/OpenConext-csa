@@ -197,7 +197,7 @@ public class CsaClient implements Csa {
         locale = RequestContextUtils.getLocale(request);
       }
     }
-    return locale != null ? locale.toString() : defaultLocale;
+    return locale != null ? locale.getLanguage() : defaultLocale;
   }
 
 }
