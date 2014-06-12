@@ -16,23 +16,16 @@
 
 package nl.surfnet.coin.csa.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.junit.Test;
-import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.ClassPathResource;
-
-import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Date;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class SerializationTest {
 
