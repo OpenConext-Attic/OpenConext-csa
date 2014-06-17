@@ -26,11 +26,11 @@
   <parent>
     <groupId>org.surfnet.coin</groupId>
     <artifactId>coin-master</artifactId>
-    <version>3.11.0</version>
+    <version>3.11.1</version>
   </parent>
   
   <artifactId>csa-parent</artifactId>
-  <version>4.0.2-SNAPSHOT</version>
+  <version>4.0.3-SNAPSHOT</version>
 
   <name>OpenConext : Cloud Services API</name>
   <inceptionYear>2013</inceptionYear>
@@ -44,6 +44,7 @@
     <connection>scm:git:git@github.com:OpenConext/OpenConext-csa.git</connection>
     <url>scm:git:git@github.com:OpenConext/OpenConext-csa.git</url>
     <developerConnection>scm:git:git@github.com:OpenConext/OpenConext-csa.git</developerConnection>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
