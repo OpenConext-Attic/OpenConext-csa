@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.surfnet.coin</groupId>
     <artifactId>csa-parent</artifactId>
-    <version>4.0.2-SNAPSHOT</version>
+    <version>4.0.2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -26,13 +26,6 @@
   <artifactId>csa-war</artifactId>
   <packaging>war</packaging>
   <name>OpenConext : Cloud Services API WAR</name>
-
-  <repositories>
-    <repository>
-      <id>rubygems-releases</id>
-      <url>http://rubygems-proxy.torquebox.org/releases</url>
-    </repository>
-  </repositories>
 
   <properties>
     <coin-test.version>3.11.0</coin-test.version>
@@ -43,16 +36,17 @@
     <bonecp.version>0.7.1.RELEASE</bonecp.version>
     <mujina-idp.version>3.11.0</mujina-idp.version>
     <dumbster.version>1.6</dumbster.version>
-    <selenium.version>2.32.0</selenium.version>
+    <selenium.version>2.42.0</selenium.version>
     <freemarker.version>[2.3.19,2.4)</freemarker.version>
     <api-secure.version>1.3.5</api-secure.version>
     <selenium.test.url>http://localhost:8282/csa/</selenium.test.url>
     <jetty.port>8282</jetty.port>
-
-
+    <jetty.version>9.1.5.v20140505</jetty.version>
     <!-- default webdriver for selenium tests. To be overridden on a per
       profile base -->
     <selenium.webdriver>firefox</selenium.webdriver>
+    <httpclient.version>4.3.1</httpclient.version>
+    <ehcache.version>2.5.1</ehcache.version>
   </properties>
 
   <dependencies>
@@ -77,24 +71,14 @@
       <artifactId>imgscalr-lib</artifactId>
       <version>4.2</version>
     </dependency>
-    <!-- Check the available versions using 
-    http://rubygems-proxy.torquebox.org/releases/rubygems/compass/maven-metadata.xml -->
-    <dependency>
-      <groupId>rubygems</groupId>
-      <artifactId>compass</artifactId>
-      <version>0.12.2</version>
-      <type>gem</type>
-    </dependency>
     <dependency>
       <groupId>org.surfnet.coin</groupId>
       <artifactId>coin-shared</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-config</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-taglibs</artifactId>
@@ -110,7 +94,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
@@ -128,24 +111,20 @@
       <artifactId>hsqldb</artifactId>
       <version>${hsqldb.version}</version>
     </dependency>
-
     <dependency>
       <groupId>com.googlecode.flyway</groupId>
       <artifactId>flyway-core</artifactId>
       <version>${flyway.version}</version>
     </dependency>
-
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
       <version>${xstream.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.surfnet.coin</groupId>
       <artifactId>coin-api-client</artifactId>
     </dependency>
-
     <!-- test local -->
     <dependency>
       <groupId>org.surfnet.coin</groupId>
@@ -153,7 +132,6 @@
       <version>${coin-test.version}</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.surfnet.coin</groupId>
       <artifactId>coin-master-test-dependencies</artifactId>
@@ -188,8 +166,7 @@
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache-core</artifactId>
-      <version>2.5.1</version>
-
+      <version>${ehcache.version}</version>
     </dependency>
 
     <dependency>
@@ -215,16 +192,15 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.commons</groupId>
+      <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>1.3.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.2.1</version>
+      <version>${httpclient.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
@@ -240,26 +216,10 @@
       <artifactId>bonecp</artifactId>
       <version>${bonecp.version}</version>
     </dependency>
-
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.2.1</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
@@ -272,7 +232,26 @@
       <version>1.5.9</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${httpclient.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <!-- Begin Selenium -->
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-htmlunit-driver</artifactId>
+      <version>${selenium.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-firefox-driver</artifactId>
@@ -284,18 +263,6 @@
       <artifactId>selenium-support</artifactId>
       <version>${selenium.version}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-htmlunit-driver</artifactId>
-      <version>${selenium.version}</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.icegreen</groupId>
@@ -321,18 +288,15 @@
       <artifactId>freemarker</artifactId>
       <version>${freemarker.version}</version>
     </dependency>
-
     <dependency>
       <groupId>nl.iprofs.modules.context-logging</groupId>
       <artifactId>context-logging</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.surfnet.coin</groupId>
       <artifactId>csa-client</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
     <dependency>
       <groupId>net.sf.opencsv</groupId>
       <artifactId>opencsv</artifactId>
@@ -340,19 +304,44 @@
     </dependency>
   </dependencies>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>rubygems</groupId>
-        <artifactId>sass</artifactId>
-        <!-- 3.2.11 has problems: http://stackoverflow.com/questions/19068382/sass-compile-error-stalenesscheckermutex-nameerror -->
-        <version>3.2.10</version>
-        <type>gem</type>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-maven-plugin</artifactId>
+          <version>${jetty.version}</version>
+          <configuration>
+            <contextHandlers>
+              <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
+                <contextPath>/mujina-idp</contextPath>
+                <war>
+                  ${settings.localRepository}/org/surfnet/coin/mujina-idp/${mujina-idp.version}/mujina-idp-${mujina-idp.version}.war
+                </war>
+                <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
+              </contextHandler>
+            </contextHandlers>
+            <webAppConfig>
+              <contextPath>/csa</contextPath>
+              <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
+              <defaultsDescriptor>${basedir}/src/test/resources/jettywebdefault.xml</defaultsDescriptor>
+              <baseResource implementation="org.eclipse.jetty.util.resource.ResourceCollection">
+                <resourcesAsCSV>${basedir}/src/main/webapp,${project.build.directory}/${project.build.finalName}
+                </resourcesAsCSV>
+              </baseResource>
+            </webAppConfig>
+            <contextXml>${basedir}/src/test/resources/jetty-context.xml</contextXml>
+            <httpConnector>
+              <port>${jetty.port}</port>
+              <host>0.0.0.0</host>
+            </httpConnector>
+            <stopKey>stopcsa</stopKey>
+            <stopPort>9282</stopPort>
+            <useTestClasspath>true</useTestClasspath>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>com.googlecode.flyway</groupId>
@@ -365,35 +354,8 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.mortbay.jetty</groupId>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
-        <configuration>
-          <contextHandlers>
-            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-              <contextPath>/mujina-idp</contextPath>
-              <war>
-                ${settings.localRepository}/org/surfnet/coin/mujina-idp/${mujina-idp.version}/mujina-idp-${mujina-idp.version}.war
-              </war>
-              <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
-            </contextHandler>
-          </contextHandlers>
-          <webAppConfig>
-            <contextPath>/csa</contextPath>
-            <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
-            <defaultsDescriptor>${basedir}/src/test/resources/jettywebdefault.xml</defaultsDescriptor>
-          </webAppConfig>
-          <contextXml>${basedir}/src/test/resources/jetty-context.xml</contextXml>
-          <connectors>
-            <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-              <port>${jetty.port}</port>
-              <host>0.0.0.0</host>
-            </connector>
-          </connectors>
-          <stopKey>stopcsa</stopKey>
-          <stopPort>9282</stopPort>
-          <reload>manual</reload>
-          <useTestClasspath>true</useTestClasspath>
-        </configuration>
         <dependencies>
           <dependency>
             <groupId>org.surfnet.coin</groupId>
@@ -431,24 +393,31 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>de.saumya.mojo</groupId>
-            <artifactId>gem-maven-plugin</artifactId>
-            <version>0.28.6</version>
-            <extensions>true</extensions>
+            <groupId>org.jasig.maven</groupId>
+            <artifactId>sass-maven-plugin</artifactId>
+            <version>1.1.1</version>
             <executions>
               <execution>
+                <id>compile</id>
+                <phase>process-resources</phase>
                 <goals>
-                  <goal>exec</goal>
+                  <goal>update-stylesheets</goal>
                 </goals>
-
-                <phase>generate-resources</phase>
               </execution>
             </executions>
             <configuration>
-              <execArgs>${project.build.directory}/rubygems/bin/compass
-                compile ${basedir}/src/main/webapp
-                ${basedir}/src/main/webapp/sass/screen.sass
-              </execArgs>
+              <useCompass>true</useCompass>
+              <resources>
+                <resource>
+                  <source>
+                    <directory>${basedir}/src/main/webapp/sass</directory>
+                    <includes>
+                      <include>*.sass</include>
+                    </includes>
+                  </source>
+                  <destination>${project.build.directory}/${project.build.finalName}/css</destination>
+                </resource>
+              </resources>
             </configuration>
           </plugin>
           <plugin>
@@ -523,7 +492,7 @@
         <plugins>
           <plugin>
             <artifactId>maven-failsafe-plugin</artifactId>
-            <version>2.12</version>
+            <version>2.17</version>
             <executions>
               <execution>
                 <goals>
@@ -553,41 +522,15 @@
             </executions>
           </plugin>
           <plugin>
-            <groupId>org.mortbay.jetty</groupId>
+            <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-maven-plugin</artifactId>
-            <version>${jetty.version}</version>
-            <configuration>
-              <scanIntervalSeconds>0</scanIntervalSeconds>
-              <contextHandlers>
-                <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-                  <contextPath>/mujina-idp</contextPath>
-                  <war>
-                    ${settings.localRepository}/org/surfnet/coin/mujina-idp/${mujina-idp.version}/mujina-idp-${mujina-idp.version}.war
-                  </war>
-                  <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
-                </contextHandler>
-              </contextHandlers>
-              <webAppConfig>
-                <contextPath>/csa</contextPath>
-                <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
-                <defaultsDescriptor>${basedir}/src/test/resources/jettywebdefault.xml</defaultsDescriptor>
-              </webAppConfig>
-              <contextXml>${basedir}/src/test/resources/jetty-context.xml</contextXml>
-              <connectors>
-                <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                  <port>${jetty.port}</port>
-                  <host>0.0.0.0</host>
-                </connector>
-              </connectors>
-              <daemon>true</daemon>
-              <scanIntervalSeconds>0</scanIntervalSeconds>
-              <stopKey>stopcsa</stopKey>
-              <stopPort>9282</stopPort>
-              <useTestClasspath>true</useTestClasspath>
-            </configuration>
             <executions>
               <execution>
                 <id>start-jetty</id>
+                <configuration>
+                  <scanIntervalSeconds>0</scanIntervalSeconds>
+                  <daemon>true</daemon>
+                </configuration>
                 <phase>pre-integration-test</phase>
                 <goals>
                   <goal>run</goal>
@@ -604,15 +547,6 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <profile>
-      <id>selenium-headless</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <properties>
-        <selenium.webdriver>htmlunit</selenium.webdriver>
-      </properties>
     </profile>
   </profiles>
 

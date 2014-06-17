@@ -89,7 +89,7 @@ public class SpLnmgListController extends BaseController {
       }
     }
     
-    List<LmngServiceBinding> result = new ArrayList<LmngServiceBinding>();
+    List<LmngServiceBinding> result = new ArrayList<>();
     if (csps.size() > 0) {
       for (CompoundServiceProvider current : csps) {
         result.add(new LmngServiceBinding(current.getLmngId(), current.getServiceProvider(), current));
@@ -109,7 +109,7 @@ public class SpLnmgListController extends BaseController {
   }
 
   private List<LmngServiceBinding> getAllBindings() {
-    List<LmngServiceBinding> lmngServiceBindings = new ArrayList<LmngServiceBinding>();
+    List<LmngServiceBinding> lmngServiceBindings = new ArrayList<>();
     for (ServiceProvider serviceProvider : providerService.getAllServiceProviders(false)) {
       String lmngIdentifier = lmngIdentifierDao.getLmngIdForServiceProviderId(serviceProvider.getId());
       CompoundServiceProvider compoundServiceProvider = compoundSPService.getCSPByServiceProvider(serviceProvider);
@@ -120,7 +120,7 @@ public class SpLnmgListController extends BaseController {
   
   @RequestMapping(value = "/export/csv")
   public @ResponseBody String exportToCSV(HttpServletRequest request, HttpServletResponse response, @RequestParam(value="type", required=false) String type) throws URISyntaxException {
-    String result = null;
+    String result;
     List<LmngServiceBinding> lmngServiceBindings = getAllBindings();
     String baseUrl = getBaseUrl(request);
     
@@ -154,7 +154,7 @@ public class SpLnmgListController extends BaseController {
 
   @RequestMapping(value = "/save-splmng", method = RequestMethod.POST)
   public ModelAndView saveLmngServices(HttpServletRequest req) {
-    Map<String, Object> model = new HashMap<String, Object>();
+    Map<String, Object> model = new HashMap<>();
 
     String spId = req.getParameter("spIdentifier");
     String lmngId = req.getParameter("lmngIdentifier");

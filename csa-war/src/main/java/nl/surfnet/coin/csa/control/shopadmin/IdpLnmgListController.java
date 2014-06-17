@@ -71,10 +71,10 @@ public class IdpLnmgListController extends BaseController {
   @RequestMapping(value = "/all-idpslmng")
   public ModelAndView listAllIdps(Map<String, Object> model) {
     if (model == null) {
-      model = new HashMap<String, Object>();
+      model = new HashMap<>();
     }
 
-    List<LmngIdentityBinding> lmngIdpBindings = new ArrayList<LmngIdentityBinding>();
+    List<LmngIdentityBinding> lmngIdpBindings = new ArrayList<>();
     for (IdentityProvider identityProvider : idpService.getAllIdentityProviders()) {
       LmngIdentityBinding lmngIdentityBinding = new LmngIdentityBinding(identityProvider);
       String lmngId = lmngIdentifierDao.getLmngIdForIdentityProviderId(identityProvider.getInstitutionId());
@@ -90,7 +90,7 @@ public class IdpLnmgListController extends BaseController {
 
   @RequestMapping(value = "/save-idplmng", method = RequestMethod.POST)
   public ModelAndView saveLmngServices(HttpServletRequest req) {
-    Map<String, Object> model = new HashMap<String, Object>();
+    Map<String, Object> model = new HashMap<>();
 
     String idpId = req.getParameter("idpIdentifier");
     String lmngId = req.getParameter("lmngIdentifier");

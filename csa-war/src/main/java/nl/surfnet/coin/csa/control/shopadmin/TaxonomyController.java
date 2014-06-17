@@ -16,24 +16,32 @@
 
 package nl.surfnet.coin.csa.control.shopadmin;
 
-import nl.surfnet.coin.csa.model.Facet;
-import nl.surfnet.coin.csa.model.FacetValue;
-import nl.surfnet.coin.csa.model.LocalizedString;
-import nl.surfnet.coin.csa.model.MultilingualString;
+import java.util.List;
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import nl.surfnet.coin.csa.control.BaseController;
 import nl.surfnet.coin.csa.dao.FacetDao;
 import nl.surfnet.coin.csa.dao.FacetValueDao;
 import nl.surfnet.coin.csa.dao.LocalizedStringDao;
 import nl.surfnet.coin.csa.dao.MultilingualStringDao;
-import nl.surfnet.coin.csa.domain.*;
+import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
+import nl.surfnet.coin.csa.domain.InUseFacetValue;
+import nl.surfnet.coin.csa.domain.IsLinkRequest;
+import nl.surfnet.coin.csa.model.Facet;
+import nl.surfnet.coin.csa.model.FacetValue;
+import nl.surfnet.coin.csa.model.LocalizedString;
+import nl.surfnet.coin.csa.model.MultilingualString;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @Controller
 @RequestMapping(value = "/shopadmin/*")
@@ -74,9 +82,8 @@ public class TaxonomyController extends BaseController {
   }
 
   @RequestMapping(value = "/facet/{facetId}", method = RequestMethod.PUT)
-  public
   @ResponseBody
-  String updateFacet(HttpServletRequest request, @RequestBody Facet facet, @PathVariable("facetId") Long facetId) {
+  public String updateFacet(@RequestBody Facet facet, @PathVariable("facetId") Long facetId) {
     Facet prev = facetDao.findById(facetId);
     prev.setName(facet.getName());
     facetDao.saveOrUpdate(prev);
