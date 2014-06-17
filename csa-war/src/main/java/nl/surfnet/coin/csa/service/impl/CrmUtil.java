@@ -43,8 +43,6 @@ public interface CrmUtil {
   String parseResultInstitute(String webserviceResult, boolean writeResponseToFile) throws ParserConfigurationException,
           SAXException, IOException, ParseException ;
 
-  boolean isValidGuid(String guid);
-
   public String getLmngSoapRequestForIdpAndSp(String institutionId, List<String> serviceIds, Date validOn, String endpoint) throws IOException;
 
   void writeIO(String filename, String content);
