@@ -17,7 +17,9 @@ package nl.surfnet.coin.csa.service.impl;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -76,7 +78,7 @@ public class LmngServiceImplIT {
   }
 
   //   we us this for a local integration test only
-  @Test
+//  @Test
   public void testRetrieveLmngGoogleEdugroepGreencloudSurfMarket() throws IOException, LmngException {
 
     List<String> spIds = new ArrayList<>();
@@ -97,7 +99,7 @@ public class LmngServiceImplIT {
 
   }
 
-  @Test
+//  @Test
   public void testRetrievalAllAccounts() throws IOException {
     List<Account> accounts = subject.getAccounts(true);
     LOG.debug("Num accounts: {}", accounts.size());
@@ -137,17 +139,19 @@ public class LmngServiceImplIT {
     assertNotNull(instituteName);
   }
 
-  @Test
-  public void testRetrieveAllLicensesForIdpAndSp() throws LmngException {
+//  @Test
+  public void testRetrieveAcademiaLicenseForErasmus() throws LmngException {
     IdentityProvider identityProvider = new IdentityProvider();
-    identityProvider.setId("SurfNet");
-    identityProvider.setInstitutionId("SURFnet");
+    identityProvider.setId("erasmus");
+    identityProvider.setInstitutionId("Erasmus");
+    final String erasmuslLmngId = "{1F73865F-900F-DC11-A6C7-0019B9DE3AA4}";
+    final String academiaArticleId = "{B6B32EB5-4091-E211-9DB6-0050569E0011}";
+    when(this.lmngIdentifierDao.getLmngIdForIdentityProviderId(identityProvider.getInstitutionId())).thenReturn(erasmuslLmngId);
 
-    String articleIdentifier = "{F46CCB08-6135-E111-B32A-0050569E0007}";
     // {F46CCB08-6135-E111-B32A-0050569E0007} {4EF1EE04-ED7C-E111-8393-0050569E0011} {FFA274E1-E5DA-E111-8363-0050569E0011} {6157077A-D933-E211-BCF7-0050569E0013}
 
-    List<License> result = subject.getLicensesForIdpAndSp(identityProvider, articleIdentifier);
-    System.out.println(result);
+    List<License> result = subject.getLicensesForIdpAndSp(identityProvider, academiaArticleId);
+    assertTrue(result.size() == 0);
   }
 
 
