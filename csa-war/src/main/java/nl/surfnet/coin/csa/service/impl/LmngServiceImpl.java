@@ -39,18 +39,17 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.BasicClientConnectionManager;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
-import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import nl.surfnet.coin.csa.dao.LmngIdentifierDao;
@@ -66,6 +65,7 @@ import nl.surfnet.coin.shared.service.ErrorMessageMailer;
  * Implementation of a licensing service that get's it information from a
  * webservice interface on LMNG
  */
+@Service
 public class LmngServiceImpl implements CrmService {
 
   private static final Logger log = LoggerFactory.getLogger(LmngServiceImpl.class);
@@ -268,16 +268,16 @@ public class LmngServiceImpl implements CrmService {
   protected String getWebServiceResult(final String soapRequest) throws IOException, KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
     log.debug("Calling the LMNG proxy webservice, endpoint: {}", endpoint);
 
+
     HttpPost httppost = new HttpPost(endpoint);
-    httppost.setHeader("Content-Type", "application/soap+xml");
+    httppost.setProtocolVersion(HttpVersion.HTTP_1_1);
+    httppost.setHeader("Content-Type", "application/soap+xml;charset=UTF-8");
     httppost.setEntity(new StringEntity(soapRequest));
 
-    long beforeCall = System.currentTimeMillis();
-    HttpClient httpclient = new DefaultHttpClient(new BasicClientConnectionManager());
-    httpclient.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
-    httpclient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-    httpclient.getParams().setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, "UTF-8");
+    RequestConfig requestConfig = RequestConfig.custom().setExpectContinueEnabled(false).build();
+    HttpClient httpclient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
 
+    long beforeCall = System.currentTimeMillis();
     HttpResponse httpResponse = httpclient.execute(httppost);
     long afterCall = System.currentTimeMillis();
     log.debug("LMNG proxy webservice called in {} ms. Http response: {}", afterCall - beforeCall, httpResponse);
