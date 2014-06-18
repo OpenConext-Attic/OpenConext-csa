@@ -16,14 +16,23 @@
 
 package nl.surfnet.coin.csa.service.impl;
 
-import nl.surfnet.coin.csa.dao.LmngIdentifierDao;
-import nl.surfnet.coin.csa.domain.Account;
-import nl.surfnet.coin.csa.domain.Article;
-import nl.surfnet.coin.csa.domain.IdentityProvider;
-import nl.surfnet.coin.csa.model.License;
-import nl.surfnet.coin.csa.service.CrmService;
-import nl.surfnet.coin.shared.domain.ErrorMail;
-import nl.surfnet.coin.shared.service.ErrorMessageMailer;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import javax.annotation.Resource;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.HttpEntity;
@@ -33,7 +42,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.impl.conn.BasicClientConnectionManager;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.params.CoreProtocolPNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,16 +53,14 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.util.*;
+import nl.surfnet.coin.csa.dao.LmngIdentifierDao;
+import nl.surfnet.coin.csa.domain.Account;
+import nl.surfnet.coin.csa.domain.Article;
+import nl.surfnet.coin.csa.domain.IdentityProvider;
+import nl.surfnet.coin.csa.model.License;
+import nl.surfnet.coin.csa.service.CrmService;
+import nl.surfnet.coin.shared.domain.ErrorMail;
+import nl.surfnet.coin.shared.service.ErrorMessageMailer;
 
 /**
  * Implementation of a licensing service that get's it information from a
@@ -265,7 +273,7 @@ public class LmngServiceImpl implements CrmService {
     httppost.setEntity(new StringEntity(soapRequest));
 
     long beforeCall = System.currentTimeMillis();
-    HttpClient httpclient = new DefaultHttpClient(new PoolingClientConnectionManager());
+    HttpClient httpclient = new DefaultHttpClient(new BasicClientConnectionManager());
     httpclient.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
     httpclient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
     httpclient.getParams().setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, "UTF-8");
