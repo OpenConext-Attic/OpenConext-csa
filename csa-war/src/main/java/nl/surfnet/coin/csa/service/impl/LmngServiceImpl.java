@@ -75,13 +75,8 @@ public class LmngServiceImpl implements CrmService {
   private boolean debug;
   private String endpoint;
 
-  private HttpClient httpclient;
 
   public LmngServiceImpl() {
-        httpclient = new DefaultHttpClient(new PoolingClientConnectionManager());
-        httpclient.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
-        httpclient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-        httpclient.getParams().setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, "UTF-8");
   }
 
   @Cacheable(value = "crm")
@@ -270,6 +265,11 @@ public class LmngServiceImpl implements CrmService {
     httppost.setEntity(new StringEntity(soapRequest));
 
     long beforeCall = System.currentTimeMillis();
+    HttpClient httpclient = new DefaultHttpClient(new PoolingClientConnectionManager());
+    httpclient.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
+    httpclient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+    httpclient.getParams().setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, "UTF-8");
+
     HttpResponse httpResponse = httpclient.execute(httppost);
     long afterCall = System.currentTimeMillis();
     log.debug("LMNG proxy webservice called in {} ms. Http response: {}", afterCall - beforeCall, httpResponse);
