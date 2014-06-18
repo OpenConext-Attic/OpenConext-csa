@@ -41,8 +41,6 @@ public interface CrmService {
    */
   List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier) throws LmngException;
   
-  List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers) throws LmngException;
-
   /**
    * Get articles for the given serviceProviders.
    * @param serviceProviderEntityIds list of ID's of serviceproviders to get the lmng article for

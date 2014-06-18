@@ -39,17 +39,12 @@ public class CrmServiceNoop implements CrmService{
 
   @Override
   public List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier) throws LmngException {
-    return new ArrayList<License>();
-  }
-
-  @Override
-  public List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers) throws LmngException {
-    return new ArrayList<License>();
+    return new ArrayList<>();
   }
 
   @Override
   public List<Article> getArticlesForServiceProviders(List<String> serviceProviderEntityIds) throws LmngException {
-    return new ArrayList<Article>();
+    return new ArrayList<>();
   }
 
   @Override

@@ -52,6 +52,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.google.common.base.Preconditions;
+
 import nl.surfnet.coin.csa.dao.LmngIdentifierDao;
 import nl.surfnet.coin.csa.domain.Account;
 import nl.surfnet.coin.csa.domain.Article;
@@ -91,17 +93,10 @@ public class LmngServiceImpl implements CrmService {
   @Override
   public List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier)
           throws LmngException {
-    return getLicensesForIdpAndSps(identityProvider, Arrays.asList(articleIdentifier));
-  }
-
-  @Cacheable(value = "crm")
-  @Override
-  public List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers)
-          throws LmngException {
     List<License> result = new ArrayList<>();
-    if (CollectionUtils.isEmpty(articleIdentifiers)) {
-      return result;
-    }
+    Preconditions.checkNotNull(identityProvider);
+    Preconditions.checkNotNull(articleIdentifier);
+
     try {
       String lmngInstitutionId = getLmngIdentityId(identityProvider);
 
@@ -109,16 +104,24 @@ public class LmngServiceImpl implements CrmService {
         return result;
       }
 
-      // get the file with the soap request
-      String soapRequest = lmngUtil.getLmngSoapRequestForIdpAndSp(lmngInstitutionId, articleIdentifiers, new Date(), endpoint);
-      if (debug) {
-        lmngUtil.writeIO("lmngRequest", StringEscapeUtils.unescapeHtml(soapRequest));
+      // apparently LMNG has a problem retrieving licenses when there has been a revision to the underlying agreement
+      // yields the license. For this reason, we have two extra queries that we do when no licenses are found
+      for (final CrmUtil.LicenseRetrievalAttempt attempt: CrmUtil.LicenseRetrievalAttempt.values()) {
+        // get the file with the soap request
+        String soapRequest = lmngUtil.getLmngSoapRequestForIdpAndSp(lmngInstitutionId, Arrays.asList(articleIdentifier), new Date(), endpoint, attempt);
+        if (debug) {
+          lmngUtil.writeIO("lmngRequest", StringEscapeUtils.unescapeHtml(soapRequest));
+        }
+        // call the webservice
+        String webserviceResult = getWebServiceResult(soapRequest);
+        // read/parse the XML response to License objects
+        result = lmngUtil.parseLicensesResult(webserviceResult, debug);
+        if (result.size() > 0) { // as soon as we have a result, return it
+          return result;
+        }
       }
 
-      // call the webservice
-      String webserviceResult = getWebServiceResult(soapRequest);
-      // read/parse the XML response to License objects
-      result = lmngUtil.parseLicensesResult(webserviceResult, debug);
+
     } catch (Exception e) {
       String exceptionMessage = "Exception while retrieving licenses" + e.getMessage();
       log.error(exceptionMessage, e);
