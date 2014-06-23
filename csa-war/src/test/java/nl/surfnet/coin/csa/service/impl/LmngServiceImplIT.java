@@ -139,7 +139,7 @@ public class LmngServiceImplIT {
     assertNotNull(instituteName);
   }
 
-//  @Test
+  @Test
   public void testRetrieveAcademiaLicenseForErasmus() throws LmngException {
     IdentityProvider identityProvider = new IdentityProvider();
     identityProvider.setId("erasmus");

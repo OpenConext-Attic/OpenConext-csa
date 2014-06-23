@@ -1,5 +1,5 @@
-orm" mapping="logical" distinct="true">
-	<entity name="lmng_licenseagreement"><attribute name="lmng_licenseagreementid"/>
+<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
+<entity name="lmng_licenseagreement"><attribute name="lmng_licenseagreementid"/>
 	<attribute name="lmng_number"/>
 	<attribute name="lmng_validfrom"/>
 	<attribute name="lmng_validto"/>
