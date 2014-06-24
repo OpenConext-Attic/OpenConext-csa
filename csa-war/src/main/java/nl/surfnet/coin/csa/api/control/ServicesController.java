@@ -17,6 +17,31 @@
 package nl.surfnet.coin.csa.api.control;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+
 import nl.surfnet.coin.csa.api.cache.CrmCache;
 import nl.surfnet.coin.csa.api.cache.ProviderCache;
 import nl.surfnet.coin.csa.api.cache.ServicesCache;
@@ -25,25 +50,17 @@ import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.domain.Screenshot;
 import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
-import nl.surfnet.coin.csa.model.*;
+import nl.surfnet.coin.csa.model.Category;
+import nl.surfnet.coin.csa.model.CategoryValue;
+import nl.surfnet.coin.csa.model.CrmArticle;
+import nl.surfnet.coin.csa.model.Facet;
+import nl.surfnet.coin.csa.model.FacetValue;
+import nl.surfnet.coin.csa.model.InstitutionIdentityProvider;
+import nl.surfnet.coin.csa.model.OfferedService;
+import nl.surfnet.coin.csa.model.Service;
 import nl.surfnet.coin.csa.service.CrmService;
+import nl.surfnet.coin.csa.service.IdentityProviderService;
 import nl.surfnet.coin.csa.service.impl.CompoundSPService;
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.support.RequestContextUtils;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 
 @Controller
@@ -83,6 +100,8 @@ public class ServicesController extends BaseApiController implements ServicesSer
   @Value("${public.api.lmng.guids}")
   private String[] guids;
 
+  @Resource
+  private IdentityProviderService identityProviderService;
 
   @Override
   public Map<String, List<Service>> findAll(long callDelay) {
@@ -158,6 +177,44 @@ public class ServicesController extends BaseApiController implements ServicesSer
      * Client-credential client where we also return non-linked services (e.g. dashboard functionality)
      */
     return doGetServicesForIdP(language, idpEntityId, true);
+  }
+
+  @RequestMapping(method = RequestMethod.GET, value = "/api/protected/idp/offered-services.json")
+  public @ResponseBody List<OfferedService> getOfferedServicesByIdp(
+    @RequestParam(value = "idpEntityId") final String idpEntityId,
+    @RequestParam(value = "lang", defaultValue = "en") String language,
+    final HttpServletRequest request) {
+
+    verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
+    final IdentityProvider identityProvider = providerCache.getIdentityProvider(idpEntityId);
+    if (identityProvider == null) {
+      throw new IllegalArgumentException("No IdentityProvider known in SR with name:'" + idpEntityId + "'");
+    }
+    final List<Service> allServices = servicesCache.getAllServices(language);
+    LOG.debug("Total of {} services known", allServices.size());
+    final Collection<Service> myServices = Collections2.filter(allServices, new Predicate<Service>() {
+      @Override
+      public boolean apply(final Service input) {
+        return identityProvider.getInstitutionId().equals(input.getInstitutionId());
+      }
+    });
+    LOG.debug("Idp with id {} has {} services", idpEntityId, myServices.size());
+
+    List<OfferedService> result = new ArrayList<>();
+    final List<IdentityProvider> allIdentityProviders = identityProviderService.getAllIdentityProviders();
+
+    for (final Service myOfferedService: myServices) {
+      List<InstitutionIdentityProvider> usingInstitutions = new ArrayList<>();
+      for (IdentityProvider idp: allIdentityProviders) {
+        final List<String> linkedServiceProviderIDs = servicesCache.findUsedServiceProvidersIds(identityProvider);
+        if (linkedServiceProviderIDs.contains(myOfferedService.getSpEntityId())) {
+          usingInstitutions.add(new InstitutionIdentityProvider(idp.getId(), idp.getName(), idp.getInstitutionId()));
+        }
+      }
+      result.add(new OfferedService(myOfferedService, usingInstitutions));
+    }
+    return result;
+
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/services/{serviceId}.json")
@@ -323,6 +380,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
     service.setArp(csp.getSp().getArp());
     service.setAvailableForEndUser(csp.isAvailableForEndUser());
     service.setIdpVisibleOnly(csp.getSp().isIdpVisibleOnly());
+    service.setInstitutionId(csp.getSp().getInstitutionId());
   }
 
   private Category findCategory(List<Category> categories, Facet facet) {

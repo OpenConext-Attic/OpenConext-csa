@@ -87,7 +87,11 @@ public class CsaClient implements Csa {
 
   @Override
   public List<OfferedService> findOfferedServicesFor(String idpEntityId) {
-    return new ArrayList<>();
+    String url = csaBaseLocation + "/api/protected/idp/offered-services.json?idpEntityId={idpEntityId}";
+    Map<String, String> variables = new HashMap<>();
+    variables.put("idpEntityId", idpEntityId);
+    variables.put("lang", getLocale());
+    return oauthClient.exchange(url, variables, OfferedService[].class);
   }
 
   @Override

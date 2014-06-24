@@ -47,7 +47,9 @@ public class ServiceProvider extends Provider implements Serializable {
   private boolean display;
 
   private String applicationUrl;
-  
+
+  private String institutionId;
+
   public ServiceProvider(String id) {
     this.id = id;
   }
@@ -156,6 +158,14 @@ public class ServiceProvider extends Provider implements Serializable {
 
   public void setApplicationUrl(String applicationUrl) {
     this.applicationUrl = applicationUrl;
+  }
+
+  public String getInstitutionId() {
+    return institutionId;
+  }
+
+  public void setInstitutionId(String institutionId) {
+    this.institutionId = institutionId;
   }
 
 }
