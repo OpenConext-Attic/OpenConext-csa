@@ -62,7 +62,7 @@ public class ServicesCache extends AbstractCache {
       services = Collections.emptyList();
     }
     @SuppressWarnings("unchecked")
-    List<Service> clone = (List<Service>) SerializationUtils.clone(new ArrayList<Service>(services));
+    List<Service> clone = (List<Service>) SerializationUtils.clone(new ArrayList<>(services));
     return clone;
   }
 
