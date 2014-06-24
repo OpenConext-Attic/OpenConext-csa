@@ -16,21 +16,11 @@
 
 package nl.surfnet.coin.csa;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nl.surfnet.coin.csa.model.Action;
-import nl.surfnet.coin.csa.model.Category;
-import nl.surfnet.coin.csa.model.CategoryValue;
-import nl.surfnet.coin.csa.model.InstitutionIdentityProvider;
-import nl.surfnet.coin.csa.model.Service;
-import nl.surfnet.coin.csa.model.Statistics;
-import nl.surfnet.coin.csa.model.Taxonomy;
+import nl.surfnet.coin.csa.model.*;
 import nl.surfnet.coin.oauth.OauthClient;
 
 import org.codehaus.jackson.map.DeserializationConfig;
@@ -93,6 +83,11 @@ public class CsaClient implements Csa {
     variables.put("idpEntityId", idpEntityId);
     variables.put("lang", getLocale());
     return restoreCategoryReferences((List<Service>) oauthClient.exchange(url, variables, Service[].class));
+  }
+
+  @Override
+  public List<OfferedService> findOfferedServicesFor(String idpEntityId) {
+    return new ArrayList<>();
   }
 
   @Override
