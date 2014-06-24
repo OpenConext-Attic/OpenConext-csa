@@ -97,6 +97,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
   @Resource
   private CrmService lmngService;
 
+  @SuppressWarnings("MismatchedReadAndWriteOfArray")
   @Value("${public.api.lmng.guids}")
   private String[] guids;
 
@@ -111,7 +112,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
     List<Service> crmOnlyServices = getCrmOnlyServices();
     servicesEn.addAll(crmOnlyServices);
     servicesNl.addAll(crmOnlyServices);
-    Map<String, List<Service>> result = new HashMap<String, List<Service>>();
+    Map<String, List<Service>> result = new HashMap<>();
     result.put("en", servicesEn);
     result.put("nl", servicesNl);
     return result;
@@ -127,7 +128,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
   @ResponseBody
   List<Service> getPublicServices(@RequestParam(value = "lang", defaultValue = "en") String language) {
     List<Service> allServices = servicesCache.getAllServices(language);
-    List<Service> publicServices = new ArrayList<Service>();
+    List<Service> publicServices = new ArrayList<>();
     for (Service service : allServices) {
       if (service.isAvailableForEndUser() && !service.isIdpVisibleOnly()) {
         publicServices.add(service);
@@ -253,7 +254,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
     List<String> serviceProviderIdentifiers = providerCache.getServiceProviderIdentifiers(idpEntityId);
 
     List<Service> allServices = servicesCache.getAllServices(language);
-    List<Service> result = new ArrayList<Service>();
+    List<Service> result = new ArrayList<>();
     for (Service service : allServices) {
       boolean isConnected = serviceProviderIdentifiers.contains(service.getSpEntityId());
       if ((service.isAvailableForEndUser() && isConnected) || (includeNotLinkedSPs && !service.isIdpVisibleOnly())) {
@@ -281,7 +282,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
    * @return a list of api services
    */
   private List<Service> buildApiServices(List<CompoundServiceProvider> services, String language) {
-    List<Service> result = new ArrayList<Service>();
+    List<Service> result = new ArrayList<>();
     for (CompoundServiceProvider csp : services) {
       result.add(buildApiService(csp, language));
     }
@@ -323,7 +324,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
 
   private void categories(CompoundServiceProvider csp, Service service, String locale) {
     // Categories - the category values need to be either in nl or en (as the facet and facet_values are based on the language setting)
-    List<Category> categories = new ArrayList<Category>();
+    List<Category> categories = new ArrayList<>();
     for (FacetValue facetValue : csp.getFacetValues()) {
       Facet facet = facetValue.getFacet();
       Category category = findCategory(categories, facet);
@@ -358,7 +359,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
   private void screenshots(CompoundServiceProvider csp, Service service) {
     // Screenshots
     if (CollectionUtils.isNotEmpty(csp.getScreenShotsImages())) {
-      List<String> screenshots = new ArrayList<String>();
+      List<String> screenshots = new ArrayList<>();
       for (Screenshot screenshot : csp.getScreenShotsImages()) {
         screenshots.add(absoluteUrl(screenshot.getFileUrl()));
       }
@@ -406,7 +407,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
   }
 
   private List<Service> getCrmOnlyServices() {
-    List<Service> result = new ArrayList<Service>();
+    List<Service> result = new ArrayList<>();
     for (String guid : guids) {
       Article currentArticle = lmngService.getService(guid);
       if (currentArticle == null) {
