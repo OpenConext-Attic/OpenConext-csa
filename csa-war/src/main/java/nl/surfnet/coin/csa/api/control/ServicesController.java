@@ -196,7 +196,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
     final Collection<Service> myServices = Collections2.filter(allServices, new Predicate<Service>() {
       @Override
       public boolean apply(final Service input) {
-        return identityProvider.getInstitutionId().equals(input.getInstitutionId());
+        return identityProvider.getInstitutionId() != null && identityProvider.getInstitutionId().equals(input.getInstitutionId());
       }
     });
     LOG.debug("Idp with id {} has {} services", idpEntityId, myServices.size());
