@@ -110,4 +110,14 @@ public class IdentityProvider extends Provider implements Serializable {
   public int hashCode() {
     return (id == null) ? 0 : id.hashCode();
   }
+
+  @Override
+  public String toString() {
+    return "IdentityProvider{" +
+      "id='" + id + '\'' +
+      ", institutionId='" + institutionId + '\'' +
+      ", ssoLocation='" + ssoLocation + '\'' +
+      ", sloLocation='" + sloLocation + '\'' +
+      '}';
+  }
 }

@@ -193,9 +193,11 @@ public class ServicesController extends BaseApiController implements ServicesSer
     }
     final List<Service> allServices = servicesCache.getAllServices(language);
     LOG.debug("Total of {} services known", allServices.size());
+    LOG.debug("identity whose services we look up: {}", identityProvider);
     final Collection<Service> myServices = Collections2.filter(allServices, new Predicate<Service>() {
       @Override
       public boolean apply(final Service input) {
+        LOG.debug("Candidate service id: {}, Service-institutionId: {}, ", input.getSpEntityId(), input.getInstitutionId());
         return identityProvider.getInstitutionId() != null && identityProvider.getInstitutionId().equals(input.getInstitutionId());
       }
     });
