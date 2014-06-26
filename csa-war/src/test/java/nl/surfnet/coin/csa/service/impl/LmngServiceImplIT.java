@@ -144,13 +144,13 @@ public class LmngServiceImplIT {
     IdentityProvider identityProvider = new IdentityProvider();
     identityProvider.setId("erasmus");
     identityProvider.setInstitutionId("Erasmus");
-    final String erasmuslLmngId = "{A14817CC-1B10-DC11-A6C7-0019B9DE3AA4}";
-    final String academiaArticleId = "{A9666CC8-4491-E211-9DB6-0050569E0011}";
-    when(this.lmngIdentifierDao.getLmngIdForIdentityProviderId(identityProvider.getInstitutionId())).thenReturn(erasmuslLmngId);
+    final String lmngId = "{A14817CC-1B10-DC11-A6C7-0019B9DE3AA4}";
+    final String articleId = "{A9666CC8-4491-E211-9DB6-0050569E0011}";
+    when(this.lmngIdentifierDao.getLmngIdForIdentityProviderId(identityProvider.getInstitutionId())).thenReturn(lmngId);
 
     // {F46CCB08-6135-E111-B32A-0050569E0007} {4EF1EE04-ED7C-E111-8393-0050569E0011} {FFA274E1-E5DA-E111-8363-0050569E0011} {6157077A-D933-E211-BCF7-0050569E0013}
 
-    List<License> result = subject.getLicensesForIdpAndSp(identityProvider, academiaArticleId);
+    List<License> result = subject.getLicensesForIdpAndSp(identityProvider, articleId);
     assertTrue(result.size() > 0);
   }
 
