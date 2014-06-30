@@ -1,5 +1,5 @@
 <%@ page isErrorPage="true" %>
-<%@ include file="WEB-INF/jsp/include.jsp"%>
+<%@ include file="include.jsp"%>
 <%--
   Copyright 2012 SURFnet bv, The Netherlands
 
@@ -42,7 +42,18 @@
     <link rel="stylesheet" href="<c:url value="/css/component-datatables.css"/>" />
     <link rel="stylesheet" href="<c:url value="/css/font-awesome.css"/>" />
     <link rel="stylesheet" href="<c:url value="/css/select2.css"/>" />
-    <link rel="stylesheet" href="<c:url value="/css/screen.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/app-detail.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/base.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/forms.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/gallery.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/grid.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/header.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/modals.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/pagination.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/secondary-menu.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/shopadmin.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/tables.css"/>" />
+    <link rel="stylesheet" href="<c:url value="/css/taxonomy.css"/>" />
 
     <!--[if lt IE 9]>
       <script src="<c:url value="/js/tools/html5shiv.js"/>"></script>
