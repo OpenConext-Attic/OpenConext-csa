@@ -74,7 +74,8 @@
     --%> 
   </c:when>
   <c:otherwise>
-    <script src="<c:url value="/js/script.min.js?t=20131021"/>"></script>
+    <spring:eval expression="@applicationProperties['app.timestamp']" var="buildTimestamp"/>
+    <link rel="stylesheet" href="<c:url value="/js/script.min.js"/>?t=${buildTimestamp}" />
   </c:otherwise>
 </c:choose>
 <script>
