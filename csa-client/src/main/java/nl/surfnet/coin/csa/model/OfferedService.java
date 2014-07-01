@@ -18,4 +18,12 @@ public class OfferedService {
   public List<InstitutionIdentityProvider> getIdentityProviders() {
     return identityProviders;
   }
+
+  @Override
+  public String toString() {
+    return "OfferedService{" +
+      "service=" + service +
+      ", identityProviders=" + identityProviders +
+      '}';
+  }
 }

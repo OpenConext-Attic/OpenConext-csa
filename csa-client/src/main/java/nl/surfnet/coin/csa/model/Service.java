@@ -379,4 +379,12 @@ public class Service implements Comparable<Service>, Serializable {
   public void setInstitutionId(String institutionId) {
     this.institutionId = institutionId;
   }
+
+  @Override
+  public String toString() {
+    return "Service{" +
+      "id=" + id +
+      ", name='" + name + '\'' +
+      '}';
+  }
 }

@@ -201,7 +201,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
         return identityProvider.getInstitutionId() != null && identityProvider.getInstitutionId().equals(input.getInstitutionId());
       }
     });
-    LOG.debug("Idp with id {} has {} services", idpEntityId, myServices.size());
+    LOG.debug("Idp with id {} offers {} services", idpEntityId, myServices.size());
 
     List<OfferedService> result = new ArrayList<>();
     final List<IdentityProvider> allIdentityProviders = identityProviderService.getAllIdentityProviders();
@@ -210,12 +210,17 @@ public class ServicesController extends BaseApiController implements ServicesSer
       List<InstitutionIdentityProvider> usingInstitutions = new ArrayList<>();
       for (IdentityProvider idp: allIdentityProviders) {
         final List<String> linkedServiceProviderIDs = servicesCache.findUsedServiceProvidersIds(identityProvider);
+        // look up optional users of our services
         if (linkedServiceProviderIDs.contains(myOfferedService.getSpEntityId())) {
           usingInstitutions.add(new InstitutionIdentityProvider(idp.getId(), idp.getName(), idp.getInstitutionId()));
         }
       }
-      result.add(new OfferedService(myOfferedService, usingInstitutions));
+      final OfferedService offeredService = new OfferedService(myOfferedService, usingInstitutions);
+      LOG.debug("Found offered service {}", offeredService);
+      result.add(offeredService);
     }
+
+    LOG.debug("Number of offered services found: {}", result.size());
     return result;
 
   }
