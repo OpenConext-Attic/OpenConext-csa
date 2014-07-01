@@ -128,6 +128,9 @@ public abstract class OauthClient {
     } catch (HttpServerErrorException serverException) {
       LOG.info("Error during request to Resource Server {}. Response body: {}", url, serverException.getResponseBodyAsString());
       throw serverException;
+    } catch (Throwable e) {
+      LOG.error("Error", e);
+      throw new RuntimeException((e));
     }
 
 
