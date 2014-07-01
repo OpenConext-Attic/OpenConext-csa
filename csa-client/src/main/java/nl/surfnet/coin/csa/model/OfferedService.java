@@ -3,8 +3,12 @@ package nl.surfnet.coin.csa.model;
 import java.util.List;
 
 public class OfferedService {
-  private final Service service;
-  private final List<InstitutionIdentityProvider> identityProviders;
+
+  private Service service;
+  private List<InstitutionIdentityProvider> identityProviders;
+
+  public OfferedService() { // only here for json marshalling (sigh...)
+  }
 
   public OfferedService(Service service, List<InstitutionIdentityProvider> identityProviders) {
     this.service = service;
