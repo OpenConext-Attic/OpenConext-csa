@@ -71,7 +71,12 @@ public class ServicesCache extends AbstractCache {
   }
 
   public List<String> findUsedServiceProvidersIds(final IdentityProvider identityProvider) {
-    return usedServiceProviders.get(identityProvider.getId());
+
+    final List<String> ids = usedServiceProviders.get(identityProvider.getId());
+    if (ids == null) {
+      return Collections.emptyList();
+    }
+    return ids;
   }
 
   public void setService(ServicesService service) {
