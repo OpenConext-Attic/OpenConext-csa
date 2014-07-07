@@ -58,7 +58,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
 
     List<String> myLinkedSPs = getLinkedServiceProviderIDs(idpId);
 
-    List<ServiceProvider> filteredList = new ArrayList<ServiceProvider>();
+    List<ServiceProvider> filteredList = new ArrayList<>();
     for (ServiceProvider sp : allSPs) {
       if (myLinkedSPs.contains(sp.getId())) {
         // an already linked SP is visible
@@ -84,7 +84,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
 
   @Override
   public List<String> getLinkedServiceProviderIDs(String idpId) {
-    List<String> spList = new ArrayList<String>();
+    List<String> spList = new ArrayList<>();
     try {
       spList = janusClient.getAllowedSps(idpId);
     } catch (RestClientException e) {
@@ -95,7 +95,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   }
 
   private List<ServiceProvider> getAllServiceProvidersUnfiltered(boolean includeArps, long callDelay) {
-    List<ServiceProvider> spList = new ArrayList<ServiceProvider>();
+    List<ServiceProvider> spList = new ArrayList<>();
     try {
       final List<EntityMetadata> sps = janusClient.getSpList();
       for (EntityMetadata metadata : sps) {
@@ -259,7 +259,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
 
   @Override
   public List<IdentityProvider> getInstituteIdentityProviders(String instituteId) {
-    List<IdentityProvider> idps = new ArrayList<IdentityProvider>();
+    List<IdentityProvider> idps = new ArrayList<>();
     if (StringUtils.isBlank(instituteId)) {
       return idps;
     }
@@ -273,7 +273,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
 
   @Override
   public List<IdentityProvider> getAllIdentityProviders() {
-    List<IdentityProvider> idps = new ArrayList<IdentityProvider>();
+    List<IdentityProvider> idps = new ArrayList<>();
     try {
       final List<EntityMetadata> sps = janusClient.getIdpList();
       for (EntityMetadata metadata : sps) {
