@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.janus.Janus;
 import nl.surfnet.coin.janus.domain.EntityMetadata;
 import nl.surfnet.coin.csa.domain.ServiceProvider;
@@ -54,7 +55,7 @@ public class ServiceRegistryProviderServiceTest {
 
   @Test
   public void getAllServiceProviders() {
-    List<EntityMetadata> ems = new ArrayList<EntityMetadata>();
+    List<EntityMetadata> ems = new ArrayList<>();
     final EntityMetadata e = new EntityMetadata();
     e.setAppEntityId("entityid");
     e.setWorkflowState("prodaccepted");
@@ -68,7 +69,7 @@ public class ServiceRegistryProviderServiceTest {
 
   @Test
   public void filteredList() {
-    List<EntityMetadata> ems = new ArrayList<EntityMetadata>();
+    List<EntityMetadata> ems = new ArrayList<>();
 
     final EntityMetadata linkedEntity = new EntityMetadata();
     linkedEntity.setWorkflowState("prodaccepted");
@@ -116,7 +117,7 @@ public class ServiceRegistryProviderServiceTest {
   @Test
   public void testFilterWorkflowstate() {
 
-    List<EntityMetadata> ems = new ArrayList<EntityMetadata>();
+    List<EntityMetadata> ems = new ArrayList<>();
     EntityMetadata e = new EntityMetadata();
     e.setWorkflowState("prodaccepted");
     e.setAppEntityId("e1");
@@ -138,5 +139,30 @@ public class ServiceRegistryProviderServiceTest {
     ServiceProvider spFound = serviceRegistryProviderService.buildServiceProviderByMetadata(metadata, true);
     assertEquals("Populair SP (name en)",spFound.getName());
     
+  }
+
+  @Test
+  public void testGetInstituteIdentityProviders(){
+    final String institutionId = "foo";
+    final EntityMetadata shouldBeFound = new EntityMetadata();
+    shouldBeFound.setWorkflowState("prodaccepted");
+    shouldBeFound.setAppEntityId("1");
+    shouldBeFound.setInstutionId(institutionId);
+
+    final EntityMetadata shouldNotBeFound = new EntityMetadata();
+    shouldNotBeFound.setWorkflowState("prodaccepted");
+    shouldNotBeFound.setAppEntityId("2");
+    shouldNotBeFound.setInstutionId("bar");
+
+    final EntityMetadata shouldNotBeFound2 = new EntityMetadata();
+    shouldNotBeFound.setWorkflowState("prodaccepted");
+    shouldNotBeFound.setAppEntityId("3");
+    shouldNotBeFound.setInstutionId(null);
+
+
+    when(janus.getIdpList()).thenReturn(Arrays.asList(shouldBeFound, shouldNotBeFound, shouldNotBeFound2));
+    final List<IdentityProvider> instituteIdentityProviders = this.serviceRegistryProviderService.getInstituteIdentityProviders(institutionId);
+    assertThat(instituteIdentityProviders.size(), is(1));
+    assertThat("only the idps with the correct institution id must remain", instituteIdentityProviders.get(0).getInstitutionId(), is(institutionId));
   }
 }

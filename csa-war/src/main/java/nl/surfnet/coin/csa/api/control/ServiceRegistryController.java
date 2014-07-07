@@ -49,7 +49,7 @@ public class ServiceRegistryController extends BaseApiController {
   public @ResponseBody
   List<InstitutionIdentityProvider> getIdps(@RequestParam(value = "identityProviderId") String identityProviderId) throws IOException {
     LOG.debug("Got request for identityProviders. identityProviderId: {}", identityProviderId);
-    List<InstitutionIdentityProvider> result = new ArrayList<InstitutionIdentityProvider>();
+    List<InstitutionIdentityProvider> result = new ArrayList<>();
     IdentityProvider identityProvider = identityProviderService.getIdentityProvider(identityProviderId);
     if (identityProvider != null) {
       String institutionId = identityProvider.getInstitutionId();
@@ -71,7 +71,7 @@ public class ServiceRegistryController extends BaseApiController {
   List<InstitutionIdentityProvider> getAllIdps(final HttpServletRequest request) throws IOException {
     LOG.debug("Got request for all identityProviders");
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES);
-    List<InstitutionIdentityProvider> result = new ArrayList<InstitutionIdentityProvider>();
+    List<InstitutionIdentityProvider> result = new ArrayList<>();
     List<IdentityProvider> identityProviders = identityProviderService.getAllIdentityProviders();
     for (IdentityProvider identityProvider : identityProviders) {
       result.add(convertIdentityProviderToInstitutionIdentityProvider(identityProvider));

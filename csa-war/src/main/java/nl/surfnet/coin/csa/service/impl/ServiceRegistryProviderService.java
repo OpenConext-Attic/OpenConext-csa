@@ -16,6 +16,22 @@
 
 package nl.surfnet.coin.csa.service.impl;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
+import org.springframework.web.client.RestClientException;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
+
 import nl.surfnet.coin.csa.domain.ContactPerson;
 import nl.surfnet.coin.csa.domain.ContactPersonType;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
@@ -29,17 +45,6 @@ import nl.surfnet.coin.janus.domain.EntityMetadata;
 import nl.surfnet.coin.janus.domain.JanusEntity;
 import nl.surfnet.coin.shared.domain.ErrorMail;
 import nl.surfnet.coin.shared.service.ErrorMessageMailer;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
-import org.springframework.web.client.RestClientException;
-
-import javax.annotation.Resource;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ServiceRegistryProviderService implements ServiceProviderService, IdentityProviderService {
 
@@ -58,7 +63,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
 
     List<String> myLinkedSPs = getLinkedServiceProviderIDs(idpId);
 
-    List<ServiceProvider> filteredList = new ArrayList<ServiceProvider>();
+    List<ServiceProvider> filteredList = new ArrayList<>();
     for (ServiceProvider sp : allSPs) {
       if (myLinkedSPs.contains(sp.getId())) {
         // an already linked SP is visible
@@ -84,7 +89,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
 
   @Override
   public List<String> getLinkedServiceProviderIDs(String idpId) {
-    List<String> spList = new ArrayList<String>();
+    List<String> spList = new ArrayList<>();
     try {
       spList = janusClient.getAllowedSps(idpId);
     } catch (RestClientException e) {
@@ -95,7 +100,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   }
 
   private List<ServiceProvider> getAllServiceProvidersUnfiltered(boolean includeArps, long callDelay) {
-    List<ServiceProvider> spList = new ArrayList<ServiceProvider>();
+    List<ServiceProvider> spList = new ArrayList<>();
     try {
       final List<EntityMetadata> sps = janusClient.getSpList();
       for (EntityMetadata metadata : sps) {
@@ -259,22 +264,24 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   }
 
   @Override
-  public List<IdentityProvider> getInstituteIdentityProviders(String instituteId) {
-    List<IdentityProvider> idps = new ArrayList<IdentityProvider>();
+  public List<IdentityProvider> getInstituteIdentityProviders(final String instituteId) {
+    List<IdentityProvider> idps = new ArrayList<>();
     if (StringUtils.isBlank(instituteId)) {
       return idps;
     }
-    // first get all entities id's
-    List<String> entityIds = janusClient.getEntityIdsByMetaData(Janus.Metadata.INSITUTION_ID, instituteId);
-    for (String entityId : entityIds) {
-      idps.add(getIdentityProvider(entityId));
-    }
-    return idps;
+    // first get all identity providers, then filter the ones we need.
+    final List<IdentityProvider> allIdentityProviders = this.getAllIdentityProviders();
+    return Lists.newArrayList(Collections2.filter(allIdentityProviders, new Predicate<IdentityProvider>() {
+      @Override
+      public boolean apply(final IdentityProvider input) {
+        return instituteId.equals(input.getInstitutionId());
+      }
+    }));
   }
 
   @Override
   public List<IdentityProvider> getAllIdentityProviders() {
-    List<IdentityProvider> idps = new ArrayList<IdentityProvider>();
+    List<IdentityProvider> idps = new ArrayList<>();
     try {
       final List<EntityMetadata> sps = janusClient.getIdpList();
       for (EntityMetadata metadata : sps) {
