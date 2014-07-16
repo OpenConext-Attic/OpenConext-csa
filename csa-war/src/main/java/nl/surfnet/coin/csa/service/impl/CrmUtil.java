@@ -31,6 +31,8 @@ import java.util.List;
 
 public interface CrmUtil {
 
+  public enum LicenseRetrievalAttempt{ One, Two, Three}
+
   List<Article> parseArticlesResult(String webserviceResult, boolean writeResponseToFile)
           throws ParserConfigurationException, SAXException, IOException, ParseException ;
 
@@ -43,9 +45,7 @@ public interface CrmUtil {
   String parseResultInstitute(String webserviceResult, boolean writeResponseToFile) throws ParserConfigurationException,
           SAXException, IOException, ParseException ;
 
-  boolean isValidGuid(String guid);
-
-  public String getLmngSoapRequestForIdpAndSp(String institutionId, List<String> serviceIds, Date validOn, String endpoint) throws IOException;
+  public String getLmngSoapRequestForIdpAndSp(String institutionId, List<String> serviceIds, Date validOn, String endpoint, LicenseRetrievalAttempt licenseRetrievalAttempt) throws IOException;
 
   void writeIO(String filename, String content);
 

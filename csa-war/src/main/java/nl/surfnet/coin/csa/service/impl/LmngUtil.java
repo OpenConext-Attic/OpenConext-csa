@@ -49,6 +49,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.google.common.collect.ImmutableMap;
+
 /**
  * Utility class for LMNG. This class contains some static methods used in the
  * {@link LmngServiceImpl}
@@ -69,7 +71,6 @@ public class LmngUtil implements CrmUtil {
   private static final String ARTICLE_INSTITUTION_CONDITION_PLACEHOLDER = "%INSTITUTION_CONDITION%";
 
   private static final String PATH_SOAP_FETCH_REQUEST = "lmngqueries/lmngSoapFetchMessage.xml";
-  private static final String PATH_FETCH_QUERY_LICENSES_LICENCES_FOR_IDP_SP = "lmngqueries/lmngQueryLicensesForIdpsAndSps.xml";
   private static final String PATH_FETCH_QUERY_ARTICLES_FOR_SPS = "lmngqueries/lmngQueryArticlesForSps.xml";
   private static final String PATH_FETCH_QUERYCONDITION_ARTICLE = "lmngqueries/lmngArticleQueryConditionValue.xml";
   private static final String PATH_FETCH_QUERYCONDITION_INSTITUTION = "lmngqueries/lmngArticleQueryInstitutionCondition.xml";
@@ -101,9 +102,16 @@ public class LmngUtil implements CrmUtil {
 
   private static final String GROUP_LICENSEMODEL = "3";
 
+  private static final Map<LicenseRetrievalAttempt, String> LICENSE_RETRIEVAL_ATTEMPT_TO_TEMPLATE = ImmutableMap.of(
+    LicenseRetrievalAttempt.One, "lmngqueries/lmngQueryLicensesForIdpsAndSps.xml",
+    LicenseRetrievalAttempt.Two, "lmngqueries/lmngQueryLicensesForIdpsAndSpsRevision2.xml",
+    LicenseRetrievalAttempt.Three, "lmngqueries/lmngQueryLicensesForIdpsAndSpsRevision3.xml"
+    );
+
   /**
    * Parse the result to an article(list)
    */
+  @Override
   public List<Article> parseArticlesResult(String webserviceResult, boolean writeResponseToFile)
           throws ParserConfigurationException, SAXException, IOException, ParseException {
     List<Article> resultList = new ArrayList<Article>();
@@ -141,6 +149,7 @@ public class LmngUtil implements CrmUtil {
   /**
    * Parse the result to a license(list)
    */
+  @Override
   public List<License> parseLicensesResult(String webserviceResult, boolean writeResponseToFile)
           throws ParserConfigurationException, SAXException, IOException, ParseException {
     List<License> resultList = new ArrayList<License>();
@@ -167,6 +176,7 @@ public class LmngUtil implements CrmUtil {
   /**
    * Parse the result to an account(list)
    */
+  @Override
   public List<Account> parseAccountsResult(String webserviceResult, boolean writeResponseToFile)
           throws ParserConfigurationException, SAXException, IOException, ParseException {
     List<Account> resultList = new ArrayList<Account>();
@@ -190,7 +200,7 @@ public class LmngUtil implements CrmUtil {
     return resultList;
   }
 
-
+  @Override
   public String parseResultInstitute(String webserviceResult, boolean writeResponseToFile) throws ParserConfigurationException,
           SAXException, IOException, ParseException {
     NodeList nodes = parse(webserviceResult, writeResponseToFile);
@@ -346,8 +356,8 @@ public class LmngUtil implements CrmUtil {
     return StringUtils.isEmpty(guid) || guid.matches("\\{[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}\\}");
   }
 
-
-  public String getLmngSoapRequestForIdpAndSp(String institutionId, List<String> serviceIds, Date validOn, String endpoint) throws IOException {
+  @Override
+  public String getLmngSoapRequestForIdpAndSp(String institutionId, List<String> serviceIds, Date validOn, String endpoint, LicenseRetrievalAttempt licenseRetrievalAttempt) throws IOException {
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     Assert.notNull(validOn);
     Assert.notNull(serviceIds);
@@ -355,7 +365,7 @@ public class LmngUtil implements CrmUtil {
     // Get the soap/fetch envelope
     String result = getLmngRequestEnvelope();
 
-    ClassPathResource queryResource = new ClassPathResource(PATH_FETCH_QUERY_LICENSES_LICENCES_FOR_IDP_SP);
+    ClassPathResource queryResource = new ClassPathResource(LICENSE_RETRIEVAL_ATTEMPT_TO_TEMPLATE.get(licenseRetrievalAttempt));
 
     InputStream inputStream = queryResource.getInputStream();
     String query = IOUtils.toString(inputStream);
