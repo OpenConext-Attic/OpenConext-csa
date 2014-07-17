@@ -16,11 +16,7 @@
 
 package nl.surfnet.coin.csa;
 
-import nl.surfnet.coin.csa.model.Action;
-import nl.surfnet.coin.csa.model.InstitutionIdentityProvider;
-import nl.surfnet.coin.csa.model.Service;
-import nl.surfnet.coin.csa.model.Statistics;
-import nl.surfnet.coin.csa.model.Taxonomy;
+import nl.surfnet.coin.csa.model.*;
 import nl.surfnet.coin.oauth.OauthClient;
 
 import java.util.List;
@@ -45,6 +41,8 @@ public interface Csa {
      * Get a list of services, scoped by the given IDP entity ID
      */
   List<Service> getServicesForIdp(String idpEntityId);
+
+  List<OfferedService> findOfferedServicesFor(String idpEntityId);
 
   /**
    * Get a service's details, scoped by the given IDP entity ID

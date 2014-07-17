@@ -15,19 +15,20 @@
  */
 package nl.surfnet.coin.csa.service.impl;
 
-import nl.surfnet.coin.csa.domain.Account;
-import nl.surfnet.coin.csa.domain.Article;
-import nl.surfnet.coin.csa.domain.IdentityProvider;
-import nl.surfnet.coin.csa.model.License;
-import nl.surfnet.coin.csa.service.CrmService;
+import java.util.Arrays;
+import java.util.List;
+
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.type.TypeReference;
 import org.springframework.core.io.ClassPathResource;
 
-import java.util.Arrays;
-import java.util.List;
+import nl.surfnet.coin.csa.domain.Account;
+import nl.surfnet.coin.csa.domain.Article;
+import nl.surfnet.coin.csa.domain.IdentityProvider;
+import nl.surfnet.coin.csa.model.License;
+import nl.surfnet.coin.csa.service.CrmService;
 
 /**
  * LicensingServiceMock.java
@@ -114,11 +115,6 @@ public class LmngServiceMock implements CrmService {
 
   @Override
   public List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier) {
-    return Arrays.asList(license);
-  }
-
-  @Override
-  public List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers) throws LmngException {
     return Arrays.asList(license);
   }
 

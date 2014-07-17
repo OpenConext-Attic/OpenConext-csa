@@ -16,34 +16,6 @@
 
 package nl.surfnet.coin.csa.service.impl;
 
-import nl.surfnet.coin.csa.dao.LmngIdentifierDao;
-import nl.surfnet.coin.csa.domain.Account;
-import nl.surfnet.coin.csa.domain.Article;
-import nl.surfnet.coin.csa.domain.IdentityProvider;
-import nl.surfnet.coin.csa.model.License;
-import nl.surfnet.coin.csa.service.CrmService;
-import nl.surfnet.coin.shared.domain.ErrorMail;
-import nl.surfnet.coin.shared.service.ErrorMessageMailer;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.params.CoreProtocolPNames;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.util.CollectionUtils;
-
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -52,12 +24,50 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import javax.annotation.Resource;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import com.google.common.base.Preconditions;
+
+import nl.surfnet.coin.csa.dao.LmngIdentifierDao;
+import nl.surfnet.coin.csa.domain.Account;
+import nl.surfnet.coin.csa.domain.Article;
+import nl.surfnet.coin.csa.domain.IdentityProvider;
+import nl.surfnet.coin.csa.model.License;
+import nl.surfnet.coin.csa.service.CrmService;
+import nl.surfnet.coin.shared.domain.ErrorMail;
+import nl.surfnet.coin.shared.service.ErrorMessageMailer;
 
 /**
  * Implementation of a licensing service that get's it information from a
  * webservice interface on LMNG
  */
+@Service
 public class LmngServiceImpl implements CrmService {
 
   private static final Logger log = LoggerFactory.getLogger(LmngServiceImpl.class);
@@ -75,30 +85,18 @@ public class LmngServiceImpl implements CrmService {
   private boolean debug;
   private String endpoint;
 
-  private HttpClient httpclient;
 
   public LmngServiceImpl() {
-        httpclient = new DefaultHttpClient(new PoolingClientConnectionManager());
-        httpclient.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
-        httpclient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-        httpclient.getParams().setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, "UTF-8");
   }
 
   @Cacheable(value = "crm")
   @Override
   public List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier)
           throws LmngException {
-    return getLicensesForIdpAndSps(identityProvider, Arrays.asList(articleIdentifier));
-  }
-
-  @Cacheable(value = "crm")
-  @Override
-  public List<License> getLicensesForIdpAndSps(IdentityProvider identityProvider, List<String> articleIdentifiers)
-          throws LmngException {
     List<License> result = new ArrayList<>();
-    if (CollectionUtils.isEmpty(articleIdentifiers)) {
-      return result;
-    }
+    Preconditions.checkNotNull(identityProvider);
+    Preconditions.checkNotNull(articleIdentifier);
+
     try {
       String lmngInstitutionId = getLmngIdentityId(identityProvider);
 
@@ -106,16 +104,24 @@ public class LmngServiceImpl implements CrmService {
         return result;
       }
 
-      // get the file with the soap request
-      String soapRequest = lmngUtil.getLmngSoapRequestForIdpAndSp(lmngInstitutionId, articleIdentifiers, new Date(), endpoint);
-      if (debug) {
-        lmngUtil.writeIO("lmngRequest", StringEscapeUtils.unescapeHtml(soapRequest));
+      // apparently LMNG has a problem retrieving licenses when there has been a revision to the underlying agreement
+      // yields the license. For this reason, we have two extra queries that we do when no licenses are found
+      for (final CrmUtil.LicenseRetrievalAttempt attempt: CrmUtil.LicenseRetrievalAttempt.values()) {
+        // get the file with the soap request
+        String soapRequest = lmngUtil.getLmngSoapRequestForIdpAndSp(lmngInstitutionId, Arrays.asList(articleIdentifier), new Date(), endpoint, attempt);
+        if (debug) {
+          lmngUtil.writeIO("lmngRequest", StringEscapeUtils.unescapeHtml(soapRequest));
+        }
+        // call the webservice
+        String webserviceResult = getWebServiceResult(soapRequest);
+        // read/parse the XML response to License objects
+        result = lmngUtil.parseLicensesResult(webserviceResult, debug);
+        if (result.size() > 0) { // as soon as we have a result, return it
+          return result;
+        }
       }
 
-      // call the webservice
-      String webserviceResult = getWebServiceResult(soapRequest);
-      // read/parse the XML response to License objects
-      result = lmngUtil.parseLicensesResult(webserviceResult, debug);
+
     } catch (Exception e) {
       String exceptionMessage = "Exception while retrieving licenses" + e.getMessage();
       log.error(exceptionMessage, e);
@@ -265,9 +271,14 @@ public class LmngServiceImpl implements CrmService {
   protected String getWebServiceResult(final String soapRequest) throws IOException, KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
     log.debug("Calling the LMNG proxy webservice, endpoint: {}", endpoint);
 
+
     HttpPost httppost = new HttpPost(endpoint);
-    httppost.setHeader("Content-Type", "application/soap+xml");
+    httppost.setProtocolVersion(HttpVersion.HTTP_1_1);
+    httppost.setHeader("Content-Type", "application/soap+xml;charset=UTF-8");
     httppost.setEntity(new StringEntity(soapRequest));
+
+    RequestConfig requestConfig = RequestConfig.custom().setExpectContinueEnabled(false).build();
+    HttpClient httpclient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
 
     long beforeCall = System.currentTimeMillis();
     HttpResponse httpResponse = httpclient.execute(httppost);

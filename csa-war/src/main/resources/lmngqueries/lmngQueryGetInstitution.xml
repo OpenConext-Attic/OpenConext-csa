@@ -4,6 +4,7 @@
     <attribute name="statuscode"/>
     <attribute name="accountid"/>
     <attribute name="websiteurl"/>
+    <attribute name="lmng_schachomeorganization"/>
     <attribute name="surf_isinstelling"/>
     <attribute name="surf_ss_authentication_domain"/>
     <filter type="and">

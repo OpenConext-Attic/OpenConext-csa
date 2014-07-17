@@ -62,7 +62,9 @@ public class Service implements Comparable<Service>, Serializable {
 
   private String institutionDescription;
 
-   private Date lastLoginDate;
+  private String institutionId;
+
+  private Date lastLoginDate;
 
   /**
    * Whether this service is connected to the IdP in the service registry
@@ -368,5 +370,21 @@ public class Service implements Comparable<Service>, Serializable {
 
   public void setIdpVisibleOnly(boolean idpVisibleOnly) {
     this.idpVisibleOnly = idpVisibleOnly;
+  }
+
+  public String getInstitutionId() {
+    return institutionId;
+  }
+
+  public void setInstitutionId(String institutionId) {
+    this.institutionId = institutionId;
+  }
+
+  @Override
+  public String toString() {
+    return "Service{" +
+      "id=" + id +
+      ", name='" + name + '\'' +
+      '}';
   }
 }
