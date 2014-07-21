@@ -49,7 +49,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.google.common.base.Preconditions;
@@ -67,7 +66,6 @@ import nl.surfnet.coin.shared.service.ErrorMessageMailer;
  * Implementation of a licensing service that get's it information from a
  * webservice interface on LMNG
  */
-@Service
 public class LmngServiceImpl implements CrmService {
 
   private static final Logger log = LoggerFactory.getLogger(LmngServiceImpl.class);
