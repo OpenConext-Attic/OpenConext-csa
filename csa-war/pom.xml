@@ -49,6 +49,7 @@
     <selenium.webdriver>firefox</selenium.webdriver>
     <httpclient.version>4.3.1</httpclient.version>
     <ehcache.version>2.5.1</ehcache.version>
+    <mysql-connector-java.version>5.1.20</mysql-connector-java.version>
   </properties>
 
   <dependencies>
@@ -282,8 +283,8 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.20</version>
-      <scope>test</scope>
+      <version>${mysql-connector-java.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.freemarker</groupId>
