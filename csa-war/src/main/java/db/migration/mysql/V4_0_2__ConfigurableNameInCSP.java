@@ -1,4 +1,4 @@
-package db.migration;
+package db.migration.mysql;
 
 import java.math.BigInteger;
 import java.util.List;

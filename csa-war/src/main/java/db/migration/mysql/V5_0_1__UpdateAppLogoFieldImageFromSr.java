@@ -16,7 +16,7 @@
  *
  */
 
-package db.migration;
+package db.migration.mysql;
 
 import java.net.URI;
 import java.sql.ResultSet;
