@@ -20,6 +20,10 @@ SURFconext: [http://www.surfconext.nl](http://www.surfconext.nl)
 - Maven 3
 - MySQL 5.5
 
+### Setting up a local db
+
+Make sure you have a local MySQL running with password 'secret' for the root account. Create an empty schema named 'csa'.
+
 ### Building and running
 
 [Maven 3](http://maven.apache.org) is needed to build and run this project.

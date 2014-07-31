@@ -51,7 +51,6 @@
   </bean>
 
   <bean class="com.googlecode.flyway.core.Flyway" init-method="migrate">
-    <property name="baseDir" value="${coin-csa.db.migrations.folder}" />
     <property name="dataSource" ref="csaDataSource" />
     <property name="disableInitCheck" value="true" /><!-- skip because Hibernate creates its own table -->
   </bean>
