@@ -32,7 +32,6 @@
     <app.timestamp>${maven.build.timestamp}</app.timestamp>
     <coin-test.version>3.11.0</coin-test.version>
     <coin-master.test-dependencies.version>3.11.0</coin-master.test-dependencies.version>
-    <spring-security-opensaml.version>4.0.0</spring-security-opensaml.version>
     <flyway.version>1.5</flyway.version>
     <xstream.version>1.4.2</xstream.version>
     <bonecp.version>0.7.1.RELEASE</bonecp.version>
@@ -87,15 +86,9 @@
       <artifactId>spring-security-taglibs</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.surfnet.coin</groupId>
-      <artifactId>spring-security-opensaml</artifactId>
-      <version>${spring-security-opensaml.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.springframework.security.extensions</groupId>
+      <artifactId>spring-security-saml2-core</artifactId>
+      <version>1.0.0.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

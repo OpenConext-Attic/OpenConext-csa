@@ -15,31 +15,38 @@
  */
 package nl.surfnet.coin.csa.interceptor;
 
-import nl.surfnet.coin.csa.domain.*;
-import nl.surfnet.coin.csa.domain.CoinAuthority.Authority;
-import nl.surfnet.spring.security.opensaml.SAMLAuthenticationToken;
+import static nl.surfnet.coin.csa.control.BaseController.TOKEN_CHECK;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import static nl.surfnet.coin.csa.control.BaseController.TOKEN_CHECK;
-import static org.junit.Assert.*;
+import nl.surfnet.coin.csa.domain.Article;
+import nl.surfnet.coin.csa.domain.CoinAuthority;
+import nl.surfnet.coin.csa.domain.CoinAuthority.Authority;
+import nl.surfnet.coin.csa.domain.CoinUser;
+import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
+import nl.surfnet.coin.csa.domain.ContactPerson;
+import nl.surfnet.coin.csa.domain.ContactPersonType;
+import nl.surfnet.coin.csa.domain.ServiceProvider;
 
-/**
- * AuthorityScopeInterceptorTest.java
- */
 public class AuthorityScopeInterceptorTest {
 
   private AuthorityScopeInterceptor interceptor = new AuthorityScopeInterceptor();
-
 
   @Test
   public void token_session_does_not_equal_request_param_token() throws Exception {
     ModelAndView modelAndView = new ModelAndView();
     CoinUser user = coinUser(Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN);
-    SecurityContextHolder.getContext().setAuthentication(new SAMLAuthenticationToken(user, "", user.getAuthorities()));
+    Authentication authentication = mock(Authentication.class);
+    when(authentication.getPrincipal()).thenReturn(user);
+    SecurityContextHolder.getContext().setAuthentication(authentication);
 
     MockHttpServletRequest request = new MockHttpServletRequest();
     interceptor.postHandle(request, null, null, modelAndView);

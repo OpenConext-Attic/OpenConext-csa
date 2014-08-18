@@ -16,10 +16,11 @@
 
 package nl.surfnet.coin.csa.filter;
 
+import static nl.surfnet.coin.csa.domain.CoinAuthority.Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -30,21 +31,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
+
 import nl.surfnet.coin.api.client.InvalidTokenException;
 import nl.surfnet.coin.api.client.OpenConextOAuthClient;
 import nl.surfnet.coin.api.client.domain.Group20;
 import nl.surfnet.coin.csa.domain.CoinAuthority;
 import nl.surfnet.coin.csa.domain.CoinUser;
 import nl.surfnet.coin.csa.util.SpringSecurity;
-import nl.surfnet.spring.security.opensaml.SAMLAuthenticationToken;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.CollectionUtils;
-
-import static nl.surfnet.coin.csa.domain.CoinAuthority.Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN;
 
 /**
  * Servlet filter that performs Oauth 2.0 (authorization code) against
@@ -166,7 +163,8 @@ public class ApiOAuthFilter implements Filter {
       coinUser.setAuthorities(new ArrayList<CoinAuthority>());
       coinUser.addAuthority(new CoinAuthority(ROLE_DISTRIBUTION_CHANNEL_ADMIN));
     }
-    SecurityContextHolder.getContext().setAuthentication(new SAMLAuthenticationToken(coinUser, "", coinUser.getAuthorities()));
+    // TODO fix providing the SAML user
+    //SecurityContextHolder.getContext().setAuthentication(new SAMLAuthenticationToken(coinUser, "", coinUser.getAuthorities()));
   }
 
   private boolean groupsContains(String teamId, List<Group20> groups) {
