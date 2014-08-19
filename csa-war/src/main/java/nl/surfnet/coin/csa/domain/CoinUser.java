@@ -18,14 +18,12 @@ package nl.surfnet.coin.csa.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import nl.surfnet.coin.csa.domain.CoinAuthority.Authority;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import nl.surfnet.coin.csa.domain.CoinAuthority.Authority;
 
 /**
  * Simple conext user
@@ -35,13 +33,11 @@ public class CoinUser implements UserDetails {
 
   private String uid;
   private String displayName;
-  private String schacHomeOrganization;
   private IdentityProvider idp;
-  private List<IdentityProvider> institutionIdps = new ArrayList<IdentityProvider>();
+  private List<IdentityProvider> institutionIdps = new ArrayList<>();
   private String institutionId;
   private String email;
-  private List<CoinAuthority> grantedAuthorities = new ArrayList<CoinAuthority>();
-  private Map<String, List<String>> attributeMap = new HashMap<String, List<String>>();
+  private List<CoinAuthority> grantedAuthorities = new ArrayList<>();
 
   /**
    * It is not allowed to call this method {@inheritDoc}
@@ -83,7 +79,7 @@ public class CoinUser implements UserDetails {
 
   /**
    * Unique identifier of the user, e.g. urn:collab:person:org.example:john.doe
-   * 
+   *
    * @return unique identifier of the user
    */
   public String getUid() {
@@ -96,7 +92,7 @@ public class CoinUser implements UserDetails {
 
   /**
    * Display name, e.g. 'John S. Doe Jr'
-   * 
+   *
    * @return display name of the user
    */
   public String getDisplayName() {
@@ -105,17 +101,6 @@ public class CoinUser implements UserDetails {
 
   public void setDisplayName(String displayName) {
     this.displayName = displayName;
-  }
-
-  /**
-   * @return schac home organization of the user
-   */
-  public String getSchacHomeOrganization() {
-    return schacHomeOrganization;
-  }
-
-  public void setSchacHomeOrganization(String schacHomeOrganization) {
-    this.schacHomeOrganization = schacHomeOrganization;
   }
 
   /**
@@ -131,7 +116,7 @@ public class CoinUser implements UserDetails {
 
   /**
    * Returns a collection that will contain {@link CoinAuthority}'s
-   * 
+   * <p/>
    * {@inheritDoc}
    */
   @Override
@@ -150,7 +135,7 @@ public class CoinUser implements UserDetails {
   /**
    * List of {@link IdentityProvider}'s of the institution for this users.
    * Usually contains only the IdP the user logs in with.
-   * 
+   *
    * @return List of {@link IdentityProvider}'s
    */
   public List<IdentityProvider> getInstitutionIdps() {
@@ -164,9 +149,9 @@ public class CoinUser implements UserDetails {
   /**
    * Identifier of the institution the IdentityProvider of the user belongs to.
    * Can be empty.
-   * 
+   *
    * @return Identifier of the institution the IdentityProvider of the user
-   *         belongs to
+   * belongs to
    */
   public String getInstitutionId() {
     return institutionId;
@@ -178,7 +163,7 @@ public class CoinUser implements UserDetails {
 
   /**
    * Identifier of the IdentityProvider the user has logged in with
-   * 
+   *
    * @return Identifier of the IdentityProvider the user has logged in with
    */
   public IdentityProvider getIdp() {
@@ -189,25 +174,8 @@ public class CoinUser implements UserDetails {
     this.idp = idp;
   }
 
-  /**
-   * Map of user attributes, key as String, value Object
-   * 
-   * @return Map of user attributes
-   */
-  public Map<String, List<String>> getAttributeMap() {
-    return attributeMap;
-  }
-
-  public void setAttributeMap(Map<String, List<String>> attributeMap) {
-    this.attributeMap = attributeMap;
-  }
-
-  public void addAttribute(String key, List<String> value) {
-    this.attributeMap.put(key, value);
-  }
-  
   public List<Authority> getAuthorityEnums() {
-    List<Authority> result = new ArrayList<Authority>();
+    List<Authority> result = new ArrayList<>();
     for (CoinAuthority authority : this.grantedAuthorities) {
       result.add(authority.getEnumAuthority());
     }
@@ -216,9 +184,9 @@ public class CoinUser implements UserDetails {
 
   @Override
   public String toString() {
-    return "CoinUser [uid=" + uid + ", displayName=" + displayName + ", schacHomeOrganization=" + schacHomeOrganization + ", idp=" + idp
-        + ", institutionIdps=" + institutionIdps + ", institutionId=" + institutionId + ", email=" + email + ", grantedAuthorities="
-        + new ArrayList<CoinAuthority>(grantedAuthorities) + ", attributeMap=" + attributeMap + "]";
+    return "CoinUser [uid=" + uid + ", displayName=" + displayName + ", idp=" + idp
+      + ", institutionIdps=" + institutionIdps + ", institutionId=" + institutionId + ", email=" + email + ", grantedAuthorities="
+      + new ArrayList<>(grantedAuthorities) + "]";
   }
 
 }

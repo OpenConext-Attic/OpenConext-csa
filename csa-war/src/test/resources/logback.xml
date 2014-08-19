@@ -53,6 +53,9 @@
   <logger name="org.springframework.security.saml" level="debug" additivity="false">
     <appender-ref ref="console"/>
   </logger>
+  <logger name="nl.surfnet.coin.csa.saml2.SAMLUserDetailsServiceImpl" level="debug" additivity="false">
+    <appender-ref ref="console"/>
+  </logger>
 
   <logger name="PROTOCOL_MESSAGE" level="debug" additivity="false">
     <appender-ref ref="console"/>
