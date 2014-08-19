@@ -31,62 +31,6 @@
     <property name="callbackFlagParameter" value="apiOauthCallback"/>
   </bean>
 
-  <!--
-  <bean id="samlCertificateStore" class="nl.surfnet.spring.security.opensaml.KeyStore">
-    <property name="certificates">
-      <map>
-        <entry key="${wayf.url.metadata}" value="${wayf.certificate}"/>
-      </map>
-    </property>
-  </bean>
-
-
-  <opensaml:service-provider id="samlAuthenticationProvider"
-                             message-handler-ref="samlMessageHandler"
-                             preauth-filter-ref="samlPreAuthFilter"
-                             entity-id="${ISSUING_ENTITY_ID}"
-                             assertion-consumer-uri="${ASSERTION_CONSUMER_URI}"
-                             provisioner-ref="samlProvisioner"
-                             certificatestore-ref="samlCertificateStore"
-                             authentication-manager-ref="authenticationManager"/>
-
-  <security:http auto-config="true" use-expressions="true" disable-url-rewriting="true">
-
-    <security:custom-filter position="PRE_AUTH_FILTER" ref="samlPreAuthFilter"/>
-    <security:custom-filter after="PRE_AUTH_FILTER" ref="apiOauthFilter"/>
-    <security:intercept-url pattern="/OpenSAML.sso/Login" access="permitAll"/>
-    <security:intercept-url pattern="/api/**" access="permitAll"/>
-    <security:intercept-url pattern="/OpenSAML.sso/Metadata" access="permitAll"/>
-    <security:intercept-url pattern="/logout.shtml" access="permitAll"/>
-    <security:intercept-url pattern="${ASSERTION_CONSUMER_URI}"
-                            access="hasAnyRole('ROLE_ANONYMOUS','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN', 'ROLE_DISTRIBUTION_CHANNEL_ADMIN', 'ROLE_USER')"/>
-
-    <security:intercept-url pattern="/css/**" access="permitAll"/>
-    <security:intercept-url pattern="/font/**" access="permitAll"/>
-    <security:intercept-url pattern="/images/**" access="permitAll"/>
-    <security:intercept-url pattern="/img/**" access="permitAll"/>
-    <security:intercept-url pattern="/public/**" access="permitAll"/>
-    <security:intercept-url pattern="/fieldimages/**" access="permitAll"/>
-    <security:intercept-url pattern="/screenshots/**" access="permitAll"/>
-    <security:intercept-url pattern="/js/**" access="permitAll"/>
-    <security:intercept-url pattern="/*.ico" access="permitAll"/>
-    <security:intercept-url pattern="/shopadmin/**" access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN')"/>
-    <security:intercept-url pattern="/stats/**"
-                            access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN')"/>
-    <security:intercept-url pattern="/requests/**"
-                            access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN')"/>
-    <security:intercept-url pattern="/**"
-                            access="hasAnyRole('ROLE_USER','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN', 'ROLE_DISTRIBUTION_CHANNEL_ADMIN')"/>
-
-    <security:form-login login-page="/OpenSAML.sso/Login?target=${wayf.url.sso}" default-target-url="/"/>
-    <security:anonymous/>
-    <security:logout logout-success-url="/logout.shtml" invalidate-session="true" delete-cookies="true"/>
-  </security:http>
-
-  <security:authentication-manager alias="authenticationManager">
-    <security:authentication-provider ref="samlAuthenticationProvider"/>
-  </security:authentication-manager>
-  -->
   <!-- Enable auto-wiring -->
   <context:annotation-config/>
 
@@ -224,16 +168,12 @@
 
       </list>
     </constructor-arg>
-    <!-- OPTIONAL used when one of the metadata files contains information about this service provider -->
-    <!-- <property name="hostedSPName" value=""/> -->
-    <!-- OPTIONAL property: can tell the system which IDP should be used for authenticating user by default. -->
-    <!-- <property name="defaultIDP" value="http://localhost:8080/opensso"/> -->
   </bean>
 
   <!-- SAML Authentication Provider responsible for validating of received SAML messages -->
   <bean id="samlAuthenticationProvider" class="org.springframework.security.saml.SAMLAuthenticationProvider">
     <property name="userDetails">
-      <bean class="nl.surfnet.coin.csa.saml2.SAMLUserDetailsServiceImpl" />
+      <bean class="nl.surfnet.coin.csa.saml2.SAMLUserDetailsServiceImpl"/>
     </property>
   </bean>
 
