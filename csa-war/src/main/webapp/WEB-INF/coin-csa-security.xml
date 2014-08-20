@@ -49,7 +49,6 @@
   <!-- Secured pages with SAML as entry point -->
   <security:http entry-point-ref="samlEntryPoint">
     <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
-    <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
     <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
   </security:http>
 
@@ -80,7 +79,7 @@
 
   <!-- Handler for successful logout -->
   <bean id="successLogoutHandler"
-        class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler" />
+        class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler"/>
 
   <security:authentication-manager alias="authenticationManager">
     <security:authentication-provider ref="samlAuthenticationProvider"/>
@@ -110,20 +109,6 @@
     </property>
   </bean>
 
-  <!-- Filter automatically generates default SP metadata -->
-  <bean id="metadataGeneratorFilter" class="org.springframework.security.saml.metadata.MetadataGeneratorFilter">
-    <constructor-arg>
-      <bean class="org.springframework.security.saml.metadata.MetadataGenerator">
-        <property name="extendedMetadata">
-          <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
-            <property name="idpDiscoveryEnabled" value="false"/>
-          </bean>
-        </property>
-      </bean>
-    </constructor-arg>
-
-  </bean>
-
   <!-- The filter is waiting for connections on URL suffixed with filterSuffix and presents SP metadata there -->
   <bean id="metadataDisplayFilter" class="org.springframework.security.saml.metadata.MetadataDisplayFilter"/>
 
@@ -151,7 +136,28 @@
             </bean>
           </constructor-arg>
         </bean>
-
+        <!-- and now for the SP-->
+        <bean class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
+          <constructor-arg>
+            <bean class="org.opensaml.saml2.metadata.provider.ResourceBackedMetadataProvider">
+              <constructor-arg>
+                <bean class="java.util.Timer"/>
+              </constructor-arg>
+              <constructor-arg>
+                <bean class="org.opensaml.util.resource.ClasspathResource">
+                  <constructor-arg value="/saml/sp.xml"/>
+                </bean>
+              </constructor-arg>
+              <property name="parserPool" ref="parserPool"/>
+            </bean>
+          </constructor-arg>
+          <constructor-arg>
+            <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
+              <property name="local" value="true"/>
+              <property name="idpDiscoveryEnabled" value="false"/>
+            </bean>
+          </constructor-arg>
+        </bean>
       </list>
     </constructor-arg>
   </bean>
@@ -286,4 +292,5 @@
   </bean>
 
   <bean id="parserPoolHolder" class="org.springframework.security.saml.parser.ParserPoolHolder"/>
+
 </beans>
