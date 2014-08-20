@@ -22,7 +22,7 @@
       </ds:KeyInfo>
     </KeyDescriptor>
     <ArtifactResolutionService index="0" isDefault="true" Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="http://localhost:8282/mujina-idp/ArtifactResolver/metaAlias/idp"/>
-    <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://localhost:8282/mujina-idp/IDPSloPOST/metaAlias/idp" ResponseLocation="http://localhost:8282/mujina-idp/IDPSloPOST/metaAlias/idp"/>
+    <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://localhost:8282/mujina-idp/j_spring_security_logout" ResponseLocation="http://ignored_by_mujina_but_engineblock_can_use_it" />
     <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
     <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
     <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</NameIDFormat>

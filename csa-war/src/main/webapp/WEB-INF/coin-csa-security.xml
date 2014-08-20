@@ -92,9 +92,7 @@
 
   <!-- Handler for successful logout -->
   <bean id="successLogoutHandler"
-        class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler">
-    <property name="defaultTargetUrl" value="/logout.jsp"/>
-  </bean>
+        class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler" />
 
   <security:authentication-manager alias="authenticationManager">
     <security:authentication-provider ref="samlAuthenticationProvider"/>

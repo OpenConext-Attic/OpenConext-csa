@@ -59,7 +59,7 @@
 
 <body>
   <script>document.body.className = 'js-loading'</script>
-  
+
   <spring:url value="/shopadmin/all-spslmng.shtml" var="homeUrl" htmlEscape="true" />
 <div id="swappable-menus">
   <header class="header">
@@ -81,7 +81,7 @@
         </li>
 
         <li class="logout">
-          <a href="<spring:url value="/logout.shtml" htmlEscape="true" />">
+          <a href="<spring:url value="/saml/logout" htmlEscape="true"  />"> <!-- Initiates a global SAML logout (with the IDP) -->
             <spring:message code="jsp.general.logout" />
           </a>
         </li>
