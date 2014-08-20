@@ -41,7 +41,10 @@
   <security:http security="none" pattern="/favicon.ico"/>
   <security:http security="none" pattern="/images/**"/>
   <security:http security="none" pattern="/css/**"/>
-  <security:http security="none" pattern="/logout.jsp"/>
+  <security:http security="none" pattern="/font/**"/>
+  <security:http security="none" pattern="/img/**"/>
+  <security:http security="none" pattern="/js/**"/>
+  <security:http security="none" pattern="/public/**"/>
 
   <!-- Secured pages with SAML as entry point -->
   <security:http entry-point-ref="samlEntryPoint">
@@ -67,12 +70,6 @@
         class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
     <property name="defaultTargetUrl" value="/"/>
   </bean>
-  <!--
-  Use the following for interpreting RelayState coming from unsolicited response as redirect URL:
-  <bean id="successRedirectHandler" class="org.springframework.security.saml.SAMLRelayStateSuccessHandler">
-     <property name="defaultTargetUrl" value="/" />
-  </bean>
-  -->
 
   <!-- Handler deciding where to redirect user after failed login -->
   <bean id="failureRedirectHandler"
