@@ -124,6 +124,7 @@
                 <bean class="java.util.Timer"/>
               </constructor-arg>
               <constructor-arg>
+                <!-- Engineblock supports loading metadata from an url, but mujina does not. Load it like this @development time for now -->
                 <bean class="org.opensaml.util.resource.ClasspathResource">
                   <constructor-arg value="/saml/idp.xml"/>
                 </bean>
