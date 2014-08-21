@@ -36,7 +36,6 @@
     <flyway.version>1.5</flyway.version>
     <xstream.version>1.4.2</xstream.version>
     <bonecp.version>0.7.1.RELEASE</bonecp.version>
-    <mujina-idp.version>4.0.1</mujina-idp.version>
     <dumbster.version>1.6</dumbster.version>
     <selenium.version>2.42.0</selenium.version>
     <freemarker.version>[2.3.19,2.4)</freemarker.version>
@@ -326,15 +325,6 @@
           <artifactId>jetty-maven-plugin</artifactId>
           <version>${jetty.version}</version>
           <configuration>
-            <contextHandlers>
-              <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-                <contextPath>/mujina-idp</contextPath>
-                <war>
-                  ${settings.localRepository}/org/surfnet/coin/mujina-idp/${mujina-idp.version}/mujina-idp-${mujina-idp.version}.war
-                </war>
-                <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
-              </contextHandler>
-            </contextHandlers>
             <webAppConfig>
               <contextPath>/csa</contextPath>
               <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
@@ -376,12 +366,6 @@
             <artifactId>coin-master-test-dependencies</artifactId>
             <version>${coin-master.test-dependencies.version}</version>
             <type>pom</type>
-          </dependency>
-          <dependency>
-            <groupId>org.surfnet.coin</groupId>
-            <artifactId>mujina-idp</artifactId>
-            <type>war</type>
-            <version>${mujina-idp.version}</version>
           </dependency>
         </dependencies>
       </plugin>
