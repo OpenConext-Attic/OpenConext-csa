@@ -41,8 +41,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:applicationContext.xml",
-        "classpath:coin-shared-context.xml"})
+@ContextConfiguration(locations = {"classpath:applicationContext.xml"})
 @TransactionConfiguration(transactionManager = "csaTransactionManager", defaultRollback = true)
 @Transactional
 public class ActionsDaoImplTest {

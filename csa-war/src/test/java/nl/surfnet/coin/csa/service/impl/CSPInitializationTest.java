@@ -21,8 +21,7 @@ import nl.surfnet.coin.csa.util.ConcurrentRunnerContext;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
   "classpath:applicationContext.xml",
-  "classpath:coin-csa-with-real-cache.xml",
-  "classpath:coin-shared-context.xml"
+  "classpath:coin-csa-with-real-cache.xml"
 })
 @TransactionConfiguration(transactionManager = "csaTransactionManager", defaultRollback = true)
 @Transactional
@@ -42,5 +41,6 @@ public class CSPInitializationTest {
     });
     for (Integer oneResult : results) {
       assertEquals("all results of getCSPsByIdp should be the same", 4, oneResult.intValue());
-    }}
+    }
+  }
 }

@@ -33,9 +33,7 @@ import static junit.framework.Assert.assertEquals;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-  "/applicationContext.xml",
-        "classpath:coin-shared-context.xml"})
+@ContextConfiguration(locations = {"classpath:applicationContext.xml"})
 public class  ActionsServiceTest {
 
   @Resource(name="actionsService")
