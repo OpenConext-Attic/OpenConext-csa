@@ -20,6 +20,8 @@ package nl.surfnet.coin.csa.api.cache;
 
 import nl.surfnet.coin.csa.api.control.ServicesService;
 import nl.surfnet.coin.csa.model.Service;
+import nl.surfnet.coin.csa.service.IdentityProviderService;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -90,6 +92,8 @@ public class ServicesCacheTest {
     cache.setDuration(1000);
     service = mock(ServicesService.class);
     cache.setService(service);
+    IdentityProviderService identityProviderService = mock(IdentityProviderService.class);
+    cache.setIdentityProviderService(identityProviderService);
 
     Map<String, List<Service>> servicesMap = initServices();
     when(service.findAll(anyLong())).thenReturn(servicesMap);
