@@ -42,9 +42,8 @@
   <security:http security="none" pattern="/js/**"/>
   <security:http security="none" pattern="/public/**"/>
 
-  <beans profile="localDev">
 
-  </beans>
+
   <beans profile="prod">
     <context:component-scan base-package="org.springframework.security.saml"/>
     <security:http entry-point-ref="samlEntryPoint">
@@ -294,5 +293,24 @@
     </bean>
 
     <bean id="parserPoolHolder" class="org.springframework.security.saml.parser.ParserPoolHolder"/>
+  </beans>
+  <beans profile="localDev">
+
+    <security:http use-expressions="true" entry-point-ref="mockEntryPoint" authentication-manager-ref="mockAuthenticationManager">
+      <security:anonymous enabled="false" />
+      <security:custom-filter position="PRE_AUTH_FILTER" ref="preAuthenticatedProcessingFilter" />
+      <security:intercept-url pattern="/**" access="isAuthenticated()" />
+    </security:http>
+
+    <bean id="mockEntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint" />
+    <bean id="mockAuthenticationManager" class="nl.surfnet.coin.csa.util.MockAuthenticationManager" />
+
+    <bean id="preAuthenticatedProcessingFilter" class="nl.surfnet.coin.csa.util.MockPreAuthenticatedProcessingFilter">
+      <property name="authenticationManager" ref="mockAuthenticationManager" />
+      <property name="authenticationDetailsSource">
+        <bean class="nl.surfnet.coin.csa.util.MockAuthenticationDetailsSource" />
+      </property>
+    </bean>
+
   </beans>
 </beans>
