@@ -18,6 +18,7 @@
 
         http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+  <context:property-placeholder location="classpath:application.properties,classpath:csa.properties"/>
 
   <context:component-scan base-package="nl.surfnet.coin.csa">
     <context:exclude-filter type="regex" expression="nl\.surfnet\.coin\.csa\.control\..*" />

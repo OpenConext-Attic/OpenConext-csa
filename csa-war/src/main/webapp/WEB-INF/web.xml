@@ -123,7 +123,6 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-      classpath:coin-csa-properties-context.xml,
       classpath:coin-csa-context.xml,
       WEB-INF/coin-csa-security.xml,
       classpath:coin-shared-context.xml

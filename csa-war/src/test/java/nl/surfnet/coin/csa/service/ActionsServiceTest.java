@@ -35,7 +35,6 @@ import static junit.framework.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "/coin-csa-context.xml",
-        "/coin-csa-properties-context.xml",
         "classpath:coin-shared-context.xml"})
 public class  ActionsServiceTest {
 
