@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import nl.surfnet.coin.csa.api.control.ServicesService;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
 import nl.surfnet.coin.csa.model.Service;
@@ -49,7 +51,6 @@ public class ServicesCache extends AbstractCache {
   @Resource
   private IdentityProviderService identityProviderService;
   /**
-   *
    * maps an idp id to a list of services used by that IDP
    */
   private ConcurrentHashMap<String, List<String>> usedServiceProviders = new ConcurrentHashMap<>();
@@ -79,8 +80,14 @@ public class ServicesCache extends AbstractCache {
     return ids;
   }
 
-  public void setService(ServicesService service) {
+  @VisibleForTesting
+  void setService(ServicesService service) {
     this.service = service;
+  }
+
+  @VisibleForTesting
+  void setIdentityProviderService(IdentityProviderService identityProviderService) {
+    this.identityProviderService = identityProviderService;
   }
 
   @Override
@@ -96,7 +103,7 @@ public class ServicesCache extends AbstractCache {
 
     LOG.debug("Populating linked services cache");
     try {
-      for (final IdentityProvider idp: allIdentityProviders) {
+      for (final IdentityProvider idp : allIdentityProviders) {
         final List<String> linkedServiceProviderIDs = identityProviderService.getLinkedServiceProviderIDs(idp.getId());
         LOG.debug("Found {} linked services for IDP with id {}", linkedServiceProviderIDs.size(), idp.getId());
         usedServiceProviders.put(idp.getId(), linkedServiceProviderIDs);
