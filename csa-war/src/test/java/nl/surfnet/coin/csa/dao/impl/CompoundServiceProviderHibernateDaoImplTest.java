@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:coin-csa-context.xml",
+@ContextConfiguration(locations = {"classpath:applicationContext.xml",
     "classpath:coin-shared-context.xml"})
 @TransactionConfiguration(transactionManager = "csaTransactionManager", defaultRollback = true)
 @Transactional

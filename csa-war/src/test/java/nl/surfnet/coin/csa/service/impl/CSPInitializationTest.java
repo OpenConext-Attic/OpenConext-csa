@@ -20,7 +20,7 @@ import nl.surfnet.coin.csa.util.ConcurrentRunnerContext;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-  "classpath:coin-csa-context.xml",
+  "classpath:applicationContext.xml",
   "classpath:coin-csa-with-real-cache.xml",
   "classpath:coin-shared-context.xml"
 })
