@@ -31,10 +31,8 @@
     <property name="callbackFlagParameter" value="apiOauthCallback"/>
   </bean>
 
-  <!-- Enable auto-wiring -->
   <context:annotation-config/>
 
-  <!-- Scan for auto-wiring classes in spring saml packages -->
   <context:component-scan base-package="org.springframework.security.saml"/>
 
   <!-- Unsecured pages -->
@@ -46,7 +44,6 @@
   <security:http security="none" pattern="/js/**"/>
   <security:http security="none" pattern="/public/**"/>
 
-  <!-- Secured pages with SAML as entry point -->
   <security:http entry-point-ref="samlEntryPoint">
     <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
     <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
