@@ -118,15 +118,13 @@
           <!-- Example of classpath metadata with Extended Metadata -->
           <bean class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
             <constructor-arg>
-              <bean class="org.opensaml.saml2.metadata.provider.ResourceBackedMetadataProvider">
+              <bean class="org.opensaml.saml2.metadata.provider.HTTPMetadataProvider">
                 <constructor-arg>
-                  <bean class="java.util.Timer"/>
+                  <value type="java.lang.String">https://engine.test.surfconext.nl/authentication/idp/metadata</value>
                 </constructor-arg>
                 <constructor-arg>
-                  <!-- Engineblock supports loading metadata from an url, but mujina does not. Load it like this @development time for now -->
-                  <bean class="org.opensaml.util.resource.ClasspathResource">
-                    <constructor-arg value="/saml/idp.xml"/>
-                  </bean>
+                  <!-- Timeout for metadata loading in ms -->
+                  <value type="int">5000</value>
                 </constructor-arg>
                 <property name="parserPool" ref="parserPool"/>
               </bean>
