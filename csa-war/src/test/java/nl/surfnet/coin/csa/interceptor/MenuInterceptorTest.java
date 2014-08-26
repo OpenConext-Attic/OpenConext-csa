@@ -23,9 +23,11 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
@@ -35,12 +37,10 @@ import nl.surfnet.coin.csa.domain.CoinAuthority.Authority;
 import nl.surfnet.coin.csa.domain.CoinUser;
 import nl.surfnet.coin.csa.domain.Menu;
 
-/**
- * TestMenuInterceptorTest.java
- */
 public class MenuInterceptorTest {
 
   private MenuInterceptor menuInterceptor = new MenuInterceptor();
+
 
   @Test
   public void test_menu_for_role_distribution_admin() throws Exception {
@@ -69,7 +69,11 @@ public class MenuInterceptorTest {
     coinUser.setAuthorities(grantedAuthorities);
 
     Authentication authentication = mock(Authentication.class);
-    when(authentication.getPrincipal()).thenReturn(coinUser);
-    SecurityContextHolder.getContext().setAuthentication(authentication);
+    SecurityContext securityContext = mock(SecurityContext.class);
+    SecurityContextHolder.setContext(securityContext);
+    when(authentication.getPrincipal()).thenReturn("foo");
+    when(authentication.getDetails()).thenReturn(coinUser);
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+
   }
 }

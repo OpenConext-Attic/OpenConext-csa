@@ -45,7 +45,7 @@ public class AuthorityScopeInterceptorTest {
     ModelAndView modelAndView = new ModelAndView();
     CoinUser user = coinUser(Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN);
     Authentication authentication = mock(Authentication.class);
-    when(authentication.getPrincipal()).thenReturn(user);
+    when(authentication.getDetails()).thenReturn(user);
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
     MockHttpServletRequest request = new MockHttpServletRequest();
@@ -86,11 +86,5 @@ public class AuthorityScopeInterceptorTest {
     return coinUser;
   }
 
-  private CompoundServiceProvider buildCompoundSeriveProvider() {
-    ServiceProvider serviceProvider = new ServiceProvider(null);
-    serviceProvider.addContactPerson(new ContactPerson(ContactPersonType.technical, "we.dont.want.regular.user.to.see.this@wgaf"));
-    CompoundServiceProvider sp = CompoundServiceProvider.builder(serviceProvider, Article.NONE);
-    return sp;
-  }
 
 }

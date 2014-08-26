@@ -34,6 +34,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
 
 import nl.surfnet.coin.api.client.InvalidTokenException;
@@ -41,7 +42,6 @@ import nl.surfnet.coin.api.client.OpenConextOAuthClient;
 import nl.surfnet.coin.api.client.domain.Group20;
 import nl.surfnet.coin.csa.domain.CoinAuthority;
 import nl.surfnet.coin.csa.domain.CoinUser;
-import nl.surfnet.coin.csa.util.SpringSecurity;
 
 /**
  * Servlet filter that performs Oauth 2.0 (authorization code) against
@@ -78,9 +78,8 @@ public class ApiOAuthFilter implements Filter {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     HttpServletResponse httpResponse = (HttpServletResponse) response;
     final HttpSession session = httpRequest.getSession(true);
-
-    if (SpringSecurity.isFullyAuthenticated() && session.getAttribute(PROCESSED) == null) {
-      CoinUser user = SpringSecurity.getCurrentUser();
+    final CoinUser user = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+    if (user != null && session.getAttribute(PROCESSED) == null) {
 
       if (apiClient.isAccessTokenGranted(user.getUid())) {
         // already authorized before (we have a token)

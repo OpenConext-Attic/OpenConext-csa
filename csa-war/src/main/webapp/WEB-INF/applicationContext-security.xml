@@ -54,6 +54,7 @@
       <security:access-denied-handler error-page="/accessDenied"/>
       <security:anonymous enabled="false"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="preAuthenticatedProcessingFilter"/>
+      <security:custom-filter ref="apiOauthFilter" after="PRE_AUTH_FILTER" />
       <security:intercept-url pattern="/**" access="isAuthenticated()"/>
     </security:http>
 
@@ -72,6 +73,7 @@
       <security:anonymous enabled="false"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="mockPreAuthenticatedProcessingFilter"/>
       <security:intercept-url pattern="/**" access="isAuthenticated()"/>
+      <security:custom-filter ref="apiOauthFilter" after="PRE_AUTH_FILTER"/>
     </security:http>
 
     <bean id="mockAuthenticationManager" class="nl.surfnet.coin.csa.shibboleth.PreAuthenticatedAuthenticationManager"/>

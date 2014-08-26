@@ -17,50 +17,57 @@
 package nl.surfnet.coin.csa.control;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import nl.surfnet.coin.csa.domain.CoinUser;
 import nl.surfnet.coin.csa.domain.IdentityProvider;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-/**
- * Tests for {@link BaseController}
- */
+@RunWith(MockitoJUnitRunner.class)
 public class BaseControllerTest {
 
   @InjectMocks
-  private BaseController baseController;
+  private BaseController baseController = new BaseController() {};
+
+
+  private CoinUser coinUser;
 
   @Mock
-  private CoinUser coinUser;
+  private SecurityContext securityContext;
+
+  @Mock
+  private Authentication authentication;
 
   @Before
   public void setUp() throws Exception {
-    baseController = new TestController();
-    MockitoAnnotations.initMocks(this);
-    SecurityContextHolder.getContext().setAuthentication(getAuthentication());
+    coinUser = new CoinUser();
+
+    SecurityContextHolder.setContext(securityContext);
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+    when(authentication.getDetails()).thenReturn(coinUser);
   }
-  
- @Test
+
+  @Test
   public void testMyIdentityProviders() throws Exception {
     IdentityProvider idp1 = new IdentityProvider();
     idp1.setId("idpId_1");
     IdentityProvider idp2 = new IdentityProvider();
-    idp1.setId("idpId_2");
-    when(coinUser.getInstitutionIdps()).thenReturn(Arrays.asList(idp1, idp2));
+    idp2.setId("idpId_2");
+    coinUser.addInstitutionIdp(idp1);
+    coinUser.addInstitutionIdp(idp2);
 
     final List<IdentityProvider> identityProviders = baseController.getMyInstitutionIdps();
     assertEquals(2, identityProviders.size());
@@ -74,18 +81,13 @@ public class BaseControllerTest {
     idp1.setId("idpId_1");
     IdentityProvider idp2 = new IdentityProvider();
     idp2.setId("idpId_2");
-    when(coinUser.getInstitutionIdps()).thenReturn(Arrays.asList(idp1, idp2));
-    when(coinUser.getIdp()).thenReturn(idp2);
+    coinUser.addInstitutionIdp(idp1);
+    coinUser.addInstitutionIdp(idp2);
+
+    coinUser.setIdp(idp2);
 
     final IdentityProvider identityProvider = baseController.getSelectedIdp(request);
     assertEquals(idp2, identityProvider);
   }
 
-  protected Authentication getAuthentication() {
-    return new TestingAuthenticationToken(coinUser, "");
-  }
-
-  private class TestController extends BaseController {
-    // nothing special
-  }
 }

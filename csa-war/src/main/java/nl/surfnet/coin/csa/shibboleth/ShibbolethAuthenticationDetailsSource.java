@@ -18,14 +18,13 @@ public class ShibbolethAuthenticationDetailsSource implements AuthenticationDeta
     String displayName = request.getHeader(ShibbolethConstants.DISPLAY_NAME);
     String email = request.getHeader(ShibbolethConstants.EMAIL);
 
-    LOG.info("Found Shibboleth name-id: '{}', displayName: '{}', email: {}", new Object[] {userId, displayName, email});
-
+    LOG.info("Found Shibboleth name-id: '{}', displayName: '{}', email: {}", userId, displayName, email);
 
     final CoinUser coinUser = new CoinUser();
     coinUser.setUid(userId);
     coinUser.setDisplayName(displayName);
     coinUser.setEmail(email);
-    // TODO groups / authorities? IDP's?
+    // TODO IDPs
     return coinUser;
 
   }

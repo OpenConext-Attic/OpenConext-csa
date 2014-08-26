@@ -16,17 +16,19 @@
 
 package nl.surfnet.coin.csa.interceptor;
 
-import nl.surfnet.coin.csa.domain.CoinAuthority.Authority;
-import nl.surfnet.coin.csa.domain.Menu;
-import nl.surfnet.coin.csa.domain.MenuItem;
-import nl.surfnet.coin.csa.util.SpringSecurity;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import nl.surfnet.coin.csa.domain.CoinAuthority.Authority;
+import nl.surfnet.coin.csa.domain.CoinUser;
+import nl.surfnet.coin.csa.domain.Menu;
+import nl.surfnet.coin.csa.domain.MenuItem;
 
 /**
  * Interceptor to add the menu
@@ -58,8 +60,8 @@ public class MenuInterceptor extends HandlerInterceptorAdapter {
 
   private Menu createMenu(final HttpServletRequest request) {
     Menu menu = new Menu();
-    List<Authority> authorities = SpringSecurity.getCurrentUser().getAuthorityEnums();
-    for (Authority authority : authorities) {
+    CoinUser coinUser = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+    for (Authority authority : coinUser.getAuthorityEnums()) {
       switch (authority) {
         case ROLE_DISTRIBUTION_CHANNEL_ADMIN:
           menu.addMenuItem(new MenuItem("jsp.allsplmng.title", "/shopadmin/all-spslmng.shtml"));

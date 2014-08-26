@@ -16,26 +16,26 @@
 
 package nl.surfnet.coin.csa.interceptor;
 
-import nl.surfnet.coin.csa.domain.CoinAuthority.Authority;
-import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
-import nl.surfnet.coin.csa.util.SpringSecurity;
+import static nl.surfnet.coin.csa.control.BaseController.*;
+import static nl.surfnet.coin.csa.domain.CoinAuthority.Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
-import static nl.surfnet.coin.csa.control.BaseController.*;
-import static nl.surfnet.coin.csa.domain.CoinAuthority.Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
+import nl.surfnet.coin.csa.domain.CoinAuthority.Authority;
+import nl.surfnet.coin.csa.domain.CoinUser;
+import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
 
 /**
  * Interceptor to de-scope the visibility {@link CompoundServiceProvider}
@@ -62,9 +62,7 @@ public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
    */
   public static final String OAUTH_CLIENT_SCOPE_STATISTICS = "stats";
 
-  private static final Logger LOG = LoggerFactory.getLogger(AuthorityScopeInterceptor.class);
-
-  private static List<String> TOKEN_CHECK_METHODS = Arrays.asList(new String[] { POST.name(), DELETE.name(), PUT.name() });
+  private static List<String> TOKEN_CHECK_METHODS = Arrays.asList(POST.name(), DELETE.name(), PUT.name());
 
   private boolean exposeTokenCheckInCookie;
 
@@ -88,18 +86,14 @@ public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
       throws Exception {
 
     if (modelAndView != null) {
-
-      List<Authority> authorities = SpringSecurity.getCurrentUser().getAuthorityEnums();
-
+      CoinUser coinUser = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
       ModelMap map = modelAndView.getModelMap();
-
-      scopeGeneralAuthCons(map, authorities, request);
-
+      scopeGeneralAuthCons(map, coinUser.getAuthorityEnums());
       addTokenToModelMap(request, response,  map);
     }
   }
 
-  protected void scopeGeneralAuthCons(ModelMap map, List<Authority> authorities, final HttpServletRequest request) {
+  protected void scopeGeneralAuthCons(ModelMap map, List<Authority> authorities) {
     boolean isAdmin = containsRole(authorities, ROLE_DISTRIBUTION_CHANNEL_ADMIN);
     map.put(SERVICE_CONNECTION_VISIBLE, isAdmin);
     map.put(FACET_CONNECTION_VISIBLE, isAdmin);
@@ -115,10 +109,7 @@ public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
     }
     return false;
   }
-  
-  public static boolean isDistributionChannelAdmin() {
-    return containsRole(SpringSecurity.getCurrentUser().getAuthorityEnums(), ROLE_DISTRIBUTION_CHANNEL_ADMIN);
-  }
+
 
   public void setExposeTokenCheckInCookie(boolean exposeTokenCheckInCookie) {
     this.exposeTokenCheckInCookie = exposeTokenCheckInCookie;

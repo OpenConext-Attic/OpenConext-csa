@@ -16,21 +16,24 @@
 
 package nl.surfnet.coin.csa.control;
 
-import nl.surfnet.coin.csa.domain.IdentityProvider;
-
-import nl.surfnet.coin.csa.service.IdentityProviderService;
-import nl.surfnet.coin.csa.util.AjaxResponseException;
-import nl.surfnet.coin.csa.util.SpringSecurity;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.LocaleResolver;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Locale;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.LocaleResolver;
+
+import nl.surfnet.coin.csa.domain.CoinUser;
+import nl.surfnet.coin.csa.domain.IdentityProvider;
+import nl.surfnet.coin.csa.util.AjaxResponseException;
 
 /**
  * Abstract controller used to set model attributes to the request
@@ -89,7 +92,8 @@ public abstract class BaseController {
 
   @ModelAttribute(value = "idps")
   public List<IdentityProvider> getMyInstitutionIdps() {
-    return SpringSecurity.getCurrentUser().getInstitutionIdps();
+    CoinUser user = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+    return user.getInstitutionIdps();
   }
 
   @ModelAttribute(value = "locale")
@@ -99,22 +103,24 @@ public abstract class BaseController {
 
   protected IdentityProvider getSelectedIdp(HttpServletRequest request) {
     final IdentityProvider selectedIdp = (IdentityProvider)  request.getSession().getAttribute(SELECTED_IDP);
+    CoinUser user = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
     if (selectedIdp != null) {
       return selectedIdp;
     }
-    return selectProvider(request, SpringSecurity.getCurrentUser().getIdp().getId());
+    return selectProvider(request, user.getIdp().getId());
   }
 
   private IdentityProvider selectProvider(HttpServletRequest request, String idpId) {
     Assert.hasText(idpId);
-    for (IdentityProvider idp : SpringSecurity.getCurrentUser().getInstitutionIdps()) {
+    CoinUser user = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+    for (IdentityProvider idp : user.getInstitutionIdps()) {
       if (idp.getId().equals(idpId)) {
         request.getSession().setAttribute(SELECTED_IDP, idp);
-        SpringSecurity.getCurrentUser().setIdp(idp);
+        user.setIdp(idp);
         return idp;
       }
     }
-    throw new RuntimeException(idpId + " is unknown for " + SpringSecurity.getCurrentUser().getUsername());
+    throw new RuntimeException(idpId + " is unknown for " + user.getUsername());
   }
 
 

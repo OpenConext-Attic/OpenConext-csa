@@ -16,48 +16,51 @@
 
 package nl.surfnet.coin.csa.filter;
 
+import static nl.surfnet.coin.csa.domain.CoinAuthority.Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
-import nl.surfnet.coin.api.client.OpenConextOAuthClient;
-import nl.surfnet.coin.api.client.domain.Group20;
-import nl.surfnet.coin.csa.domain.CoinAuthority.Authority;
-
-import org.hamcrest.core.Is;
 import org.hamcrest.core.IsEqual;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import static nl.surfnet.coin.csa.domain.CoinAuthority.Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN;
-import static nl.surfnet.coin.csa.filter.SpringSecurityUtil.assertNoRoleIsGranted;
-import static nl.surfnet.coin.csa.filter.SpringSecurityUtil.assertRoleIsGranted;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import nl.surfnet.coin.api.client.OpenConextOAuthClient;
+import nl.surfnet.coin.api.client.domain.Group20;
+import nl.surfnet.coin.csa.domain.CoinAuthority;
+import nl.surfnet.coin.csa.domain.CoinAuthority.Authority;
+import nl.surfnet.coin.csa.domain.CoinUser;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ApiOAuthFilterTest {
 
   private static final String THE_USERS_UID = "the-users-uid";
 
   @InjectMocks
-  private ApiOAuthFilter filter;
+  private ApiOAuthFilter filter = new ApiOAuthFilter();
 
   @Mock
   private FilterChain chain;
@@ -69,19 +72,26 @@ public class ApiOAuthFilterTest {
   private MockHttpServletRequest request;
   private MockHttpServletResponse response;
 
+  @Mock
+  private SecurityContext securityContext;
+
+
+  private CoinUser coinUser;
+
   @Before
   public void setUp() throws Exception {
-    filter = new ApiOAuthFilter();
-    MockitoAnnotations.initMocks(this);
 
     request = new MockHttpServletRequest("GET", "/anyUrl");
     response = new MockHttpServletResponse();
 
-    SecurityContextHolder.getContext().setAuthentication(null);
+    SecurityContextHolder.setContext(securityContext);
+
   }
 
   @Test
   public void filterWhenNotLoggedInAtAll() throws Exception {
+    Authentication mockAuthentication = mock(Authentication.class);
+    when(securityContext.getAuthentication()).thenReturn(mockAuthentication);
     filter.doFilter(request, response, chain);
     verify(chain).doFilter(request, response);
   }
@@ -89,7 +99,7 @@ public class ApiOAuthFilterTest {
   @Test
   public void filterWhenAlreadyProcessed() throws Exception {
     request.getSession().setAttribute(ApiOAuthFilter.PROCESSED, "true");
-
+    setAuthentication();
     filter.doFilter(request, response, chain);
 
     // Filter should skip all logic and call chain.doFilter() straight on.
@@ -102,7 +112,7 @@ public class ApiOAuthFilterTest {
   public void filterAndStartOauthDance() throws Exception {
 
     setAuthentication();
-    
+
     when(apiClient.getAuthorizationUrl()).thenReturn("http://authorization-url");
 
     filter.doFilter(request, response, chain);
@@ -140,8 +150,8 @@ public class ApiOAuthFilterTest {
     when(apiClient.getGroups20(THE_USERS_UID, THE_USERS_UID)).thenReturn(null);
 
     filter.doFilter(request, response, chain);
-    assertThat((String) request.getSession().getAttribute(ApiOAuthFilter.PROCESSED), Is.is("true"));
-    assertNoRoleIsGranted();
+    assertThat((String) request.getSession().getAttribute(ApiOAuthFilter.PROCESSED), is("true"));
+    assertNoRoleIsGranted(coinUser);
   }
 
 
@@ -150,7 +160,7 @@ public class ApiOAuthFilterTest {
   public void filterAndUsePrefetchedAccessTokenAndIsAdmin() throws Exception {
 
     setAuthentication();
-
+    coinUser.addAuthority(new CoinAuthority(Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN));
     when(apiClient.isAccessTokenGranted(anyString())).thenReturn(true);
     request.getSession(true).setAttribute(ApiOAuthFilter.PROCESSED, null);
 
@@ -158,23 +168,24 @@ public class ApiOAuthFilterTest {
 
     filter.doFilter(request, response, chain);
 
-    assertRoleIsGranted(ROLE_DISTRIBUTION_CHANNEL_ADMIN);
-
+    assertRoleIsGranted(coinUser, ROLE_DISTRIBUTION_CHANNEL_ADMIN);
     // Verify flag that the process is done.
-    assertThat((String) request.getSession().getAttribute(ApiOAuthFilter.PROCESSED), Is.is("true"));
+    assertThat((String) request.getSession().getAttribute(ApiOAuthFilter.PROCESSED), is("true"));
+
   }
 
   @Test
   public void test_elevate_user_results_in_only_one_csa_admin() throws IOException, ServletException {
     setUpForAuthoritiesCheck(ROLE_DISTRIBUTION_CHANNEL_ADMIN);
-    assertRoleIsGranted(ROLE_DISTRIBUTION_CHANNEL_ADMIN);
+    assertRoleIsGranted(coinUser, ROLE_DISTRIBUTION_CHANNEL_ADMIN);
   }
 
 
   @Test
   public void test_elevate_user_results_in_no_authorities_in_lmng_disactive_modus() throws IOException, ServletException {
     setUpForAuthoritiesCheck(new Authority[]{});
-    assertNoRoleIsGranted();
+    coinUser.setAuthorities(Collections.<CoinAuthority>emptyList());
+    assertNoRoleIsGranted(coinUser);
   }
 
   private void setUpForAuthoritiesCheck(Authority... groupMemberShips) throws IOException, ServletException {
@@ -189,8 +200,18 @@ public class ApiOAuthFilterTest {
     
   }
 
+  protected static void assertNoRoleIsGranted(CoinUser user) {
+    assertEquals(0, user.getAuthorityEnums().size());
+  }
+
+  protected static void assertRoleIsGranted(CoinUser user, CoinAuthority.Authority... expectedAuthorities) {
+    List<CoinAuthority.Authority> actualAuthorities = user.getAuthorityEnums();
+    assertEquals("expected roles: " + Arrays.asList(expectedAuthorities) + ", actual roles: " + actualAuthorities, expectedAuthorities.length, actualAuthorities.size());
+    assertTrue("expected roles: " + Arrays.asList(expectedAuthorities) + ", actual roles: " + actualAuthorities, actualAuthorities.containsAll(Arrays.asList(expectedAuthorities)));
+  }
+
   private void setUpGroupMembersShips(Authority... authorities) {
-    List<Group20> groups = new ArrayList<Group20>();
+    List<Group20> groups = new ArrayList<>();
     for (Authority authority : authorities) {
       switch (authority) {
       case ROLE_DISTRIBUTION_CHANNEL_ADMIN:
@@ -204,7 +225,14 @@ public class ApiOAuthFilterTest {
   }
 
   private void setAuthentication() {
-    SpringSecurityUtil.setAuthentication(THE_USERS_UID);
+
+    final TestingAuthenticationToken token = new TestingAuthenticationToken(THE_USERS_UID, "");
+    token.setAuthenticated(true);
+    coinUser = new CoinUser();
+    coinUser.setUid(THE_USERS_UID);
+
+    token.setDetails(coinUser);
+    when(securityContext.getAuthentication()).thenReturn(token);
   }
 
 }
