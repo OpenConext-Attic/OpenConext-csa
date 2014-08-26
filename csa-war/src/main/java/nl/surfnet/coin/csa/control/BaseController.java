@@ -45,27 +45,10 @@ public abstract class BaseController {
   public static final String COMPOUND_SPS = "compoundSps";
 
   /**
-   * The name of the key under which all identityproviders are stored
-   */
-  public static final String ALL_IDPS = "allIdps";
-
-  /**
    * The name of the key under which a compoundSps (e.g. the service) is stored
    * for the detail view
    */
   public static final String COMPOUND_SP = "compoundSp";
-
-  /**
-   * The name of the key under which we store the info if a logged user is
-   * allowed to request connections / disconnects
-   */
-  public static final String SERVICE_APPLY_ALLOWED = "applyAllowed";
-
-  /**
-   * The name of the key under which we store the info if a logged user is
-   * allowed to ask questions
-   */
-  public static final String SERVICE_QUESTION_ALLOWED = "questionAllowed";
 
   /**
    * The name of the key under which we store the info if the status of a
@@ -77,18 +60,6 @@ public abstract class BaseController {
    * The name of the key under which we store the info if the connection facet is visible to the current user.
    */
   public static final String FACET_CONNECTION_VISIBLE = "facetConnectionVisible";
-
-  /**
-   * The name of the key under which we store the info if a logged user is
-   * allowed to filter in the app grid
-   */
-  public static final String FILTER_APP_GRID_ALLOWED = "filterAppGridAllowed";
-
-  /**
-   * The name of the key under which we store the info if a logged user is a
-   * kind of admin
-   */
-  public static final String IS_ADMIN_USER = "isAdminUser";
 
   /**
    * The name of the key that defines whether a deeplink to SURFMarket should be
@@ -109,24 +80,9 @@ public abstract class BaseController {
   public static final String TOKEN_CHECK = "tokencheck";
 
   /**
-   * The name of the key under which we store the information from Api regarding
-   * group memberships and actual members for auto-completion in the
-   * recommendation modal popup.
-   */
-  public static final String GROUPS_WITH_MEMBERS = "groupsWithMembers";
-
-  /**
-   * Key in which we store whether a user should see the technical attribute names of an ARP.
-   */
-  public static final String RAW_ARP_ATTRIBUTES_VISIBLE = "rawArpAttributesVisible";
-
-  /**
    * Key in which we store the currently selected IdP
    */
   protected static final String SELECTED_IDP = "selectedIdp";
-
-  @Resource(name = "providerService")
-  private IdentityProviderService idpService;
 
   @Resource(name = "localeResolver")
   protected LocaleResolver localeResolver;
@@ -147,11 +103,6 @@ public abstract class BaseController {
       return selectedIdp;
     }
     return selectProvider(request, SpringSecurity.getCurrentUser().getIdp().getId());
-  }
-
-  protected IdentityProvider switchIdp(HttpServletRequest request, String switchIdpId) {
-    Assert.hasText(switchIdpId);
-    return selectProvider(request, switchIdpId);
   }
 
   private IdentityProvider selectProvider(HttpServletRequest request, String idpId) {
