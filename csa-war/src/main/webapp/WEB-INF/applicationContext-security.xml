@@ -19,7 +19,6 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:security="http://www.springframework.org/schema/security"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:beans="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/security
@@ -39,7 +38,7 @@
   <context:annotation-config/>
 
   <!-- Unsecured pages -->
-  <security:http security="none" pattern="/Shibboleth.sso/*" />
+  <security:http security="none" pattern="/Shibboleth.sso/*"/>
   <security:http security="none" pattern="/favicon.ico"/>
   <security:http security="none" pattern="/images/**"/>
   <security:http security="none" pattern="/css/**"/>
@@ -50,15 +49,17 @@
 
 
   <beans profile="prod">
-    <security:http use-expressions="true" create-session="never" entry-point-ref="entryPoint" authentication-manager-ref="authenticationManager">
+    <security:http use-expressions="true" create-session="never" entry-point-ref="entryPoint"
+                   authentication-manager-ref="authenticationManager">
       <security:access-denied-handler error-page="/accessDenied"/>
-      <security:anonymous enabled="false" />
-      <security:custom-filter position="PRE_AUTH_FILTER" ref="preAuthenticatedProcessingFilter" />
-      <security:intercept-url pattern="/**" access="isAuthenticated()" />
+      <security:anonymous enabled="false"/>
+      <security:custom-filter position="PRE_AUTH_FILTER" ref="preAuthenticatedProcessingFilter"/>
+      <security:intercept-url pattern="/**" access="isAuthenticated()"/>
     </security:http>
 
-    <bean id="preAuthenticatedProcessingFilter" class="nl.surfnet.coin.csa.shibboleth.ShibbolethPreAuthenticatedProcessingFilter">
-      <property name="authenticationManager" ref="authenticationManager" />
+    <bean id="preAuthenticatedProcessingFilter"
+          class="nl.surfnet.coin.csa.shibboleth.ShibbolethPreAuthenticatedProcessingFilter">
+      <property name="authenticationManager" ref="authenticationManager"/>
       <property name="authenticationDetailsSource">
         <bean class="nl.surfnet.coin.csa.shibboleth.ShibbolethAuthenticationDetailsSource"/>
       </property>
@@ -66,7 +67,8 @@
   </beans>
 
   <beans profile="localDev">
-    <security:http use-expressions="true" entry-point-ref="entryPoint" authentication-manager-ref="authenticationManager">
+    <security:http use-expressions="true" entry-point-ref="entryPoint"
+                   authentication-manager-ref="authenticationManager">
       <security:anonymous enabled="false"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="mockPreAuthenticatedProcessingFilter"/>
       <security:intercept-url pattern="/**" access="isAuthenticated()"/>
@@ -74,7 +76,8 @@
 
     <bean id="mockAuthenticationManager" class="nl.surfnet.coin.csa.shibboleth.PreAuthenticatedAuthenticationManager"/>
 
-    <bean id="mockPreAuthenticatedProcessingFilter" class="nl.surfnet.coin.csa.shibboleth.mock.MockPreAuthenticatedProcessingFilter">
+    <bean id="mockPreAuthenticatedProcessingFilter"
+          class="nl.surfnet.coin.csa.shibboleth.mock.MockPreAuthenticatedProcessingFilter">
       <property name="authenticationManager" ref="mockAuthenticationManager"/>
       <property name="authenticationDetailsSource">
         <bean class="nl.surfnet.coin.csa.shibboleth.mock.MockAuthenticationDetailsSource"/>
