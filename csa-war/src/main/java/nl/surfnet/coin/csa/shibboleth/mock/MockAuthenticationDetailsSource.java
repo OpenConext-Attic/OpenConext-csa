@@ -1,4 +1,4 @@
-package nl.surfnet.coin.csa.util;
+package nl.surfnet.coin.csa.shibboleth.mock;
 
 import javax.servlet.http.HttpServletRequest;
 
