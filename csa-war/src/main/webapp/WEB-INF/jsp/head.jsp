@@ -81,7 +81,7 @@
         </li>
 
         <li class="logout">
-          <a href="<spring:url value="/saml/logout" htmlEscape="true"  />"> <!-- Initiates a global SAML logout (with the IDP) -->
+          <a href="<spring:url value="/Shibboleth.sso/Logout?target=/" htmlEscape="true"  />"> <!-- Initiates a global SAML logout (with the IDP) -->
             <spring:message code="jsp.general.logout" />
           </a>
         </li>
