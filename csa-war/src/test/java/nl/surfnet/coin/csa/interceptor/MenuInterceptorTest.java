@@ -41,7 +41,6 @@ public class MenuInterceptorTest {
 
   private MenuInterceptor menuInterceptor = new MenuInterceptor();
 
-
   @Test
   public void test_menu_for_role_distribution_admin() throws Exception {
     Menu menu = executeTestAndReturnMenu("/whatever.shtml", ROLE_DISTRIBUTION_CHANNEL_ADMIN);

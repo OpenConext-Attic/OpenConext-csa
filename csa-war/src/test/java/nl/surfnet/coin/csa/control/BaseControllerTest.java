@@ -57,7 +57,7 @@ public class BaseControllerTest {
 
     SecurityContextHolder.setContext(securityContext);
     when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getDetails()).thenReturn(coinUser);
+    when(authentication.getPrincipal()).thenReturn(coinUser);
   }
 
   @Test

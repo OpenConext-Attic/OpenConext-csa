@@ -25,15 +25,13 @@
        http://www.springframework.org/schema/security/spring-security.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
 
-  <bean id="apiOauthFilter" class="nl.surfnet.coin.csa.filter.ApiOAuthFilter">
-    <property name="adminDistributionTeam" value="${admin.distribution.channel.teamname}"/>
-    <property name="apiClient" ref="openConextApiClient"/>
-    <property name="callbackFlagParameter" value="apiOauthCallback"/>
-  </bean>
+  <!--<bean id="apiOauthFilter" class="nl.surfnet.coin.csa.filter.ApiOAuthFilter">-->
+  <!--<property name="adminDistributionTeam" value="${admin.distribution.channel.teamname}"/>-->
+  <!--<property name="apiClient" ref="openConextApiClient"/>-->
+  <!--<property name="callbackFlagParameter" value="apiOauthCallback"/>-->
+  <!--</bean>-->
 
   <bean id="entryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
-
-  <bean id="authenticationManager" class="nl.surfnet.coin.csa.shibboleth.PreAuthenticatedAuthenticationManager"/>
 
   <context:annotation-config/>
 
@@ -48,44 +46,30 @@
   <security:http security="none" pattern="/public/**"/>
 
 
-  <beans profile="prod">
-    <security:http use-expressions="true" create-session="never" entry-point-ref="entryPoint"
-                   authentication-manager-ref="authenticationManager">
-      <security:access-denied-handler error-page="/accessDenied"/>
-      <security:anonymous enabled="false"/>
-      <security:custom-filter position="PRE_AUTH_FILTER" ref="preAuthenticatedProcessingFilter"/>
-      <security:custom-filter ref="apiOauthFilter" after="PRE_AUTH_FILTER" />
-      <security:intercept-url pattern="/**" access="isAuthenticated()"/>
-    </security:http>
+  <security:http use-expressions="true" entry-point-ref="entryPoint">
+    <security:access-denied-handler error-page="/accessDenied"/>
+    <security:anonymous enabled="false"/>
+    <security:custom-filter position="PRE_AUTH_FILTER" ref="preAuthenticatedProcessingFilter"/>
+    <security:intercept-url pattern="/shopadmin/**" access="hasRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN')"/>
+    <security:intercept-url pattern="/stats/**" access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN')"/>
+    <security:intercept-url pattern="/requests/**" access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN')"/>
+    <security:intercept-url pattern="/**" access="hasAnyRole('ROLE_USER','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN', 'ROLE_DISTRIBUTION_CHANNEL_ADMIN')"/>
+  </security:http>
 
-    <bean id="preAuthenticatedProcessingFilter"
-          class="nl.surfnet.coin.csa.shibboleth.ShibbolethPreAuthenticatedProcessingFilter">
-      <property name="authenticationManager" ref="authenticationManager"/>
-      <property name="authenticationDetailsSource">
-        <bean class="nl.surfnet.coin.csa.shibboleth.ShibbolethAuthenticationDetailsSource"/>
-      </property>
-    </bean>
-  </beans>
+  <bean id="preAuthenticatedProcessingFilter"
+        class="nl.surfnet.coin.csa.shibboleth.ShibbolethPreAuthenticatedProcessingFilter">
+    <property name="authenticationManager" ref="authenticationManager"/>
+  </bean>
+  <bean id="preAuthProvider"
+        class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+    <property name="preAuthenticatedUserDetailsService">
+      <bean class="nl.surfnet.coin.csa.shibboleth.RichUserDetailsService"/>
+    </property>
+  </bean>
 
-  <beans profile="localDev">
-    <security:http use-expressions="true" entry-point-ref="entryPoint"
-                   authentication-manager-ref="authenticationManager">
-      <security:anonymous enabled="false"/>
-      <security:custom-filter position="PRE_AUTH_FILTER" ref="mockPreAuthenticatedProcessingFilter"/>
-      <security:intercept-url pattern="/**" access="isAuthenticated()"/>
-      <security:custom-filter ref="apiOauthFilter" after="PRE_AUTH_FILTER"/>
-    </security:http>
-
-    <bean id="mockAuthenticationManager" class="nl.surfnet.coin.csa.shibboleth.PreAuthenticatedAuthenticationManager"/>
-
-    <bean id="mockPreAuthenticatedProcessingFilter"
-          class="nl.surfnet.coin.csa.shibboleth.mock.MockPreAuthenticatedProcessingFilter">
-      <property name="authenticationManager" ref="mockAuthenticationManager"/>
-      <property name="authenticationDetailsSource">
-        <bean class="nl.surfnet.coin.csa.shibboleth.mock.MockAuthenticationDetailsSource"/>
-      </property>
-    </bean>
-  </beans>
+  <security:authentication-manager alias="authenticationManager">
+    <security:authentication-provider ref="preAuthProvider"/>
+  </security:authentication-manager>
 
 
 </beans>

@@ -76,7 +76,7 @@
         <li class="user">
           <spring:message code="jsp.general.welcome" />
           <span>
-            <sec:authentication property="details.displayName" scope="request" htmlEscape="true" />
+            <sec:authentication property="principal.displayName" scope="request" htmlEscape="true" />
           </span>
         </li>
 

@@ -321,12 +321,10 @@
           <version>${jetty.version}</version>
           <configuration>
             <webAppConfig>
-              <contextPath>/csa</contextPath>
               <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
               <defaultsDescriptor>${basedir}/src/test/resources/jettywebdefault.xml</defaultsDescriptor>
               <baseResource implementation="org.eclipse.jetty.util.resource.ResourceCollection">
-                <resourcesAsCSV>${basedir}/src/main/webapp,${project.build.directory}/${project.build.finalName}
-                </resourcesAsCSV>
+                <resourcesAsCSV>${basedir}/src/main/webapp,${project.build.directory}/${project.build.finalName}</resourcesAsCSV>
               </baseResource>
             </webAppConfig>
             <contextXml>${basedir}/src/test/resources/jetty-context.xml</contextXml>

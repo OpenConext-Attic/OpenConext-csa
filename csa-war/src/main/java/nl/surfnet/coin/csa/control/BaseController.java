@@ -92,7 +92,7 @@ public abstract class BaseController {
 
   @ModelAttribute(value = "idps")
   public List<IdentityProvider> getMyInstitutionIdps() {
-    CoinUser user = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+    CoinUser user = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     return user.getInstitutionIdps();
   }
 
@@ -103,7 +103,7 @@ public abstract class BaseController {
 
   protected IdentityProvider getSelectedIdp(HttpServletRequest request) {
     final IdentityProvider selectedIdp = (IdentityProvider)  request.getSession().getAttribute(SELECTED_IDP);
-    CoinUser user = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+    CoinUser user = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     if (selectedIdp != null) {
       return selectedIdp;
     }
@@ -112,7 +112,7 @@ public abstract class BaseController {
 
   private IdentityProvider selectProvider(HttpServletRequest request, String idpId) {
     Assert.hasText(idpId);
-    CoinUser user = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+    CoinUser user = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     for (IdentityProvider idp : user.getInstitutionIdps()) {
       if (idp.getId().equals(idpId)) {
         request.getSession().setAttribute(SELECTED_IDP, idp);
