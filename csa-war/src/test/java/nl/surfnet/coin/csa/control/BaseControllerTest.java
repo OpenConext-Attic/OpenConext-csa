@@ -42,7 +42,6 @@ public class BaseControllerTest {
   @InjectMocks
   private BaseController baseController = new BaseController() {};
 
-
   private CoinUser coinUser;
 
   @Mock
