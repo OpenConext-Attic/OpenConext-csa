@@ -60,7 +60,7 @@ public class MenuInterceptor extends HandlerInterceptorAdapter {
 
   private Menu createMenu(final HttpServletRequest request) {
     Menu menu = new Menu();
-    CoinUser coinUser = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+    CoinUser coinUser = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     for (Authority authority : coinUser.getAuthorityEnums()) {
       switch (authority) {
         case ROLE_DISTRIBUTION_CHANNEL_ADMIN:

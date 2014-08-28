@@ -32,7 +32,7 @@ public class RichUserDetailsService implements AuthenticationUserDetailsService<
     }
     // TODO IDPs
 
-    // TODO fetch groups to see if we have the admin role
+
     return coinUser;
   }
 

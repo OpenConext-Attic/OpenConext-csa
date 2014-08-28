@@ -86,7 +86,7 @@ public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
       throws Exception {
 
     if (modelAndView != null) {
-      CoinUser coinUser = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getDetails();
+      CoinUser coinUser = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
       ModelMap map = modelAndView.getModelMap();
       scopeGeneralAuthCons(map, coinUser.getAuthorityEnums());
       addTokenToModelMap(request, response,  map);

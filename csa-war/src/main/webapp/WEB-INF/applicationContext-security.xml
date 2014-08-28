@@ -25,11 +25,11 @@
        http://www.springframework.org/schema/security/spring-security.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
 
-  <!--<bean id="apiOauthFilter" class="nl.surfnet.coin.csa.filter.ApiOAuthFilter">-->
-  <!--<property name="adminDistributionTeam" value="${admin.distribution.channel.teamname}"/>-->
-  <!--<property name="apiClient" ref="openConextApiClient"/>-->
-  <!--<property name="callbackFlagParameter" value="apiOauthCallback"/>-->
-  <!--</bean>-->
+  <bean id="apiOauthFilter" class="nl.surfnet.coin.csa.filter.ApiOAuthFilter">
+    <property name="adminDistributionTeam" value="${admin.distribution.channel.teamname}"/>
+    <property name="apiClient" ref="openConextApiClient"/>
+    <property name="callbackFlagParameter" value="apiOauthCallback"/>
+  </bean>
 
   <bean id="entryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
 
@@ -47,9 +47,10 @@
 
 
   <security:http use-expressions="true" entry-point-ref="entryPoint">
-    <security:access-denied-handler error-page="/accessDenied"/>
+    <security:access-denied-handler error-page="/accessDenied"/><!-- TODO make sure this page exists -->
     <security:anonymous enabled="false"/>
     <security:custom-filter position="PRE_AUTH_FILTER" ref="preAuthenticatedProcessingFilter"/>
+    <security:custom-filter after="PRE_AUTH_FILTER" ref="apiOauthFilter" />
     <security:intercept-url pattern="/shopadmin/**" access="hasRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN')"/>
     <security:intercept-url pattern="/stats/**" access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN')"/>
     <security:intercept-url pattern="/requests/**" access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN')"/>
@@ -63,7 +64,7 @@
   <bean id="preAuthProvider"
         class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
     <property name="preAuthenticatedUserDetailsService">
-      <bean class="nl.surfnet.coin.csa.shibboleth.RichUserDetailsService"/>
+      <bean class="nl.surfnet.coin.csa.shibboleth.RichUserDetailsService" />
     </property>
   </bean>
 

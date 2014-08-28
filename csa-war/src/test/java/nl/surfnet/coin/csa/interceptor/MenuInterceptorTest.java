@@ -70,8 +70,7 @@ public class MenuInterceptorTest {
     Authentication authentication = mock(Authentication.class);
     SecurityContext securityContext = mock(SecurityContext.class);
     SecurityContextHolder.setContext(securityContext);
-    when(authentication.getPrincipal()).thenReturn("foo");
-    when(authentication.getDetails()).thenReturn(coinUser);
+    when(authentication.getPrincipal()).thenReturn(coinUser);
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
   }

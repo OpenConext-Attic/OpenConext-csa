@@ -5,6 +5,7 @@ package nl.surfnet.coin.csa.shibboleth;
  */
 public final class ShibbolethConstants {
 
+  public static final String UID = "Shib-uid";
   public static final String DISPLAY_NAME = "Shib-displayName";
   public static final String EMAIL = "Shib-email";
 
