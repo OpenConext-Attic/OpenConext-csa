@@ -120,7 +120,7 @@ public class CoinUser implements UserDetails {
    * {@inheritDoc}
    */
   @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
+  public Collection<CoinAuthority> getAuthorities() {
     return grantedAuthorities;
   }
 

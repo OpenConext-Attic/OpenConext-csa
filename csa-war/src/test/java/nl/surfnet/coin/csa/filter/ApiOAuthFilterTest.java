@@ -48,6 +48,7 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 import nl.surfnet.coin.api.client.OpenConextOAuthClient;
 import nl.surfnet.coin.api.client.domain.Group20;
@@ -233,7 +234,7 @@ public class ApiOAuthFilterTest {
 
     coinUser = new CoinUser();
     coinUser.setUid(THE_USERS_UID);
-    final TestingAuthenticationToken token = new TestingAuthenticationToken(coinUser, "");
+    final PreAuthenticatedAuthenticationToken token = new PreAuthenticatedAuthenticationToken(coinUser, "");
     token.setAuthenticated(true);
     when(securityContext.getAuthentication()).thenReturn(token);
   }

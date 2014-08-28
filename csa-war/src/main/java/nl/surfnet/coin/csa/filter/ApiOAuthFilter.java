@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.util.CollectionUtils;
 
 import nl.surfnet.coin.api.client.InvalidTokenException;
@@ -162,6 +163,10 @@ public class ApiOAuthFilter implements Filter {
       coinUser.setAuthorities(new ArrayList<CoinAuthority>());
       coinUser.addAuthority(new CoinAuthority(ROLE_DISTRIBUTION_CHANNEL_ADMIN));
     }
+
+    final PreAuthenticatedAuthenticationToken currentAuthentication = (PreAuthenticatedAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+    final PreAuthenticatedAuthenticationToken withAuthorities = new PreAuthenticatedAuthenticationToken(currentAuthentication.getPrincipal(), currentAuthentication.getCredentials(), coinUser.getAuthorities());
+    SecurityContextHolder.getContext().setAuthentication(withAuthorities);
   }
 
   private boolean groupsContains(String teamId, List<Group20> groups) {
