@@ -23,13 +23,16 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
   @Override
   protected Object getPreAuthenticatedPrincipal(final HttpServletRequest request) {
     if (Arrays.asList(environment.getActiveProfiles()).contains(Constants.DEV_PROFILE_NAME)) {
-      return new ShibbolethPrincipal("csa_admin", "dev admin", "admin@local");
+      return new ShibbolethPrincipal("csa_admin", "dev admin", "admin@local", "http://mock-idp");
     }
 
-    final Optional<String> uid = Optional.of((String) request.getAttribute(ShibbolethConstants.UID));
+    final Optional<String> uid = Optional.of((String) request.getAttribute(ShibbolethRequestAttributes.UID.getAttributeName()));
     if (uid.isPresent() ) {
       LOG.debug("Found user with uid {}", uid.get());
-      return new ShibbolethPrincipal(uid.get(), ((String)request.getAttribute(ShibbolethConstants.DISPLAY_NAME)), ((String)request.getAttribute(ShibbolethConstants.EMAIL)));
+      final String displayName = (String) request.getAttribute(ShibbolethRequestAttributes.DISPLAY_NAME.getAttributeName());
+      final String email = (String) request.getAttribute(ShibbolethRequestAttributes.EMAIL.getAttributeName());
+      final String idpId = (String) request.getAttribute(ShibbolethRequestAttributes.IDP_ID.getAttributeName());
+      return new ShibbolethPrincipal(uid.get(), displayName, email, idpId);
     } else {
       LOG.debug("No principal found. This should trigger shibboleth.");
       return null;
