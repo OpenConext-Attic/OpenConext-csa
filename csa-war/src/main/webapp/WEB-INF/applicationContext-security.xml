@@ -47,14 +47,31 @@
 
 
   <security:http use-expressions="true" entry-point-ref="entryPoint">
-    <security:access-denied-handler error-page="/accessDenied"/><!-- TODO make sure this page exists -->
     <security:anonymous enabled="false"/>
     <security:custom-filter position="PRE_AUTH_FILTER" ref="preAuthenticatedProcessingFilter"/>
     <security:custom-filter after="PRE_AUTH_FILTER" ref="apiOauthFilter" />
-    <security:intercept-url pattern="/shopadmin/**" access="hasRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN')"/>
-    <security:intercept-url pattern="/stats/**" access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN')"/>
-    <security:intercept-url pattern="/requests/**" access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN')"/>
-    <security:intercept-url pattern="/**" access="hasAnyRole('ROLE_USER','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN', 'ROLE_DISTRIBUTION_CHANNEL_ADMIN')"/>
+
+    <security:intercept-url pattern="/api/**" access="permitAll"/>
+    <security:intercept-url pattern="/logout.shtml" access="permitAll"/>
+
+    <security:intercept-url pattern="/css/**" access="permitAll"/>
+    <security:intercept-url pattern="/font/**" access="permitAll"/>
+    <security:intercept-url pattern="/images/**" access="permitAll"/>
+    <security:intercept-url pattern="/img/**" access="permitAll"/>
+    <security:intercept-url pattern="/public/**" access="permitAll"/>
+    <security:intercept-url pattern="/fieldimages/**" access="permitAll"/>
+    <security:intercept-url pattern="/screenshots/**" access="permitAll"/>
+    <security:intercept-url pattern="/js/**" access="permitAll"/>
+    <security:intercept-url pattern="/*.ico" access="permitAll"/>
+    <security:intercept-url pattern="/shopadmin/**" access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN')"/>
+    <security:intercept-url pattern="/stats/**"
+                            access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN')"/>
+    <security:intercept-url pattern="/requests/**"
+                            access="hasAnyRole('ROLE_DISTRIBUTION_CHANNEL_ADMIN','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN')"/>
+    <security:intercept-url pattern="/**"
+                            access="hasAnyRole('ROLE_USER','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN', 'ROLE_DISTRIBUTION_CHANNEL_ADMIN')"/>
+
+
   </security:http>
 
   <bean id="preAuthenticatedProcessingFilter"
