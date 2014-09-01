@@ -30,6 +30,7 @@ import nl.surfnet.coin.janus.Janus;
 import nl.surfnet.coin.janus.domain.EntityMetadata;
 
 import org.apache.commons.lang.StringUtils;
+import org.scribe.utils.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -51,43 +52,52 @@ public class V5_0_1__UpdateAppLogoFieldImageFromSr implements JavaMigration {
 
   @Override
   public void migrate(JdbcTemplate jdbcTemplate) throws Exception {
-    Properties props = new Properties();
-    props.load(new ClassPathResource("csa.properties").getInputStream());
-    
-    Janus janus = getJanusClass(props.getProperty("janus.class"));
+    try {
+      Properties props = new Properties();
+      props.load(new ClassPathResource("csa.properties").getInputStream());
 
-    janus.setJanusUri(new URI(props.getProperty("janus.uri")));
-    janus.setSecret(props.getProperty("janus.secret"));
-    janus.setUser(props.getProperty("janus.user"));
+      final String janusClass = props.getProperty("janus.class");
+      Preconditions.checkNotNull(janusClass, " property janus.class must be set");
+      Janus janus = getJanusClass(janusClass);
 
-    String query = "select id, service_provider_entity_id from compound_service_provider";
-    List<Object[]> serviceProviderArrs = jdbcTemplate.query(query, new RowMapper<Object[]>() {
-      @Override
-      public Object[] mapRow(ResultSet resultSet, int i) throws SQLException {
-        return new Object[]{resultSet.getLong("id"), resultSet.getString("service_provider_entity_id")};
-      }
-    });
-    for (Object[] serviceProviderArr : serviceProviderArrs) {
-      String entityId = (String) serviceProviderArr[1];
-      EntityMetadata metadata;
-      try {
-        metadata = janus.getMetadataByEntityId(entityId);
-      } catch (Throwable e) {
-        LOG.warn("SR reported an exception for retrieving the metadata for {}", entityId );
-        continue;
-      }
-      if (metadata != null) {
-        String appLogoUrl = metadata.getAppLogoUrl();
-        if (StringUtils.isNotBlank(appLogoUrl) && !appLogoUrl.equalsIgnoreCase(CompoundServiceProvider.SR_DEFAULT_LOGO_VALUE)) {
-          int update = jdbcTemplate.update("UPDATE field_image SET field_source = " + Field.Source.SURFCONEXT.ordinal() +
-                  " WHERE compound_service_provider_id = " + serviceProviderArr[0] +
-                  " AND field_key = " + Field.Key.APPSTORE_LOGO.ordinal());
-          LOG.info("Updated {} record in field_image table to use the SURFCONEXT source for the App Store Logo {} for {}", update, appLogoUrl, entityId);
+      janus.setJanusUri(new URI(props.getProperty("janus.uri")));
+      janus.setSecret(props.getProperty("janus.secret"));
+      janus.setUser(props.getProperty("janus.user"));
+
+      String query = "select id, service_provider_entity_id from compound_service_provider";
+      List<Object[]> serviceProviderArrs = jdbcTemplate.query(query, new RowMapper<Object[]>() {
+        @Override
+        public Object[] mapRow(ResultSet resultSet, int i) throws SQLException {
+          return new Object[]{resultSet.getLong("id"), resultSet.getString("service_provider_entity_id")};
+        }
+      });
+      for (Object[] serviceProviderArr : serviceProviderArrs) {
+        String entityId = (String) serviceProviderArr[1];
+        EntityMetadata metadata;
+        try {
+          metadata = janus.getMetadataByEntityId(entityId);
+        } catch (Throwable e) {
+          LOG.warn("SR reported an exception for retrieving the metadata for {}", entityId);
+          continue;
+        }
+        if (metadata != null) {
+          String appLogoUrl = metadata.getAppLogoUrl();
+          if (StringUtils.isNotBlank(appLogoUrl) && !appLogoUrl.equalsIgnoreCase(CompoundServiceProvider.SR_DEFAULT_LOGO_VALUE)) {
+            int update = jdbcTemplate.update("UPDATE field_image SET field_source = " + Field.Source.SURFCONEXT.ordinal() +
+              " WHERE compound_service_provider_id = " + serviceProviderArr[0] +
+              " AND field_key = " + Field.Key.APPSTORE_LOGO.ordinal());
+            LOG.info("Updated {} record in field_image table to use the SURFCONEXT source for the App Store Logo {} for {}", update, appLogoUrl, entityId);
+          }
         }
       }
+
+    } catch (Exception e) {
+      // this antiquated version of flyway swallows stacktraces without logging them, so we must do it ourselves.
+      LOG.error("migration failed", e);
+      throw e;
     }
   }
-  
+
   private Janus getJanusClass(String clazz) {
     try {
       return (Janus) Class.forName(clazz).newInstance();

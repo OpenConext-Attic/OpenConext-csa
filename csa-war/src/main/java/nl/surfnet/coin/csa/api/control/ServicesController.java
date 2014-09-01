@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -78,18 +77,11 @@ public class ServicesController extends BaseApiController implements ServicesSer
   @Resource
   private CrmCache crmCache;
 
-  private
-  @Value("${WEB_APPLICATION_CHANNEL}")
-  String protocol;
-  private
-  @Value("${WEB_APPLICATION_HOST_AND_PORT}")
-  String hostAndPort;
-  private
-  @Value("${WEB_APPLICATION_CONTEXT_PATH}")
-  String contextPath;
-  private
+  @Value("${static.baseurl}")
+  private String staticBaseUrl;
+
   @Value("${lmngDeepLinkBaseUrl}")
-  String lmngDeepLinkBaseUrl;
+  private String lmngDeepLinkBaseUrl;
 
   @Resource
   private CompoundSPService compoundSPService;
@@ -404,13 +396,10 @@ public class ServicesController extends BaseApiController implements ServicesSer
    * Returns an absolute URL for the given url
    */
   private String absoluteUrl(final String relativeUrl) {
-    String result = relativeUrl;
-    if (result != null) {
-      if (result.startsWith("/")) {
-        result = protocol + "://" + hostAndPort + (StringUtils.hasText(contextPath) ? contextPath : "") + result;
-      }
+    if (relativeUrl != null && relativeUrl.startsWith("/")) {
+      return this.staticBaseUrl + relativeUrl;
     }
-    return result;
+    return relativeUrl;
   }
 
   private List<Service> getCrmOnlyServices() {

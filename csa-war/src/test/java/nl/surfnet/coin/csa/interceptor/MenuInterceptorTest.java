@@ -15,56 +15,63 @@
  */
 package nl.surfnet.coin.csa.interceptor;
 
-import nl.surfnet.coin.csa.domain.CoinAuthority;
-import nl.surfnet.coin.csa.domain.CoinAuthority.Authority;
-import nl.surfnet.coin.csa.domain.CoinUser;
-import nl.surfnet.coin.csa.domain.Menu;
-import nl.surfnet.spring.security.opensaml.SAMLAuthenticationToken;
-import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.servlet.ModelAndView;
+import static nl.surfnet.coin.csa.domain.CoinAuthority.Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static nl.surfnet.coin.csa.domain.CoinAuthority.Authority.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.servlet.ModelAndView;
 
-/**
- * TestMenuInterceptorTest.java
- */
+import nl.surfnet.coin.csa.domain.CoinAuthority;
+import nl.surfnet.coin.csa.domain.CoinAuthority.Authority;
+import nl.surfnet.coin.csa.domain.CoinUser;
+import nl.surfnet.coin.csa.domain.Menu;
+
 public class MenuInterceptorTest {
 
-    private MenuInterceptor menuInterceptor = new MenuInterceptor();
+  private MenuInterceptor menuInterceptor = new MenuInterceptor();
 
-    @Test
-    public void test_menu_for_role_distribution_admin() throws Exception {
-        Menu menu = executeTestAndReturnMenu("/whatever.shtml", ROLE_DISTRIBUTION_CHANNEL_ADMIN);
-        assertEquals(4, menu.getMenuItems().size());
+  @Test
+  public void test_menu_for_role_distribution_admin() throws Exception {
+    Menu menu = executeTestAndReturnMenu("/whatever.shtml", ROLE_DISTRIBUTION_CHANNEL_ADMIN);
+    assertEquals(4, menu.getMenuItems().size());
+  }
+
+  private Menu executeTestAndReturnMenu(String requestUri, Authority... authorities) throws Exception {
+    setUpAuthorities(authorities);
+    ModelAndView modelAndView = new ModelAndView();
+    MockHttpServletRequest request = new MockHttpServletRequest("GET", requestUri);
+    menuInterceptor.postHandle(request, null, null, modelAndView);
+
+    ModelMap modelMap = modelAndView.getModelMap();
+
+    Menu menu = (Menu) modelMap.get("menu");
+    return menu;
+  }
+
+  private void setUpAuthorities(Authority... authorities) {
+    CoinUser coinUser = new CoinUser();
+    List<CoinAuthority> grantedAuthorities = new ArrayList<>();
+    for (Authority authority : authorities) {
+      grantedAuthorities.add(new CoinAuthority(authority));
     }
+    coinUser.setAuthorities(grantedAuthorities);
 
-    private Menu executeTestAndReturnMenu(String requestUri, Authority... authorities) throws Exception {
-        setUpAuthorities(authorities);
-        ModelAndView modelAndView = new ModelAndView();
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", requestUri);
-        menuInterceptor.postHandle(request, null, null, modelAndView);
+    Authentication authentication = mock(Authentication.class);
+    SecurityContext securityContext = mock(SecurityContext.class);
+    SecurityContextHolder.setContext(securityContext);
+    when(authentication.getPrincipal()).thenReturn(coinUser);
+    when(securityContext.getAuthentication()).thenReturn(authentication);
 
-        ModelMap modelMap = modelAndView.getModelMap();
-
-        Menu menu = (Menu) modelMap.get("menu");
-        return menu;
-    }
-
-    private void setUpAuthorities(Authority... authorities) {
-        CoinUser coinUser = new CoinUser();
-        List<CoinAuthority> grantedAuthorities = new ArrayList<CoinAuthority>();
-        for (Authority authority : authorities) {
-            grantedAuthorities.add(new CoinAuthority(authority));
-        }
-        coinUser.setAuthorities(grantedAuthorities);
-        SecurityContextHolder.getContext().setAuthentication(new SAMLAuthenticationToken(coinUser, "", coinUser.getAuthorities()));
-    }
+  }
 }

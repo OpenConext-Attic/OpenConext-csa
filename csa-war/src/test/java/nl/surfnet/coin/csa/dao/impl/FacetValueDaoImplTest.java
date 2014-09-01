@@ -29,6 +29,7 @@ import nl.surfnet.coin.csa.domain.ServiceProvider;
 import nl.surfnet.coin.csa.model.Facet;
 import nl.surfnet.coin.csa.model.FacetValue;
 import nl.surfnet.coin.csa.model.LocalizedString;
+
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -54,9 +55,7 @@ import java.util.Locale;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:coin-csa-context.xml",
-        "classpath:coin-csa-properties-context.xml",
-        "classpath:coin-shared-context.xml"})
+@ContextConfiguration(locations = {"classpath:applicationContext.xml"})
 @TransactionConfiguration(transactionManager = "csaTransactionManager", defaultRollback = true)
 @Transactional
 public class FacetValueDaoImplTest implements LocaleResolver {
@@ -76,7 +75,7 @@ public class FacetValueDaoImplTest implements LocaleResolver {
   private Locale currentLocale;
 
   private ObjectMapper mapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY).
-          setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+    setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
   @Test
   public void testRetrieveFacetOnCompoundServicerProvider() {
@@ -204,7 +203,7 @@ public class FacetValueDaoImplTest implements LocaleResolver {
     facetDao.saveOrUpdate(facet);
     int localizedStringsCountAfter = localizedStringDao.findAll().size();
     assertEquals("No more than existing nr of localized strings should be stored when updating existing, orphans should be deleted, ",
-            localizedStringsCountBefore, localizedStringsCountAfter);
+      localizedStringsCountBefore, localizedStringsCountAfter);
   }
 
   private Facet createFacetWithValue() {

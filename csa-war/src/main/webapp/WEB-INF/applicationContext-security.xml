@@ -18,18 +18,12 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:security="http://www.springframework.org/schema/security"
-       xmlns:opensaml="http://www.surfnet.nl/schema/security/opensaml"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/security
-       http://www.springframework.org/schema/security/spring-security.xsd
-       http://www.surfnet.nl/schema/security/opensaml
-       http://www.surfnet.nl/schema/security/spring-security-opensaml.xsd">
+       http://www.springframework.org/schema/security/spring-security.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-  <bean id="samlProvisioner" class="nl.surfnet.coin.csa.provisioner.SAMLProvisioner">
-    <property name="identityProviderService" ref="providerService"/>
-    <property name="uuidAttribute" value="${saml-uuid-attribute}"/>
-  </bean>
 
   <bean id="apiOauthFilter" class="nl.surfnet.coin.csa.filter.ApiOAuthFilter">
     <property name="adminDistributionTeam" value="${admin.distribution.channel.teamname}"/>
@@ -37,33 +31,28 @@
     <property name="callbackFlagParameter" value="apiOauthCallback"/>
   </bean>
 
-  <bean id="samlCertificateStore" class="nl.surfnet.spring.security.opensaml.KeyStore">
-    <property name="certificates">
-      <map>
-        <entry key="${wayf.url.metadata}" value="${wayf.certificate}"/>
-      </map>
-    </property>
-  </bean>
+  <bean id="entryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
 
-  <opensaml:service-provider id="samlAuthenticationProvider"
-                             message-handler-ref="samlMessageHandler"
-                             preauth-filter-ref="samlPreAuthFilter"
-                             entity-id="${ISSUING_ENTITY_ID}"
-                             assertion-consumer-uri="${ASSERTION_CONSUMER_URI}"
-                             provisioner-ref="samlProvisioner"
-                             certificatestore-ref="samlCertificateStore"
-                             authentication-manager-ref="authenticationManager"/>
+  <context:annotation-config/>
 
-  <security:http auto-config="true" use-expressions="true" disable-url-rewriting="true">
+  <!-- Unsecured pages -->
+  <security:http security="none" pattern="/Shibboleth.sso/*"/>
+  <security:http security="none" pattern="/favicon.ico"/>
+  <security:http security="none" pattern="/images/**"/>
+  <security:http security="none" pattern="/css/**"/>
+  <security:http security="none" pattern="/font/**"/>
+  <security:http security="none" pattern="/img/**"/>
+  <security:http security="none" pattern="/js/**"/>
+  <security:http security="none" pattern="/public/**"/>
 
-    <security:custom-filter position="PRE_AUTH_FILTER" ref="samlPreAuthFilter"/>
-    <security:custom-filter after="PRE_AUTH_FILTER" ref="apiOauthFilter"/>
-    <security:intercept-url pattern="/OpenSAML.sso/Login" access="permitAll"/>
+
+  <security:http use-expressions="true" entry-point-ref="entryPoint">
+    <security:anonymous enabled="false"/>
+    <security:custom-filter position="PRE_AUTH_FILTER" ref="preAuthenticatedProcessingFilter"/>
+    <security:custom-filter after="PRE_AUTH_FILTER" ref="apiOauthFilter" />
+
     <security:intercept-url pattern="/api/**" access="permitAll"/>
-    <security:intercept-url pattern="/OpenSAML.sso/Metadata" access="permitAll"/>
     <security:intercept-url pattern="/logout.shtml" access="permitAll"/>
-    <security:intercept-url pattern="${ASSERTION_CONSUMER_URI}"
-                            access="hasAnyRole('ROLE_ANONYMOUS','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN', 'ROLE_DISTRIBUTION_CHANNEL_ADMIN', 'ROLE_USER')"/>
 
     <security:intercept-url pattern="/css/**" access="permitAll"/>
     <security:intercept-url pattern="/font/**" access="permitAll"/>
@@ -82,12 +71,23 @@
     <security:intercept-url pattern="/**"
                             access="hasAnyRole('ROLE_USER','ROLE_IDP_SURFCONEXT_ADMIN', 'ROLE_IDP_LICENSE_ADMIN', 'ROLE_DISTRIBUTION_CHANNEL_ADMIN')"/>
 
-    <security:form-login login-page="/OpenSAML.sso/Login?target=${wayf.url.sso}" default-target-url="/"/>
-    <security:anonymous/>
-    <security:logout logout-success-url="/logout.shtml" invalidate-session="true" delete-cookies="true"/>
+
   </security:http>
 
+  <bean id="preAuthenticatedProcessingFilter"
+        class="nl.surfnet.coin.csa.shibboleth.ShibbolethPreAuthenticatedProcessingFilter">
+    <property name="authenticationManager" ref="authenticationManager"/>
+  </bean>
+  <bean id="preAuthProvider"
+        class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+    <property name="preAuthenticatedUserDetailsService">
+      <bean class="nl.surfnet.coin.csa.shibboleth.RichUserDetailsService" />
+    </property>
+  </bean>
+
   <security:authentication-manager alias="authenticationManager">
-    <security:authentication-provider ref="samlAuthenticationProvider"/>
+    <security:authentication-provider ref="preAuthProvider"/>
   </security:authentication-manager>
+
+
 </beans>

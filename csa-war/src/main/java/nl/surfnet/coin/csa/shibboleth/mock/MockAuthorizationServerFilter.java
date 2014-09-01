@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package nl.surfnet.coin.csa.util;
+package nl.surfnet.coin.csa.shibboleth.mock;
 
 import static nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_ACTIONS;
 import static nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES;

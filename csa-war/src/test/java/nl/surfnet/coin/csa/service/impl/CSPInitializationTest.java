@@ -1,11 +1,8 @@
 package nl.surfnet.coin.csa.service.impl;
 
-import java.util.List;
+import static junit.framework.Assert.assertEquals;
 
-import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
-import nl.surfnet.coin.csa.domain.IdentityProvider;
-import nl.surfnet.coin.csa.util.ConcurrentRunner;
-import nl.surfnet.coin.csa.util.ConcurrentRunnerContext;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,15 +12,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import static junit.framework.Assert.assertEquals;
+import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
+import nl.surfnet.coin.csa.domain.IdentityProvider;
+import nl.surfnet.coin.csa.util.ConcurrentRunner;
+import nl.surfnet.coin.csa.util.ConcurrentRunnerContext;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-  "classpath:coin-csa-context.xml",
-  "classpath:coin-csa-with-real-cache.xml",
-  "classpath:coin-csa-properties-context.xml",
-  "classpath:coin-shared-context.xml"
+  "classpath:applicationContext.xml",
+  "classpath:coin-csa-with-real-cache.xml"
 })
 @TransactionConfiguration(transactionManager = "csaTransactionManager", defaultRollback = true)
 @Transactional
@@ -43,5 +41,6 @@ public class CSPInitializationTest {
     });
     for (Integer oneResult : results) {
       assertEquals("all results of getCSPsByIdp should be the same", 4, oneResult.intValue());
-    }}
+    }
+  }
 }
