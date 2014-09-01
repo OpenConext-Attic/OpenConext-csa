@@ -31,6 +31,8 @@ To build:
 To run locally:
 
     cd coin-csa-war
-    mvn jetty:run
+    mvn jetty:run -Dspring.profiles.active=localDev
+
+The Spring 'localDev' profile automatically logs you in as user 'csa_admin' and therefore mocks out communication with SAML servers.
 
 Log in with username `csa_admin`. You can leave the password field empty. 

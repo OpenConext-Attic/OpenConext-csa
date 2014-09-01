@@ -14,7 +14,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.surfnet.coin</groupId>
     <artifactId>csa-parent</artifactId>
@@ -32,11 +33,9 @@
     <app.timestamp>${maven.build.timestamp}</app.timestamp>
     <coin-test.version>3.11.0</coin-test.version>
     <coin-master.test-dependencies.version>3.11.0</coin-master.test-dependencies.version>
-    <spring-security-opensaml.version>4.0.0</spring-security-opensaml.version>
     <flyway.version>1.5</flyway.version>
     <xstream.version>1.4.2</xstream.version>
     <bonecp.version>0.7.1.RELEASE</bonecp.version>
-    <mujina-idp.version>3.11.0</mujina-idp.version>
     <dumbster.version>1.6</dumbster.version>
     <selenium.version>2.42.0</selenium.version>
     <freemarker.version>[2.3.19,2.4)</freemarker.version>
@@ -49,6 +48,7 @@
     <selenium.webdriver>firefox</selenium.webdriver>
     <httpclient.version>4.3.1</httpclient.version>
     <ehcache.version>2.5.1</ehcache.version>
+    <mysql-connector-java.version>5.1.31</mysql-connector-java.version>
   </properties>
 
   <dependencies>
@@ -84,17 +84,6 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-taglibs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.surfnet.coin</groupId>
-      <artifactId>spring-security-opensaml</artifactId>
-      <version>${spring-security-opensaml.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -282,8 +271,8 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.20</version>
-      <scope>test</scope>
+      <version>${mysql-connector-java.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.freemarker</groupId>
@@ -309,8 +298,19 @@
   <build>
     <resources>
       <resource>
+        <!-- Avoid filtering any other files than the property file -->
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/*.properties</exclude>
+        </excludes>
       </resource>
     </resources>
     <pluginManagement>
@@ -320,22 +320,11 @@
           <artifactId>jetty-maven-plugin</artifactId>
           <version>${jetty.version}</version>
           <configuration>
-            <contextHandlers>
-              <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-                <contextPath>/mujina-idp</contextPath>
-                <war>
-                  ${settings.localRepository}/org/surfnet/coin/mujina-idp/${mujina-idp.version}/mujina-idp-${mujina-idp.version}.war
-                </war>
-                <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
-              </contextHandler>
-            </contextHandlers>
             <webAppConfig>
-              <contextPath>/csa</contextPath>
               <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
               <defaultsDescriptor>${basedir}/src/test/resources/jettywebdefault.xml</defaultsDescriptor>
               <baseResource implementation="org.eclipse.jetty.util.resource.ResourceCollection">
-                <resourcesAsCSV>${basedir}/src/main/webapp,${project.build.directory}/${project.build.finalName}
-                </resourcesAsCSV>
+                <resourcesAsCSV>${basedir}/src/main/webapp,${project.build.directory}/${project.build.finalName}</resourcesAsCSV>
               </baseResource>
             </webAppConfig>
             <contextXml>${basedir}/src/test/resources/jetty-context.xml</contextXml>
@@ -370,12 +359,6 @@
             <artifactId>coin-master-test-dependencies</artifactId>
             <version>${coin-master.test-dependencies.version}</version>
             <type>pom</type>
-          </dependency>
-          <dependency>
-            <groupId>org.surfnet.coin</groupId>
-            <artifactId>mujina-idp</artifactId>
-            <type>war</type>
-            <version>${mujina-idp.version}</version>
           </dependency>
         </dependencies>
       </plugin>
