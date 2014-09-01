@@ -31,7 +31,6 @@
   
   <artifactId>csa-parent</artifactId>
   <version>4.0.4-SNAPSHOT</version>
-
   <name>OpenConext : Cloud Services API</name>
   <inceptionYear>2013</inceptionYear>
 
