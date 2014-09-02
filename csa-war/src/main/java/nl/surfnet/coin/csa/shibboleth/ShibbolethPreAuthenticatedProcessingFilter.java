@@ -26,7 +26,7 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
       return new ShibbolethPrincipal("csa_admin", "dev admin", "admin@local", "http://mock-idp");
     }
 
-    final Optional<String> uid = Optional.of((String) request.getAttribute(ShibbolethRequestAttributes.UID.getAttributeName()));
+    final Optional<String> uid = Optional.fromNullable((String) request.getAttribute(ShibbolethRequestAttributes.UID.getAttributeName()));
     if (uid.isPresent() ) {
       LOG.debug("Found user with uid {}", uid.get());
       final String displayName = (String) request.getAttribute(ShibbolethRequestAttributes.DISPLAY_NAME.getAttributeName());
