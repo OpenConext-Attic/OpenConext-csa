@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import nl.surfnet.coin.csa.domain.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,10 +45,6 @@ import com.google.common.collect.Collections2;
 import nl.surfnet.coin.csa.api.cache.CrmCache;
 import nl.surfnet.coin.csa.api.cache.ProviderCache;
 import nl.surfnet.coin.csa.api.cache.ServicesCache;
-import nl.surfnet.coin.csa.domain.Article;
-import nl.surfnet.coin.csa.domain.CompoundServiceProvider;
-import nl.surfnet.coin.csa.domain.IdentityProvider;
-import nl.surfnet.coin.csa.domain.Screenshot;
 import nl.surfnet.coin.csa.interceptor.AuthorityScopeInterceptor;
 import nl.surfnet.coin.csa.model.Category;
 import nl.surfnet.coin.csa.model.CategoryValue;
@@ -345,6 +342,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
       service.setSupportUrl(csp.getSupportUrlEn());
       service.setInstitutionDescription(csp.getInstitutionDescriptionEn());
       service.setServiceUrl(csp.getSupportUrlEn());
+      service.setSpName(csp.getSp().getName(Provider.Language.EN));
     } else {
       service.setDescription(csp.getServiceDescriptionNl());
       service.setEnduserDescription(csp.getEnduserDescriptionNl());
@@ -352,6 +350,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
       service.setSupportUrl(csp.getSupportUrlNl());
       service.setInstitutionDescription(csp.getInstitutionDescriptionNl());
       service.setServiceUrl(csp.getSupportUrlNl());
+      service.setSpName(csp.getSp().getName(Provider.Language.NL));
     }
   }
 

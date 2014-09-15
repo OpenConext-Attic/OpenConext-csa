@@ -90,6 +90,8 @@ public class Service implements Comparable<Service>, Serializable {
 
   private String spEntityId;
 
+  private String spName;
+
   private ARP arp;
 
   private boolean availableForEndUser;
@@ -378,6 +380,14 @@ public class Service implements Comparable<Service>, Serializable {
 
   public void setInstitutionId(String institutionId) {
     this.institutionId = institutionId;
+  }
+
+  public String getSpName() {
+    return spName;
+  }
+
+  public void setSpName(String spName) {
+    this.spName = spName;
   }
 
   @Override
