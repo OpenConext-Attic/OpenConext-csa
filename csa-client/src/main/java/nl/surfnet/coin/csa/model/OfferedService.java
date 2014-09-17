@@ -10,7 +10,7 @@ public class OfferedService {
   public OfferedService() { // only here for json marshalling (sigh...)
   }
 
-  public OfferedService(Service service, List<InstitutionIdentityProvider> identityProviders) {
+  public OfferedService(Service service) {
     this.service = service;
     this.identityProviders = identityProviders;
   }

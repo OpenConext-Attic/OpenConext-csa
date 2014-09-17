@@ -204,20 +204,9 @@ public class ServicesController extends BaseApiController implements ServicesSer
     LOG.debug("Idp with id {} offers {} services", idpEntityId, myServices.size());
 
     List<OfferedService> result = new ArrayList<>();
-    final List<IdentityProvider> allIdentityProviders = identityProviderService.getAllIdentityProviders();
 
     for (final Service myOfferedService: myServices) {
-      List<InstitutionIdentityProvider> usingInstitutions = new ArrayList<>();
-      for (IdentityProvider idp: allIdentityProviders) {
-        final List<String> linkedServiceProviderIDs = servicesCache.findUsedServiceProvidersIds(identityProvider);
-        // look up optional users of our services
-        if (linkedServiceProviderIDs.contains(myOfferedService.getSpEntityId())) {
-          usingInstitutions.add(new InstitutionIdentityProvider(idp.getId(), idp.getName(), idp.getInstitutionId()));
-        }
-      }
-      final OfferedService offeredService = new OfferedService(myOfferedService, usingInstitutions);
-      LOG.debug("Found offered service {}", offeredService);
-      result.add(offeredService);
+      result.add(new OfferedService(myOfferedService));
     }
 
     LOG.debug("Number of offered services found: {}", result.size());
