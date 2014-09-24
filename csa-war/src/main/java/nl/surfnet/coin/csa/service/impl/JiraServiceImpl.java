@@ -16,6 +16,16 @@
 
 package nl.surfnet.coin.csa.service.impl;
 
+import com.google.common.base.Joiner;
+import nl.surfnet.coin.csa.domain.CoinUser;
+import nl.surfnet.coin.csa.model.JiraTask;
+import nl.surfnet.coin.csa.service.JiraService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
+import org.swift.common.soap.jira.*;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,22 +33,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import nl.surfnet.coin.csa.domain.CoinUser;
-import nl.surfnet.coin.csa.model.JiraTask;
-import nl.surfnet.coin.csa.service.JiraService;
-
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
-import org.swift.common.soap.jira.JiraSoapService;
-import org.swift.common.soap.jira.JiraSoapServiceServiceLocator;
-import org.swift.common.soap.jira.RemoteCustomFieldValue;
-import org.swift.common.soap.jira.RemoteFieldValue;
-import org.swift.common.soap.jira.RemoteIssue;
-
-import com.google.common.base.Joiner;
-
 public class JiraServiceImpl implements JiraService, InitializingBean {
+  private static final Logger LOG = LoggerFactory.getLogger(JiraServiceImpl.class);
 
+  private final static String STATUS_CLOSED = "6";
 
   private static String ENDPOINT = "/rpc/soap/jirasoapservice-v2";
 
@@ -47,7 +45,7 @@ public class JiraServiceImpl implements JiraService, InitializingBean {
   public static final RemoteCustomFieldValue[] EMPTY_REMOTE_CUSTOM_FIELD_VALUES = new RemoteCustomFieldValue[0];
   public static final String SP_CUSTOM_FIELD = "customfield_10100";
   public static final String IDP_CUSTOM_FIELD = "customfield_10101";
-  private static final long DEFAULT_SECURITY_LEVEL = 10100L; 
+  private static final long DEFAULT_SECURITY_LEVEL = 10100L;
 
   public static final String TYPE_LINKREQUEST = "13";
   public static final String TYPE_UNLINKREQUEST = "17";
@@ -67,13 +65,13 @@ public class JiraServiceImpl implements JiraService, InitializingBean {
   public String create(final JiraTask task, CoinUser user) throws IOException {
     RemoteIssue remoteIssue;
     switch (task.getIssueType()) {
-    case LINKREQUEST:
-    case UNLINKREQUEST:
-      remoteIssue = createRequest(task, user);
-      break;
-    default:
-      remoteIssue = createQuestion(task, user);
-      break;
+      case LINKREQUEST:
+      case UNLINKREQUEST:
+        remoteIssue = createRequest(task, user);
+        break;
+      default:
+        remoteIssue = createQuestion(task, user);
+        break;
     }
     final RemoteIssue createdIssue = jiraSoapService.createIssueWithSecurityLevel(getToken(), remoteIssue, DEFAULT_SECURITY_LEVEL);
     if (createdIssue == null) {
@@ -103,14 +101,14 @@ public class JiraServiceImpl implements JiraService, InitializingBean {
 
   private String getIssueTypeByJiraTaskType(JiraTask.Type t) {
     switch (t) {
-    case QUESTION:
-      return TYPE_QUESTION;
-    case LINKREQUEST:
-      return TYPE_LINKREQUEST;
-    case UNLINKREQUEST:
-      return TYPE_UNLINKREQUEST;
-    default:
-      throw new IllegalStateException("Unknown type: " + t);
+      case QUESTION:
+        return TYPE_QUESTION;
+      case LINKREQUEST:
+        return TYPE_LINKREQUEST;
+      case UNLINKREQUEST:
+        return TYPE_UNLINKREQUEST;
+      default:
+        throw new IllegalStateException("Unknown type: " + t);
     }
   }
 
@@ -162,14 +160,14 @@ public class JiraServiceImpl implements JiraService, InitializingBean {
   public void doAction(String key, JiraTask.Action update) throws IOException {
     String action;
     switch (update) {
-    case CLOSE:
-      action = CLOSE_ACTION_IDENTIFIER;
-      break;
-    case REOPEN:
-      action = REOPEN_ACTION_IDENTIFIER;
-      break;
-    default:
-      throw new IllegalArgumentException("Action must be either close or reopen");
+      case CLOSE:
+        action = CLOSE_ACTION_IDENTIFIER;
+        break;
+      case REOPEN:
+        action = REOPEN_ACTION_IDENTIFIER;
+        break;
+      default:
+        throw new IllegalArgumentException("Action must be either close or reopen");
     }
     jiraSoapService.progressWorkflowAction(getToken(), key, action, Collections.emptyList().toArray(EMPTY_REMOTE_FIELD_VALUES));
   }
@@ -184,25 +182,26 @@ public class JiraServiceImpl implements JiraService, InitializingBean {
     query.append(" AND key IN(");
     Joiner.on(",").skipNulls().appendTo(query, keys);
     query.append(")");
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Sending query to JIRA: " + query.toString());
+    }
     final RemoteIssue[] issuesFromJqlSearch = jiraSoapService.getIssuesFromJqlSearch(getToken(), query.toString(), 1000);
     for (RemoteIssue remoteIssue : issuesFromJqlSearch) {
       String identityProvider = fetchValue(IDP_CUSTOM_FIELD, remoteIssue.getCustomFieldValues());
       String serviceProvider = fetchValue(SP_CUSTOM_FIELD, remoteIssue.getCustomFieldValues());
       final JiraTask jiraTask = new JiraTask.Builder().key(remoteIssue.getKey()).identityProvider(identityProvider)
-          .serviceProvider(serviceProvider).institution("???").status(fetchStatus(remoteIssue)).body(remoteIssue.getDescription()).build();
+        .serviceProvider(serviceProvider).institution("???").status(fetchStatus(remoteIssue)).body(remoteIssue.getDescription()).build();
       jiraTasks.add(jiraTask);
     }
     return jiraTasks;
   }
 
   private JiraTask.Status fetchStatus(final RemoteIssue remoteIssue) {
-    if ("6".equals(remoteIssue.getStatus())) {
+    if (STATUS_CLOSED.equals(remoteIssue.getStatus())) {
       return JiraTask.Status.CLOSED;
-    }
-    if ("1".equals(remoteIssue.getStatus())) {
+    } else {
       return JiraTask.Status.OPEN;
     }
-    throw new IllegalStateException("Unknown JiraTask Status");
   }
 
   private String fetchValue(final String name, final RemoteCustomFieldValue[] customFieldValues) {
@@ -232,9 +231,8 @@ public class JiraServiceImpl implements JiraService, InitializingBean {
 
   /**
    * meant to override the default impl (for instance to mock for unit tests)
-   * 
-   * @param jiraSoapService
-   *          the soap service
+   *
+   * @param jiraSoapService the soap service
    */
   protected void setJiraSoapService(JiraSoapService jiraSoapService) {
     this.jiraSoapService = jiraSoapService;
