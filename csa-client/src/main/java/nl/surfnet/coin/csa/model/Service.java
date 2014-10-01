@@ -54,7 +54,7 @@ public class Service implements Comparable<Service>, Serializable {
 
   private String eulaUrl;
 
-  private List<String> screenshotUrls;
+  private List<String> screenshotUrls = new ArrayList<>();
 
   private String supportMail;
 
@@ -86,7 +86,7 @@ public class Service implements Comparable<Service>, Serializable {
    */
   private License license;
 
-  private List<Category> categories;
+  private List<Category> categories = new ArrayList<>();
 
   private String spEntityId;
 
