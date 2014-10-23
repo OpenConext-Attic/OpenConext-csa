@@ -132,7 +132,11 @@ public abstract class Field extends DomainObject implements Comparable<Field> {
     
     TITLE_EN,
     
-    TITLE_NL;
+    TITLE_NL,
+
+    WIKI_URL_EN,
+
+    WIKI_URL_NL;
   }
 
   public Source getSource() {

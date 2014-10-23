@@ -54,6 +54,8 @@ public class Service implements Comparable<Service>, Serializable {
 
   private String eulaUrl;
 
+  private String wikiUrl;
+
   private List<String> screenshotUrls = new ArrayList<>();
 
   private String supportMail;
@@ -388,6 +390,14 @@ public class Service implements Comparable<Service>, Serializable {
 
   public void setSpName(String spName) {
     this.spName = spName;
+  }
+
+  public String getWikiUrl() {
+    return wikiUrl;
+  }
+
+  public void setWikiUrl(String wikiUrl) {
+    this.wikiUrl = wikiUrl;
   }
 
   @Override

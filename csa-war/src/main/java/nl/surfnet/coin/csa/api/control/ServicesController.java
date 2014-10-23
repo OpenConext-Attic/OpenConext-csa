@@ -331,6 +331,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
       service.setSupportUrl(csp.getSupportUrlEn());
       service.setInstitutionDescription(csp.getInstitutionDescriptionEn());
       service.setServiceUrl(csp.getSupportUrlEn());
+      service.setWikiUrl(csp.getWikiUrlEn());
       service.setSpName(csp.getSp().getName(Provider.Language.EN));
     } else {
       service.setDescription(csp.getServiceDescriptionNl());
@@ -339,6 +340,7 @@ public class ServicesController extends BaseApiController implements ServicesSer
       service.setSupportUrl(csp.getSupportUrlNl());
       service.setInstitutionDescription(csp.getInstitutionDescriptionNl());
       service.setServiceUrl(csp.getSupportUrlNl());
+      service.setWikiUrl(csp.getWikiUrlNl());
       service.setSpName(csp.getSp().getName(Provider.Language.NL));
     }
   }
