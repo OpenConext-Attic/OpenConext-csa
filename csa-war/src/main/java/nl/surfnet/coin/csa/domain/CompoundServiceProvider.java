@@ -318,7 +318,7 @@ public class CompoundServiceProvider extends DomainObject {
         }
       }
     }
-    throw new RuntimeException("Unset key for ('" + this + "'");
+    throw new RuntimeException("Unset key (" + key + ") for ('" + this + "'");
   }
 
   private String getDistributionChannelProperty(Field field) {
