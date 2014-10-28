@@ -76,6 +76,9 @@ public class SpLmngDataBindingController extends BaseController {
     CompoundServiceProvider compoundServiceProvider = compoundSPService.getCSPByServiceProviderEntityId(entityId);
     Map model = new HashMap();
     model.put(BaseController.COMPOUND_SP, compoundServiceProvider);
+    LOG.debug("Listing service with id: {}", entityId);
+    LOG.debug("Listing fields: {}", compoundServiceProvider.getFields());
+
     return new ModelAndView("shopadmin/compoundSp-detail", model);
   }
 

@@ -75,6 +75,7 @@ public class SpLnmgListController extends BaseController {
     model.put("bindings", lmngServiceBindings);
     List<LmngServiceBinding> cspOrphans = getOrphans(lmngServiceBindings);
     model.put("orphans", cspOrphans);
+    log.debug("Listing all services");
     return new ModelAndView("shopadmin/sp-overview", model);
   }
 
