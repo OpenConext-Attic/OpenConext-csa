@@ -59,7 +59,7 @@
   <logger name="nl.surfnet.sab" level="info" additivity="false">
     <appender-ref ref="console"/>
   </logger>
-  <logger name="org.springframework.security" level="debug" additivity="false">
+  <logger name="org.springframework.security" level="warn" additivity="false">
     <appender-ref ref="console"/>
   </logger>
   <logger name="nl.surfnet.coin.oauth.OauthClient" level="warn" additivity="false">
