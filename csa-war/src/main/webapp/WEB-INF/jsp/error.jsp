@@ -95,7 +95,7 @@
         List<String> profiles = Arrays.asList(applicationContext.getEnvironment().getActiveProfiles());
       %>
 
-      <c:if test="<%= profiles.contains("localDev") %>">
+      <c:if test="<%= profiles.contains(\"localDev\") %>">
         <div class="well">
         <h2>Details (shown only in dev mode)</h2>
         <dl>
