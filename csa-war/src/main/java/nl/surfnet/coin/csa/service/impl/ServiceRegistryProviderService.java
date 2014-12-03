@@ -93,7 +93,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
     try {
       spList = janusClient.getAllowedSps(idpId);
     } catch (RestClientException e) {
-      log.warn("Could not retrieve allowed SPs from Janus client", e.getMessage());
+      log.warn("Could not retrieve allowed SPs from Janus client", e);
       sendErrorMail("RestClientException", e.getMessage(), "LinkedServiceProviderIDs");
     }
     return spList;
@@ -116,7 +116,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
         }
       }
     } catch (RestClientException e) {
-      log.warn("Could not retrieve 'all SPs' from Janus client", e.getMessage());
+      log.warn("Could not retrieve 'all SPs' from Janus client", e);
       sendErrorMail("RestClientException", e.getMessage(), "AllServiceProvidersUnfiltered");
     }
     return spList;
@@ -143,7 +143,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
 
       return serviceProvider;
     } catch (RestClientException e) {
-      log.warn("Could not retrieve metadata from Janus client", e.getMessage());
+      log.warn("Could not retrieve metadata from Janus client", e);
       sendErrorMail("RestClientException", e.getMessage(), "ServiceProvider");
     }
     return null;
@@ -258,6 +258,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
       EntityMetadata metadataByEntityId = janusClient.getMetadataByEntityId(idpEntityId);
       return buildIdentityProviderByMetadata(metadataByEntityId);
     } catch (Exception e) {
+      log.error("Unable to getIdentityProvider " + idpEntityId, e);
       sendErrorMail("Exception", e.getMessage(), "identityProvider");
       return null;
     }
@@ -290,7 +291,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
         }
       }
     } catch (RestClientException e) {
-      log.warn("Could not retrieve 'all IdPs' from Janus client", e.getMessage());
+      log.warn("Could not retrieve 'all IdPs' from Janus client", e);
     }
     return idps;
   }
