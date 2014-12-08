@@ -143,7 +143,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
 
       return serviceProvider;
     } catch (RestClientException e) {
-      log.warn("Could not retrieve metadata from Janus client", e);
+      log.error("Could not retrieve metadata from Janus client", e);
       sendErrorMail("RestClientException", e.getMessage(), "ServiceProvider");
     }
     return null;
