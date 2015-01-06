@@ -30,7 +30,7 @@
   </parent>
   
   <artifactId>csa-parent</artifactId>
-  <version>4.0.6</version>
+  <version>4.0.7-SNAPSHOT</version>
   <name>OpenConext : Cloud Services API</name>
   <inceptionYear>2013</inceptionYear>
 
@@ -43,7 +43,7 @@
     <connection>scm:git:git@github.com:OpenConext/OpenConext-csa.git</connection>
     <url>scm:git:git@github.com:OpenConext/OpenConext-csa.git</url>
     <developerConnection>scm:git:git@github.com:OpenConext/OpenConext-csa.git</developerConnection>
-    <tag>csa-parent-4.0.6</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
