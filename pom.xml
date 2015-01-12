@@ -20,7 +20,6 @@
   <modules>
     <module>csa-client</module>
     <module>csa-war</module>
-    <module>csa-dist</module>
   </modules>
 
   <parent>

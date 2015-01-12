@@ -17,38 +17,30 @@
 # RELEASE INFORMATION
 
     Project:           CSA
-    Date:              2013-03-18
 
     Content:
-      1.  Unpack tarball
-      2.  Prepare Tomcat
-        2.1 Stop Tomcat
-        2.2 Undeploy a previous version
-        2.3 Copy / edit property files
-      3.  Deploy war file
-      4.  Start tomcat
+      1.  Prepare Tomcat
+        1.1 Stop Tomcat
+        1.2 Undeploy a previous version
+        1.3 Copy / edit property files
+      2.  Deploy war file
+      3.  Start tomcat
 
 
-## 1. UNPACK TARBALL
-
-Unpack the provided tarball on the server that you want to deploy
-the application on. e.g. extract the tarball in /tmp
-
-
-## 2. PREPARE TOMCAT
+## 1. PREPARE TOMCAT
 
 This installation document only provides documentation for the Tomcat application server.
 
 If you already have deployed a previous version of the csa application
-you must follow step 2.2a to undeploy the previous version.
+you must follow step 1.2a to undeploy the previous version.
 
-If you have not deployed a previous version yet, follow 2.2b instead.
+If you have not deployed a previous version yet, follow 1.2b instead.
 
-### 2.1 Stop Tomcat
+### 1.1 Stop Tomcat
 
 Stop the tomcat application server
 
-### 2.2a Undeploy a previous version (optional)
+### 1.2a Undeploy a previous version (optional)
 Navigate to the `<<CATALINA_HOME>>/wars/`
 (e.g. /opt/tomcat/wars/)
 delete the `csa-war-<<VERION>>.war` file.
@@ -57,14 +49,14 @@ delete the `csa-war-<<VERION>>.war` file.
 Navigate to `<<CATALINA_HOME>>/work/csa.{dev,test,acc}.surfconext.nl/`
 Delete the entire csa directory listed there.
 
-### 2.2b Prepare Tomcat for first time deployment
+### 1.2b Prepare Tomcat for first time deployment
 Create a webapps holder directory:
 `<<CATALINA_HOME>>/webapps/csa.{dev,test,acc}.surfconext.nl/`
 and give ownership to tomcat:
 `chown tomcat:tomcat <<CATALINA_HOME>>/webapps/csa.{dev,test,acc}.surfconext.nl/`
 
 
-### 2.3 Copy / edit property files
+### 1.3 Copy / edit property files
 
 Out-of-the-box the tarball comes with a number of different property files.
 A number of property files are delivered:
@@ -85,7 +77,7 @@ Copy the chosen property files to:
 Edit the values of the property files according to your environment.
 
 
-## 3. DEPLOY WAR FILE
+## 2. DEPLOY WAR FILE
 
 Copy the provided context descriptor from
 `<<EXTRACTED_TAR_BALL_PATH>>/tomcat/conf/context`
@@ -100,6 +92,6 @@ to
 (e.g. /opt/tomcat/wars/
 
 
-## 4. START TOMCAT
+## 3. START TOMCAT
 
 Start tomcat again.
