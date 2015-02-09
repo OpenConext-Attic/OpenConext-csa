@@ -1,3 +1,7 @@
+<%@ page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
+<%@ page import="org.springframework.web.context.WebApplicationContext" %>
+<%@ page import="java.util.Arrays" %>
+<%@ page import="java.util.List" %>
 <%@ page isErrorPage="true" %>
 <%@ include file="include.jsp"%>
 <%--
@@ -85,7 +89,13 @@
 
       <p>${endUserMessage}</p>
 
-      <c:if test="${dev}">
+      <%
+        ServletContext sc = request.getSession().getServletContext();
+        WebApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(sc);
+        List<String> profiles = Arrays.asList(applicationContext.getEnvironment().getActiveProfiles());
+      %>
+
+      <c:if test="<%= profiles.contains(\"localDev\") %>">
         <div class="well">
         <h2>Details (shown only in dev mode)</h2>
         <dl>

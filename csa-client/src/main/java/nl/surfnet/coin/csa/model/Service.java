@@ -54,7 +54,9 @@ public class Service implements Comparable<Service>, Serializable {
 
   private String eulaUrl;
 
-  private List<String> screenshotUrls;
+  private String wikiUrl;
+
+  private List<String> screenshotUrls = new ArrayList<>();
 
   private String supportMail;
 
@@ -86,9 +88,11 @@ public class Service implements Comparable<Service>, Serializable {
    */
   private License license;
 
-  private List<Category> categories;
+  private List<Category> categories = new ArrayList<>();
 
   private String spEntityId;
+
+  private String spName;
 
   private ARP arp;
 
@@ -378,6 +382,22 @@ public class Service implements Comparable<Service>, Serializable {
 
   public void setInstitutionId(String institutionId) {
     this.institutionId = institutionId;
+  }
+
+  public String getSpName() {
+    return spName;
+  }
+
+  public void setSpName(String spName) {
+    this.spName = spName;
+  }
+
+  public String getWikiUrl() {
+    return wikiUrl;
+  }
+
+  public void setWikiUrl(String wikiUrl) {
+    this.wikiUrl = wikiUrl;
   }
 
   @Override

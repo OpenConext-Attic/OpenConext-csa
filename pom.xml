@@ -20,7 +20,6 @@
   <modules>
     <module>csa-client</module>
     <module>csa-war</module>
-    <module>csa-dist</module>
   </modules>
 
   <parent>
@@ -30,8 +29,7 @@
   </parent>
   
   <artifactId>csa-parent</artifactId>
-  <version>4.0.4-SNAPSHOT</version>
-
+  <version>4.0.7-SNAPSHOT</version>
   <name>OpenConext : Cloud Services API</name>
   <inceptionYear>2013</inceptionYear>
 

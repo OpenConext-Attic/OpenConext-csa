@@ -65,7 +65,7 @@ import nl.surfnet.coin.oauth.ClientCredentialsClient;
 
 public class CsaClientTestIntegration {
 
-  private static final String endpoint = "http://localhost:8282/csa";
+  private static final String endpoint = "http://localhost:8282";
 
   private static String answer = "{\"scope\":\"something\",\"access_token\":\"3fc6a956-a414-4f4b-a280-65cfbeb9ba2a\",\"token_type\":\"bearer\",\"expires_in\":0}";
 

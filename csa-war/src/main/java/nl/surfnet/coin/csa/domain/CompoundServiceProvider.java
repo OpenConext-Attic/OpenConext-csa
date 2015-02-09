@@ -120,6 +120,8 @@ public class CompoundServiceProvider extends DomainObject {
     buildFieldString(Key.SUPPORT_URL_NL, null, getSupportUrl(serviceProvider, Language.NL), provider);
     buildFieldString(Key.SUPPORT_URL_EN, null, getSupportUrl(serviceProvider, Language.EN), provider);
     buildFieldString(Key.TECHNICAL_SUPPORTMAIL, null, getMail(serviceProvider, ContactPersonType.technical), provider);
+    buildFieldString(Key.WIKI_URL_EN, null, null, provider);
+    buildFieldString(Key.WIKI_URL_NL, null, null, provider);
 
     return provider;
   }
@@ -240,6 +242,14 @@ public class CompoundServiceProvider extends DomainObject {
     return (String) getFieldValue(EULA_URL);
   }
 
+  public String getWikiUrlEn() {
+    return (String) getFieldValue(WIKI_URL_EN);
+  }
+
+  public String getWikiUrlNl() {
+    return (String) getFieldValue(WIKI_URL_NL);
+  }
+
   public String getSupportMail() {
     return (String) getFieldValue(SUPPORT_MAIL);
   }
@@ -308,7 +318,7 @@ public class CompoundServiceProvider extends DomainObject {
         }
       }
     }
-    throw new RuntimeException("Unset key for ('" + this + "'");
+    throw new RuntimeException("Unset key (" + key + ") for ('" + this + "'");
   }
 
   private String getDistributionChannelProperty(Field field) {

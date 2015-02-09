@@ -36,14 +36,14 @@ public class ActionsServiceImpl implements ActionsService {
 
   private static final Logger LOG = LoggerFactory.getLogger(ActionsServiceImpl.class);
 
-  @Resource(name="actionsDao")
+  @Resource(name = "actionsDao")
   private ActionsDaoImpl actionsDao;
 
-  @Resource(name="jiraService")
+  @Resource(name = "jiraService")
   private JiraService jiraService;
 
 
-  @Resource(name="providerService")
+  @Resource(name = "providerService")
   private ServiceProviderService providerService;
 
   @Override
@@ -51,8 +51,7 @@ public class ActionsServiceImpl implements ActionsService {
     try {
       synchronizeWithJira(identityProvider);
     } catch (IOException e) {
-      //tough luck
-      LOG.warn("Could not synchronize with JIRA", e);
+      LOG.error("Could not synchronize with JIRA", e);
     }
     return actionsDao.findActionsByIdP(identityProvider);
   }
@@ -60,12 +59,12 @@ public class ActionsServiceImpl implements ActionsService {
   @Override
   public void registerJiraIssueCreation(Action action) {
     JiraTask task = new JiraTask.Builder()
-            .body(action.getUserEmail() + ("\n\n" + action.getBody()))
-            .identityProvider(action.getIdpId()).serviceProvider(action.getSpId())
-            .institution(action.getInstitutionId()).issueType(action.getType())
-            .status(JiraTask.Status.OPEN).build();
+      .body(action.getUserEmail() + ("\n\n" + action.getBody()))
+      .identityProvider(action.getIdpId()).serviceProvider(action.getSpId())
+      .institution(action.getInstitutionId()).issueType(action.getType())
+      .status(JiraTask.Status.OPEN).build();
     try {
-      String jiraKey =  jiraService.create(task, createUser(action));
+      String jiraKey = jiraService.create(task, createUser(action));
       action.setJiraKey(jiraKey);
     } catch (IOException e) {
       throw new RuntimeException(e);
