@@ -57,6 +57,7 @@ public class EntityMetadata implements Serializable {
   private List<Contact> contacts = new ArrayList<Contact>();
   private String instutionId;
   private String applicationUrl;
+  private boolean publishedInEduGain;
 
   public static EntityMetadata fromMetadataMap(Map<String, Object> metadata) {
     EntityMetadata em = new EntityMetadata();
@@ -120,7 +121,10 @@ public class EntityMetadata implements Serializable {
       Contact contact = getContact2(metadata, (String) c2Mail);
       em.addContact(contact);
     }
-
+    Object publishedInEduGain = metadata.get(Janus.Metadata.PUBLISHED_EDU_GAIN.val());
+    if (publishedInEduGain != null) {
+      em.setPublishedInEduGain((Boolean) publishedInEduGain);
+    }
     return em;
   }
 
@@ -415,4 +419,11 @@ public class EntityMetadata implements Serializable {
     this.applicationUrl = applicationUrl;
   }
 
+  public boolean isPublishedInEduGain() {
+    return publishedInEduGain;
+  }
+
+  public void setPublishedInEduGain(boolean publishedInEduGain) {
+    this.publishedInEduGain = publishedInEduGain;
+  }
 }

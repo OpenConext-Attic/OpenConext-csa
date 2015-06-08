@@ -100,6 +100,8 @@ public class Service implements Comparable<Service>, Serializable {
 
   private boolean idpVisibleOnly;
 
+  private boolean publishedInEdugain;
+
   public Service() {
   }
 
@@ -398,6 +400,14 @@ public class Service implements Comparable<Service>, Serializable {
 
   public void setWikiUrl(String wikiUrl) {
     this.wikiUrl = wikiUrl;
+  }
+
+  public boolean isPublishedInEdugain() {
+    return publishedInEdugain;
+  }
+
+  public void setPublishedInEdugain(boolean publishedInEdugain) {
+    this.publishedInEdugain = publishedInEdugain;
   }
 
   @Override

@@ -80,34 +80,6 @@ public class JanusRestClientMock implements Janus {
   }
 
   @Override
-  public List<String> getEntityIdsByMetaData(nl.surfnet.coin.csa.janus.Janus.Metadata key, String value) {
-    // Two known cases: Janus.Metadata.OAUTH_CONSUMERKEY &
-    // Janus.Metadata.INSITUTION_ID
-    List<String> results = new ArrayList<>();
-    switch (key) {
-      case OAUTH_CONSUMERKEY:
-        for (EntityMetadata metadata : spList) {
-          String consumerKey = metadata.getOauthConsumerKey();
-          if (StringUtils.hasText(consumerKey) && consumerKey.matches(value)) {
-            results.add(metadata.getAppEntityId());
-          }
-        }
-        return results;
-      case INSITUTION_ID:
-        for (EntityMetadata metadata : idpList) {
-          String institutionId = metadata.getInstutionId();
-          if (StringUtils.hasText(institutionId) && institutionId.equalsIgnoreCase(value)) {
-            results.add(metadata.getAppEntityId());
-          }
-        }
-        return results;
-      default:
-        throw new RuntimeException("Only supported Janus.MetaData types are : " + Janus.Metadata.INSITUTION_ID + ","
-                + Janus.Metadata.OAUTH_CONSUMERKEY);
-    }
-  }
-
-  @Override
   public List<String> getAllowedSps(String idpentityid) {
     List<String> allowedSps = spsForIdp.get(idpentityid);
     return allowedSps != null ? allowedSps : new ArrayList<>();
