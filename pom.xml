@@ -25,6 +25,7 @@
     <version>1.2.3.RELEASE</version>
   </parent>
 
+  <groupId>org.surfnet.coin</groupId>
   <artifactId>csa</artifactId>
   <packaging>war</packaging>
   <name>OpenConext : Cloud Services API</name>
