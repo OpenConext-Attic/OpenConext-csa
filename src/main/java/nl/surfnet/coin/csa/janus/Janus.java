@@ -71,7 +71,8 @@ public interface Janus {
     WORKFLOWSTATE("workflowState"),
     URL_EN("url:en"),
     URL_NL("url:nl"),
-    APPLICATION_URL("coin:application_url");
+    APPLICATION_URL("coin:application_url"),
+    PUBLISHED_EDU_GAIN("coin:publish_in_edugain");
 
     private String val;
 
@@ -90,15 +91,6 @@ public interface Janus {
    * @param entityId the entityId
    */
   EntityMetadata getMetadataByEntityId(String entityId);
-
-  /**
-   * Get a list of entity ids that match the given metadata key/value pair.
-   *
-   * @param key   the metadata key
-   * @param value the value the give metadata key should have
-   * @return the entity id
-   */
-  List<String> getEntityIdsByMetaData(Metadata key, String value);
 
   /**
    * Refer to {@link Janus#getAllowedSps(String, String)} but without the revision parameter.

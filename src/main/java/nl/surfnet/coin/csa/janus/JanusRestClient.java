@@ -16,21 +16,11 @@
 
 package nl.surfnet.coin.csa.janus;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-
+import nl.surfnet.coin.csa.janus.domain.ARP;
+import nl.surfnet.coin.csa.janus.domain.EntityMetadata;
+import nl.surfnet.coin.csa.janus.domain.JanusEntity;
 import org.apache.commons.codec.binary.Hex;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -39,9 +29,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
-import nl.surfnet.coin.csa.janus.domain.ARP;
-import nl.surfnet.coin.csa.janus.domain.EntityMetadata;
-import nl.surfnet.coin.csa.janus.domain.JanusEntity;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * REST client implementation for Janus.
@@ -57,6 +51,8 @@ public class JanusRestClient implements Janus {
   private final String user;
 
   private final String secret;
+
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
   public JanusRestClient(URI uri, String user, String secret) {
     this.janusUri = uri;
@@ -92,7 +88,7 @@ public class JanusRestClient implements Janus {
       Assert.notNull(restResponse, "Rest response from Janus should not be null");
 
       if (LOG.isTraceEnabled()) {
-        LOG.trace("Janus-request returned: {}", restResponse.toString());
+        LOG.trace("Janus-request returned: {}", objectMapper.writeValueAsString(restResponse));
       }
 
       final EntityMetadata entityMetadata = EntityMetadata.fromMetadataMap(restResponse);
@@ -101,38 +97,9 @@ public class JanusRestClient implements Janus {
       return entityMetadata;
     } catch (IOException e) {
       LOG.error("While doing Janus-request", e);
+      throw new RuntimeException(e);
+
     }
-    return null;
-  }
-
-  @Override
-  public List<String> getEntityIdsByMetaData(Metadata key, String value) {
-    Map<String, String> parameters = new HashMap<>();
-    parameters.put("key", key.val());
-    parameters.put("value", value);
-
-    URI signedUri;
-    try {
-      signedUri = sign("findIdentifiersByMetadata", parameters);
-
-      if (LOG.isTraceEnabled()) {
-        LOG.trace("Signed Janus-request is: {}", signedUri);
-      }
-
-      @SuppressWarnings("unchecked")
-      final List<String> restResponse = restTemplate.getForObject(signedUri, List.class);
-
-      if (LOG.isTraceEnabled()) {
-        LOG.trace("Janus-request returned: {}", restResponse.toString());
-      }
-
-      return restResponse;
-
-    } catch (IOException e) {
-      LOG.error("While doing Janus-request", e);
-    }
-    return null;
-
   }
 
   @Override
@@ -146,7 +113,7 @@ public class JanusRestClient implements Janus {
     Assert.hasText(idpentityid, "idpentityid is a required parameter");
     Map<String, String> parameters = new HashMap<>();
     parameters.put("idpentityid", idpentityid);
-    if (!StringUtils.hasLength(revision)) {
+    if (StringUtils.hasLength(revision)) {
       parameters.put("idprevision", revision);
     }
 
@@ -162,15 +129,16 @@ public class JanusRestClient implements Janus {
       final List<String> restResponse = restTemplate.getForObject(signedUri, List.class);
 
       if (LOG.isTraceEnabled()) {
-        LOG.trace("Janus-request returned: {}", restResponse.toString());
+        LOG.trace("Janus-request returned: {}", objectMapper.writeValueAsString(restResponse));
       }
 
       return restResponse;
 
     } catch (IOException e) {
       LOG.error("While doing Janus-request", e);
+      throw new RuntimeException(e);
+
     }
-    return null;
   }
 
   @Override
@@ -193,7 +161,7 @@ public class JanusRestClient implements Janus {
       final Map<String, Map<String, Object>> restResponse = restTemplate.getForObject(signedUri, Map.class);
 
       if (LOG.isTraceEnabled()) {
-        LOG.trace("Janus-request returned: {}", restResponse.toString());
+        LOG.trace("Janus-request returned: {}", objectMapper.writeValueAsString(restResponse));
       }
 
       List<EntityMetadata> entities = new ArrayList<EntityMetadata>();
@@ -208,8 +176,9 @@ public class JanusRestClient implements Janus {
 
     } catch (IOException e) {
       LOG.error("While doing Janus-request", e);
+      throw new RuntimeException(e);
+
     }
-    return null;
   }
 
   @Override
@@ -232,7 +201,7 @@ public class JanusRestClient implements Janus {
       final Map<String, Map<String, Object>> restResponse = restTemplate.getForObject(signedUri, Map.class);
 
       if (LOG.isTraceEnabled()) {
-        LOG.trace("Janus-request returned: {}", restResponse.toString());
+        LOG.trace("Janus-request returned: {}", objectMapper.writeValueAsString(restResponse));
       }
 
       List<EntityMetadata> entities = new ArrayList<EntityMetadata>();
@@ -247,8 +216,9 @@ public class JanusRestClient implements Janus {
 
     } catch (IOException e) {
       LOG.error("While doing Janus-request", e);
+      throw new RuntimeException(e);
+
     }
-    return null;
   }
 
   @Override
@@ -261,16 +231,16 @@ public class JanusRestClient implements Janus {
       if (LOG.isTraceEnabled()) {
         LOG.trace("Signed Janus-request is: {}", signedUri);
       }
+      final Map restResponse = restTemplate.getForObject(signedUri, Map.class);
+      if (LOG.isTraceEnabled()) {
+        LOG.trace("Janus-request returned: {}", objectMapper.writeValueAsString(restResponse));
+      }
+
+      return (restResponse == null) ? null : ARP.fromRestResponse(restResponse);
     } catch (IOException e) {
       LOG.error("Could not do ARP request to Janus", e);
+      throw new RuntimeException(e);
     }
-
-    final Map restResponse = restTemplate.getForObject(signedUri, Map.class);
-    if (LOG.isTraceEnabled()) {
-      LOG.trace("Janus-request returned: {}", restResponse.toString());
-    }
-
-    return (restResponse == null) ? null : ARP.fromRestResponse(restResponse);
   }
 
   @Override
@@ -284,16 +254,16 @@ public class JanusRestClient implements Janus {
       if (LOG.isTraceEnabled()) {
         LOG.trace("Signed Janus-request is: {}", signedUri);
       }
+      final List restResponse = restTemplate.getForObject(signedUri, List.class);
+      if (LOG.isTraceEnabled()) {
+        LOG.trace("Janus-request returned: {}", objectMapper.writeValueAsString(restResponse));
+      }
+      return restResponse != null && restResponse.size() > 0 ? (Boolean) restResponse.get(0) : false;
     } catch (IOException e) {
       LOG.error("Could not do isConnectionAllowed request to Janus", e);
+      throw new RuntimeException(e);
     }
 
-    final List restResponse = restTemplate.getForObject(signedUri, List.class);
-    if (LOG.isTraceEnabled()) {
-      LOG.trace("Janus-request returned: {}", restResponse.toString());
-    }
-
-    return restResponse != null && restResponse.size() > 0 ? (Boolean) restResponse.get(0) : false;
   }
 
   @Override
@@ -306,18 +276,19 @@ public class JanusRestClient implements Janus {
       if (LOG.isTraceEnabled()) {
         LOG.trace("Signed Janus-request is: {}", signedUri);
       }
+      @SuppressWarnings("unchecked")
+      final Map<String, Object> restResponse = restTemplate.getForObject(signedUri, Map.class);
+
+      if (LOG.isTraceEnabled()) {
+        LOG.trace("Janus-request returned: {}", objectMapper.writeValueAsString(restResponse));
+      }
+
+      return restResponse == null ? null : JanusEntity.fromJanusResponse(restResponse);
     } catch (IOException e) {
       LOG.error("Could not do getEntity request to Janus", e);
+      throw new RuntimeException(e);
     }
 
-    @SuppressWarnings("unchecked")
-    final Map<String, Object> restResponse = restTemplate.getForObject(signedUri, Map.class);
-
-    if (LOG.isTraceEnabled()) {
-      LOG.trace("Janus-request returned: {}", restResponse.toString());
-    }
-
-    return restResponse == null ? null : JanusEntity.fromJanusResponse(restResponse);
   }
 
   /**

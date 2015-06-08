@@ -13,7 +13,6 @@ import javax.persistence.MappedSuperclass;
 
 @SuppressWarnings("serial")
 @MappedSuperclass
-@Deprecated // Copied this in from the infamous coin-shared only to be removed ASAP.
 public abstract class DomainObject implements Serializable {
 
   /*
