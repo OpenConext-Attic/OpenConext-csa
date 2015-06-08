@@ -16,11 +16,24 @@ SURFconext: [http://www.surfconext.nl](http://www.surfconext.nl)
 
 ### System Requirements
 
-- Java 6
+- Java 8
 - Maven 3
 - MySQL 5.5
 
 ### Building and running
+
+To build, first setup your local db:
+
+Connect to your local mysql database: `mysql -uroot`
+
+Execute the following:
+
+```sql
+CREATE DATABASE csa DEFAULT CHARACTER SET utf8;
+create user 'csa'@'localhost' identified by 'csa';
+grant all on csa.* to 'csa'@'localhost';
+
+```
 
 [Maven 3](http://maven.apache.org) is needed to build and run this project.
 
@@ -30,8 +43,11 @@ To build:
 
 To run locally:
 
-    cd coin-csa-war
-    mvn jetty:run -Dspring.profiles.active=localDev
+    mvn spring-boot:run -Dspring.profiles.active=dev
 
 The Spring 'localDev' profile automatically logs you in as user 'csa_admin' and therefore mocks out communication with SAML servers.
+
+To run selenium tests:
+
+    mvn verify -Pselenium
 
