@@ -29,11 +29,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.jayway.awaitility.Duration;
 
 public class ServicesCacheTest {
 
@@ -64,11 +68,8 @@ public class ServicesCacheTest {
     services = subject.getAllServices("en");
     assertEquals(1, services.size());
 
-    //now wait for the cache to be updated
-    Thread.sleep(1250);
-
-    services = subject.getAllServices("en");
-    assertEquals(2, services.size());
+    //now wait for the cache to expire and be refilled
+    await().atMost(Duration.FIVE_SECONDS).until(() -> subject.getAllServices("en").size(), is(2));
   }
 
   @Test

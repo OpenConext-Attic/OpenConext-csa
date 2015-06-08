@@ -22,15 +22,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-import nl.surfnet.coin.csa.service.ServicesService;
 import nl.surfnet.coin.csa.model.Service;
+import nl.surfnet.coin.csa.service.ServicesService;
 
 public class ServicesCache extends AbstractCache {
 
@@ -46,11 +46,11 @@ public class ServicesCache extends AbstractCache {
     this.servicesService = servicesService;
   }
 
-  private ConcurrentHashMap<String, List<Service>> allServicesCache = new ConcurrentHashMap<>();
+  private AtomicReference<Map<String, List<Service>>> allServicesCache = new AtomicReference<>();
 
-  public List<Service> getAllServices(String lang) {
-    assertLanguage(lang);
-    List<Service> services = allServicesCache.get(lang);
+  public List<Service> getAllServices(final String lang) {
+    Assert.isTrue("en".equalsIgnoreCase(lang) || "nl".equalsIgnoreCase(lang), "The only languages supported are 'nl' and 'en'");
+    List<Service> services = allServicesCache.get().get(lang);
     if (services == null) {
       LOG.debug("Cache miss for lang '{}', will return empty list", lang);
       services = Collections.emptyList();
@@ -58,15 +58,10 @@ public class ServicesCache extends AbstractCache {
     return SerializationUtils.clone(new ArrayList<>(services));
   }
 
-  private void assertLanguage(String lang) {
-    Assert.isTrue("en".equalsIgnoreCase(lang) || "nl".equalsIgnoreCase(lang), "The only languages supported are 'nl' and 'en'");
-  }
-
   @Override
   protected void doPopulateCache() {
     Map<String, List<Service>> services = servicesService.findAll(callDelay);
-    allServicesCache.clear();
-    allServicesCache.putAll(services);
+    allServicesCache.set(services);
   }
 
 

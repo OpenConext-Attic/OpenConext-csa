@@ -18,20 +18,25 @@
  */
 package nl.surfnet.coin.csa.api.cache;
 
-import nl.surfnet.coin.csa.domain.IdentityProvider;
-import nl.surfnet.coin.csa.service.IdentityProviderService;
-import org.junit.Before;
-import org.junit.Test;
+import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hibernate.validator.util.Contracts.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.hibernate.validator.util.Contracts.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.jayway.awaitility.Duration;
+
+import nl.surfnet.coin.csa.domain.IdentityProvider;
+import nl.surfnet.coin.csa.service.IdentityProviderService;
 
 public class ProviderCacheTest {
 
@@ -44,6 +49,7 @@ public class ProviderCacheTest {
     identityProviderService = mock(IdentityProviderService.class);
     subject = new ProviderCache(identityProviderService, 0, 1000, 0);
   }
+
   @Test
   public void testGetServiceProviderIdentifiers() throws Exception {
     List<String> sps = getSPs();
@@ -61,10 +67,7 @@ public class ProviderCacheTest {
     assertEquals(1, serviceProviderIdentifiers.size());
 
     //now wait for the cache to be updated
-    Thread.sleep(1250);
-
-    serviceProviderIdentifiers = subject.getServiceProviderIdentifiers(IDP_ID);
-    assertEquals(2, serviceProviderIdentifiers.size());
+    await().atMost(Duration.FIVE_SECONDS).until(() -> subject.getServiceProviderIdentifiers(IDP_ID).size(), is(2));
   }
 
   @Test
@@ -88,15 +91,18 @@ public class ProviderCacheTest {
     List<IdentityProvider> listWithThreeIdps = Arrays.asList(idp1, idp2, idp3);
 
     when(identityProviderService.getAllIdentityProviders()).thenReturn(listWithTwoIdps);
-    Thread.sleep(1250);
-    assertNotNull(subject.getIdentityProvider("idp1"));
-    assertNotNull(subject.getIdentityProvider("idp2"));
-    assertNull(subject.getIdentityProvider("idp3"));
+    await().atMost(Duration.FIVE_SECONDS).until(() ->
+        subject.getIdentityProvider("idp1") != null &&
+          subject.getIdentityProvider("idp2") != null &&
+          subject.getIdentityProvider("idp3") == null
+    );
+
     when(identityProviderService.getAllIdentityProviders()).thenReturn(listWithThreeIdps);
-    Thread.sleep(1250);
-    assertNotNull(subject.getIdentityProvider("idp1"));
-    assertNotNull(subject.getIdentityProvider("idp2"));
-    assertNotNull(subject.getIdentityProvider("idp3"));
+    await().atMost(Duration.FIVE_SECONDS).until(() ->
+        subject.getIdentityProvider("idp1") != null &&
+          subject.getIdentityProvider("idp2") != null &&
+          subject.getIdentityProvider("idp3") != null
+    );
   }
 
   private List<String> getSPs() {

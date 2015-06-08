@@ -59,9 +59,9 @@ public class CrmCacheTest {
     articles.add(createArticle());
     when(service.getArticlesForServiceProviders(anyListOf(String.class))).thenReturn(articles);
 
-    cache = new CrmCache(service, dao, 0, 10000);
+    cache = new CrmCache(service, dao, 0, 1000);
     //cache needs to kick in
-    Thread.sleep(250);
+    Thread.sleep(10);
   }
 
   @Test
