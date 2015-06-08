@@ -44,6 +44,8 @@ public class ServiceProvider extends Provider implements Serializable {
 
   private String institutionId;
 
+  private boolean publishedInEdugain;
+
   public ServiceProvider(String id) {
     this.id = id;
   }
@@ -106,6 +108,14 @@ public class ServiceProvider extends Provider implements Serializable {
 
   public void setArp(ARP arp) {
     this.arp = arp;
+  }
+
+  public boolean isPublishedInEdugain() {
+    return publishedInEdugain;
+  }
+
+  public void setPublishedInEdugain(boolean publishedInEdugain) {
+    this.publishedInEdugain = publishedInEdugain;
   }
 
   @Override
