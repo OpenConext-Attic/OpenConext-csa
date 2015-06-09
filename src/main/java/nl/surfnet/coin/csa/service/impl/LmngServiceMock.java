@@ -82,7 +82,7 @@ public class LmngServiceMock implements CrmService {
 
   @Override
   public String getInstitutionName(String guid) {
-    return null;
+    return services.stream().filter(institute -> institute.getGuid().equals(guid)).findFirst().orElseGet(Account::new).getGuid();
   }
 
   @Override

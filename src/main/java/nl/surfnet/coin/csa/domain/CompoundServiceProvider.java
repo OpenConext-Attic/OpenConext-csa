@@ -68,6 +68,9 @@ public class CompoundServiceProvider extends DomainObject {
   @Column
   private boolean availableForEndUser;
 
+  @Column
+  private String licenseStatus;
+
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "compoundServiceProvider")
   @Sort(type = SortType.NATURAL)
   private SortedSet<FieldString> fields = new TreeSet<FieldString>();
@@ -498,6 +501,13 @@ public class CompoundServiceProvider extends DomainObject {
     this.availableForEndUser = availableForEndUser;
   }
 
+  public String getLicenseStatus() {
+    return licenseStatus;
+  }
+
+  public void setLicenseStatus(String licenseStatus) {
+    this.licenseStatus = licenseStatus;
+  }
 
   private static void buildFieldString(Key key, String lmng, String surfconext, CompoundServiceProvider provider) {
     FieldString fieldString = null;
