@@ -1,7 +1,16 @@
 package csa.filter;
 
-import com.google.common.base.Preconditions;
-import csa.domain.CheckTokenResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -13,16 +22,13 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.filter.GenericFilterBean;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Map;
+import com.google.common.base.Preconditions;
 
-public class AuthorizationServerFilter implements Filter {
+import csa.domain.CheckTokenResponse;
+
+public class AuthorizationServerFilter extends GenericFilterBean {
 
   public static final String CHECK_TOKEN_RESPONSE = "CheckTokenResponse";
 
@@ -33,15 +39,18 @@ public class AuthorizationServerFilter implements Filter {
      * Details needed so that we may check tokens presented to us by clients. This application uses them to authenticate via
      * Basic authentication with the oAuth server.
      */
-  private String oauthCheckTokenEndpointUrl;
-  private String oauthCheckTokenClientId;
-  private String oauthCheckTokenSecret;
+  private final String oauthCheckTokenEndpointUrl;
+  private final String oauthCheckTokenClientId;
+  private final String oauthCheckTokenSecret;
 
-  private RestTemplate restTemplate = new RestTemplate();
+  private final RestTemplate restTemplate = new RestTemplate();
 
-  @Override
-  public void init(FilterConfig filterConfig) throws ServletException {
+  public AuthorizationServerFilter(String oauthCheckTokenEndpointUrl, String oauthCheckTokenClientId, String oauthCheckTokenSecret) {
+    this.oauthCheckTokenEndpointUrl = oauthCheckTokenEndpointUrl;
+    this.oauthCheckTokenClientId = oauthCheckTokenClientId;
+    this.oauthCheckTokenSecret = oauthCheckTokenSecret;
   }
+
 
   @Override
   public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
@@ -54,7 +63,7 @@ public class AuthorizationServerFilter implements Filter {
       sendError(response, HttpServletResponse.SC_FORBIDDEN, "OAuth secured endpoint");
       return;
     }
-    MultiValueMap<String, String> formData = new LinkedMultiValueMap<String, String>();
+    MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
     formData.add("token", accessToken);
     HttpHeaders headers = new HttpHeaders();
     headers.set("Authorization", getAuthorizationHeader(oauthCheckTokenClientId, oauthCheckTokenSecret));
@@ -69,6 +78,7 @@ public class AuthorizationServerFilter implements Filter {
   }
 
   private CheckTokenResponse parseCheckTokenResponse(Map<String, Object> map) {
+    @SuppressWarnings("unchecked")
     List<String> scopes = (List<String>) map.get("scope");
     Preconditions.checkArgument(scopes != null, "Authorization server did not return an 'scope' value");
 
@@ -97,7 +107,7 @@ public class AuthorizationServerFilter implements Filter {
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     }
     return restTemplate.exchange(path, HttpMethod.POST,
-      new HttpEntity<MultiValueMap<String, String>>(formData, headers), Map.class).getBody();
+      new HttpEntity<>(formData, headers), Map.class).getBody();
   }
 
   private String getAccessToken(HttpServletRequest request) {
@@ -123,18 +133,6 @@ public class AuthorizationServerFilter implements Filter {
     } catch (IOException e) {
       throw new RuntimeException(reason, e);
     }
-  }
-
-  public void setOauthCheckTokenEndpointUrl(String oauthCheckTokenEndpointUrl) {
-    this.oauthCheckTokenEndpointUrl = oauthCheckTokenEndpointUrl;
-  }
-
-  public void setOauthCheckTokenClientId(String oauthCheckTokenClientId) {
-    this.oauthCheckTokenClientId = oauthCheckTokenClientId;
-  }
-
-  public void setOauthCheckTokenSecret(String oauthCheckTokenSecret) {
-    this.oauthCheckTokenSecret = oauthCheckTokenSecret;
   }
 
 }

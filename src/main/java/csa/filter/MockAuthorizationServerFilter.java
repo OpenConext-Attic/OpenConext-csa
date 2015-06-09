@@ -18,14 +18,19 @@
  */
 package csa.filter;
 
-import csa.interceptor.AuthorityScopeInterceptor;
-import csa.domain.CheckTokenResponse;
-
-import javax.servlet.*;
 import java.io.IOException;
 import java.util.Arrays;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
-public class MockAuthorizationServerFilter extends AuthorizationServerFilter {
+import csa.domain.CheckTokenResponse;
+import csa.interceptor.AuthorityScopeInterceptor;
+
+public class MockAuthorizationServerFilter implements Filter {
 
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
@@ -37,7 +42,7 @@ public class MockAuthorizationServerFilter extends AuthorizationServerFilter {
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-    request.setAttribute(AuthorizationServerFilter.CHECK_TOKEN_RESPONSE, new CheckTokenResponse("http://mock-idp",Arrays.asList(AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_ACTIONS, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_STATISTICS)));
+    request.setAttribute(AuthorizationServerFilter.CHECK_TOKEN_RESPONSE, new CheckTokenResponse("http://mock-idp", Arrays.asList(AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_CROSS_IDP_SERVICES, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_ACTIONS, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_STATISTICS)));
     chain.doFilter(request, response);
   }
 }

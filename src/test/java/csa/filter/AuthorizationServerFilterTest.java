@@ -45,11 +45,7 @@ public class AuthorizationServerFilterTest {
 
   @Before
   public void before() {
-    subject = new AuthorizationServerFilter();
-
-    subject.setOauthCheckTokenClientId(client);
-    subject.setOauthCheckTokenSecret(secret);
-    subject.setOauthCheckTokenEndpointUrl("http://localhost:8889/oauth/check_token");
+    subject = new AuthorizationServerFilter("http://localhost:8889/oauth/check_token", client, secret);
 
     request = new MockHttpServletRequest("GET", "/anyUrl");
     response = new MockHttpServletResponse();

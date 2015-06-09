@@ -18,13 +18,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 
+import csa.filter.AuthorizationServerFilter;
+import csa.filter.MockAuthorizationServerFilter;
 import csa.filter.VootFilter;
 import csa.janus.Janus;
+import csa.service.IdentityProviderService;
 import csa.service.VootClient;
 import csa.shibboleth.RichUserDetailsService;
 import csa.shibboleth.ShibbolethPreAuthenticatedProcessingFilter;
 import csa.shibboleth.mock.MockShibbolethFilter;
-import csa.service.IdentityProviderService;
 
 @EnableWebSecurity
 @Configuration
@@ -51,11 +53,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   public void configure(WebSecurity web) throws Exception {
     web
       .ignoring()
-      .antMatchers("/api/**","/public/**", "/css/**", "/font/**", "/images/**", "/img/**", "/js/**", "/health")
+      .antMatchers("/api/**", "/public/**", "/css/**", "/font/**", "/images/**", "/img/**", "/js/**", "/health")
     ;
   }
+
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+
+
     http
       .csrf().disable()
       .addFilterBefore(
@@ -90,5 +95,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     shibFilter.addUrlPatterns("/shopadmin/*");
     shibFilter.setOrder(1);
     return shibFilter;
+  }
+
+  @Bean
+  @Autowired
+  public FilterRegistrationBean authorizationServerFilter(Environment environment,
+                                                          @Value("${oauth.checkToken.endpoint.url}") String oauthCheckTokenEndpointUrl,
+                                                          @Value("${oauth.checkToken.clientId}") String oauthCheckTokenClientId,
+                                                          @Value("${oauth.checkToken.secret}") String oauthCheckTokenSecret) {
+    final FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+    filterRegistrationBean.addUrlPatterns("/api/*");
+
+    if (environment.acceptsProfiles(Application.DEV_PROFILE_NAME)) {
+      filterRegistrationBean.setFilter(new MockAuthorizationServerFilter());
+    } else {
+      final AuthorizationServerFilter authorizationServerFilter = new AuthorizationServerFilter(oauthCheckTokenEndpointUrl, oauthCheckTokenClientId, oauthCheckTokenSecret);
+      filterRegistrationBean.setFilter(authorizationServerFilter);
+    }
+    return filterRegistrationBean;
   }
 }
