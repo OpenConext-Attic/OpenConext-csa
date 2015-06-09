@@ -136,7 +136,7 @@ public class Application extends SpringBootServletInitializer {
     if (environment.acceptsProfiles(DEV_PROFILE_NAME)) {
       return new LmngServiceMock();
     }
-    return new LmngServiceImpl(lmngIdentifierDao, true, endpoint);
+    return new LmngServiceImpl(lmngIdentifierDao, false, endpoint);
   }
 
   @Bean
