@@ -19,24 +19,30 @@
 package csa.api.cache;
 
 
-import csa.domain.MappingEntry;
-import csa.service.CrmService;
-import csa.dao.LmngIdentifierDao;
-import csa.domain.Article;
-import csa.domain.IdentityProvider;
-import csa.model.License;
-import csa.model.Service;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.*;
-
-import static org.junit.Assert.assertNotNull;
+import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.jayway.awaitility.Duration;
+
+import csa.dao.LmngIdentifierDao;
+import csa.domain.Article;
+import csa.domain.IdentityProvider;
+import csa.domain.MappingEntry;
+import csa.model.License;
+import csa.model.Service;
+import csa.service.CrmService;
 
 public class CrmCacheTest {
 
@@ -61,26 +67,21 @@ public class CrmCacheTest {
     when(service.getArticlesForServiceProviders(anyListOf(String.class))).thenReturn(articles);
 
     cache = new CrmCache(service, dao, 0, 1000);
-    //cache needs to kick in
-    Thread.sleep(10);
   }
 
   @Test
   public void testGetLicense() {
     Service service = new Service();
     service.setSpEntityId("spId-2");
-    License license = cache.getLicense(service, "idpId-2");
 
-    assertNotNull(license);
+    await().atMost(Duration.FIVE_SECONDS).until(() -> cache.getLicense(service, "idpId-2"), notNullValue());
   }
 
   @Test
   public void testGetArticle() {
     Service service = new Service();
     service.setSpEntityId("spId-2");
-    Article article = cache.getArticle(service);
-
-    assertNotNull(article);
+    await().atMost(Duration.FIVE_SECONDS).until(() -> cache.getArticle(service), notNullValue());
   }
 
   @Test

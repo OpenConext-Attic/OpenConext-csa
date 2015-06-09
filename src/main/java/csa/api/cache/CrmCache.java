@@ -1,9 +1,10 @@
 package csa.api.cache;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
@@ -12,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import csa.domain.MappingEntry;
 import csa.dao.LmngIdentifierDao;
 import csa.domain.Article;
 import csa.domain.IdentityProvider;
+import csa.domain.MappingEntry;
 import csa.model.License;
 import csa.model.Service;
 import csa.service.CrmService;
@@ -40,26 +41,22 @@ public class CrmCache extends AbstractCache {
   /**
    * Cache of Licenses, keyed by Entry of Idp institutionId and spEntityId
    */
-  private ConcurrentMap<MappingEntry, License> licenseCache = new ConcurrentHashMap<>();
+  private AtomicReference<Map<MappingEntry, License>> licenseCache = new AtomicReference<>(new HashMap<>());
 
   /**
    * Cache of Articles, keyed by spEntityId
    */
-  private ConcurrentMap<String, Article> articleCache = new ConcurrentHashMap<>();
+  private AtomicReference<Map<String, Article>> articleCache = new AtomicReference<>(new HashMap<>());
 
   private List<MappingEntry> idpToLmngId;
   private List<MappingEntry> spToLmngId;
 
-  private final Object lock = new Object();
-
 
   @Override
-  protected void doPopulateCache() {
-    synchronized (lock) {
-      populateMappings();
-      licenseCache = createNewLicensesCache();
-      articleCache = createNewArticleCache();
-    }
+  protected synchronized void doPopulateCache() {
+    populateMappings();
+    licenseCache.set(createNewLicensesCache());
+    articleCache.set(createNewArticleCache());
   }
 
   private void populateMappings() {
@@ -68,8 +65,8 @@ public class CrmCache extends AbstractCache {
 
   }
 
-  private ConcurrentMap<String, Article> createNewArticleCache() {
-    ConcurrentMap<String, Article> newCache = new ConcurrentHashMap<>();
+  private Map<String, Article> createNewArticleCache() {
+    Map<String, Article> newCache = new HashMap<>();
 
     // Here we only have to query the articles that have been mapped to an SP, luckily not the whole CRM database.
     for (MappingEntry spAndLmngId : spToLmngId) {
@@ -93,8 +90,8 @@ public class CrmCache extends AbstractCache {
     return newCache;
   }
 
-  private ConcurrentMap<MappingEntry, License> createNewLicensesCache() {
-    ConcurrentMap<MappingEntry, License> newLicenseCache = new ConcurrentHashMap<>();
+  private Map<MappingEntry, License> createNewLicensesCache() {
+    Map<MappingEntry, License> newLicenseCache = new HashMap<>();
     // Nested loop to query the cartesian product of all SPs and all IdPs
     for (MappingEntry idpLmngEntry : idpToLmngId) {
       String idpInstitutionId = idpLmngEntry.getKey();
@@ -139,7 +136,7 @@ public class CrmCache extends AbstractCache {
       return null;
     }
     MappingEntry entry = new MappingEntry(idpInstitutionId, service.getSpEntityId());
-    License license = licenseCache.get(entry);
+    License license = licenseCache.get().get(entry);
     LOG.debug("Looked for license for service {} and idpInstitutionId {}, and found: {}", service.getSpEntityId(), idpInstitutionId, license);
     return license;
   }
@@ -149,7 +146,7 @@ public class CrmCache extends AbstractCache {
       // This happens for 'crm only' services, with no reference to Service Registry's services.
       return null;
     }
-    return SerializationUtils.clone(articleCache.get(service.getSpEntityId()));
+    return SerializationUtils.clone(articleCache.get().get(service.getSpEntityId()));
   }
 
   @Override
