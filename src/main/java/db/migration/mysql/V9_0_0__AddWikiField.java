@@ -6,7 +6,7 @@ import java.util.List;
 import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import nl.surfnet.coin.csa.domain.Field;
+import csa.domain.Field;
 
 public class V9_0_0__AddWikiField implements SpringJdbcMigration {
 
