@@ -1,4 +1,4 @@
-package nl.surfnet.coin.csa.model;
+package csa.model;
 
 public enum LicenseStatus {
 
