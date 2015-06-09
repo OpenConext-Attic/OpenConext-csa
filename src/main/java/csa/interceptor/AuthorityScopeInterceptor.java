@@ -19,9 +19,11 @@ package csa.interceptor;
 import static csa.domain.CoinAuthority.Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN;
 
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
@@ -61,9 +63,9 @@ public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
   @Override
   public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)
       throws Exception {
-
-    if (modelAndView != null) {
-      CoinUser coinUser = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    final Optional<Authentication> authentication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
+    if (modelAndView != null && authentication.isPresent()) {
+      CoinUser coinUser = (CoinUser) authentication.get().getPrincipal();
       ModelMap map = modelAndView.getModelMap();
       scopeGeneralAuthCons(map, coinUser.getAuthorityEnums());
     }

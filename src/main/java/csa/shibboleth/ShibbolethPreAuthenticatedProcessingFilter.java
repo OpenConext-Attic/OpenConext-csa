@@ -1,6 +1,5 @@
 package csa.shibboleth;
 
-import java.util.Arrays;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
@@ -27,16 +26,16 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
 
   @Override
   protected Object getPreAuthenticatedPrincipal(final HttpServletRequest request) {
-    if (Arrays.asList(environment.getActiveProfiles()).contains(Application.DEV_PROFILE_NAME)) {
+    LOG.debug("Attempting to find Principal for request {}", request.getRequestURI());
+    if (environment.acceptsProfiles(Application.DEV_PROFILE_NAME)) {
       return new ShibbolethPrincipal("csa_admin", "dev admin", "admin@local", "http://mock-idp");
     }
-
-    final Optional<String> uid = Optional.ofNullable((String) request.getAttribute(ShibbolethRequestAttributes.UID.getAttributeName()));
+    final Optional<String> uid = Optional.ofNullable(request.getHeader(ShibbolethRequestHeaders.UID.getHeaderName()));
     if (uid.isPresent()) {
       LOG.debug("Found user with uid {}", uid.get());
-      final String displayName = (String) request.getAttribute(ShibbolethRequestAttributes.DISPLAY_NAME.getAttributeName());
-      final String email = (String) request.getAttribute(ShibbolethRequestAttributes.EMAIL.getAttributeName());
-      final String idpId = (String) request.getAttribute(ShibbolethRequestAttributes.IDP_ID.getAttributeName());
+      final String displayName = request.getHeader(ShibbolethRequestHeaders.DISPLAY_NAME.getHeaderName());
+      final String email = request.getHeader(ShibbolethRequestHeaders.EMAIL.getHeaderName());
+      final String idpId = request.getHeader(ShibbolethRequestHeaders.IDP_ID.getHeaderName());
       return new ShibbolethPrincipal(uid.get(), displayName, email, idpId);
     } else {
       LOG.debug("No principal found. This should trigger shibboleth.");

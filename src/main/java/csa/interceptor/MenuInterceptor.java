@@ -17,9 +17,11 @@
 package csa.interceptor;
 
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
@@ -35,10 +37,10 @@ public class MenuInterceptor extends HandlerInterceptorAdapter {
   @Override
   public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)
           throws Exception {
-
-    if (modelAndView != null) {
+    final Optional<Authentication> authentication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
+    if (modelAndView != null && authentication.isPresent()) {
       final ModelMap map = modelAndView.getModelMap();
-      Menu menu = createMenu(request);
+      Menu menu = createMenu((CoinUser) authentication.get().getPrincipal());
       setSelected(request, menu);
       map.addAttribute("menu", menu);
     }
@@ -55,9 +57,9 @@ public class MenuInterceptor extends HandlerInterceptorAdapter {
     }
   }
 
-  private Menu createMenu(final HttpServletRequest request) {
+  private Menu createMenu(final CoinUser coinUser) {
     Menu menu = new Menu();
-    CoinUser coinUser = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
     for (CoinAuthority.Authority authority : coinUser.getAuthorityEnums()) {
       switch (authority) {
         case ROLE_DISTRIBUTION_CHANNEL_ADMIN:
