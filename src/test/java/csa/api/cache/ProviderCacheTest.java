@@ -21,7 +21,6 @@ package csa.api.cache;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hibernate.validator.util.Contracts.assertNotNull;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -56,15 +55,8 @@ public class ProviderCacheTest {
 
     when(identityProviderService.getLinkedServiceProviderIDs(IDP_ID)).thenReturn(sps);
 
-    List<String> serviceProviderIdentifiers = subject.getServiceProviderIdentifiers(IDP_ID);
-    assertEquals(1, serviceProviderIdentifiers.size());
-
-    sps = getSPs();
+    await().atMost(Duration.FIVE_SECONDS).until(() -> subject.getServiceProviderIdentifiers(IDP_ID).size(), is(1));
     sps.add("sp2");
-    when(identityProviderService.getLinkedServiceProviderIDs(IDP_ID)).thenReturn(sps);
-
-    serviceProviderIdentifiers = subject.getServiceProviderIdentifiers(IDP_ID);
-    assertEquals(1, serviceProviderIdentifiers.size());
 
     //now wait for the cache to be updated
     await().atMost(Duration.FIVE_SECONDS).until(() -> subject.getServiceProviderIdentifiers(IDP_ID).size(), is(2));
