@@ -9,12 +9,11 @@ app.spServices = function () {
       return;
     }
 
-    var performAjaxUpdate = function(elem, methodPart) {
+    var performAjaxUpdate = function(elem, methodPart, newValue) {
       var $elm = $(elem);
       var tokencheck = $elm.parent("td").find("input[name='tokencheck']").val();
-      var value = $elm.is(':checked');
       var cspId = $elm.data('compound-service-provider-id');
-      $.ajax(methodPart + "/" + cspId + "/" + value + ".shtml?tokencheck=" + tokencheck,
+      $.ajax(methodPart + "/" + cspId + "/" + newValue + ".shtml?tokencheck=" + tokencheck,
         {
           type: "PUT"
         })
@@ -30,7 +29,11 @@ app.spServices = function () {
     };
 
     $('#sp_overview_table').find("input[type='checkbox'][name='availableForEndUser']").click(function () {
-      performAjaxUpdate(this, "update-enduser-visible");
+      performAjaxUpdate(this, "update-enduser-visible", $(this).is(':checked'));
+    });
+
+    $('#sp_overview_table').find("select[name='licenseStatus']").change(function () {
+      performAjaxUpdate(this, "update-license-status", this.value);
     });
 
   };

@@ -15,6 +15,7 @@
  */
 package csa.domain;
 
+import csa.model.LicenseStatus;
 import csa.util.DomainObject;
 import csa.model.FacetValue;
 import csa.model.License;
@@ -65,7 +66,7 @@ public class CompoundServiceProvider extends DomainObject {
   private boolean availableForEndUser;
 
   @Column
-  private String licenseStatus;
+  private LicenseStatus licenseStatus = LicenseStatus.NOT_NEEDED;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "compoundServiceProvider")
   @Sort(type = SortType.NATURAL)
@@ -497,11 +498,11 @@ public class CompoundServiceProvider extends DomainObject {
     this.availableForEndUser = availableForEndUser;
   }
 
-  public String getLicenseStatus() {
+  public LicenseStatus getLicenseStatus() {
     return licenseStatus;
   }
 
-  public void setLicenseStatus(String licenseStatus) {
+  public void setLicenseStatus(LicenseStatus licenseStatus) {
     this.licenseStatus = licenseStatus;
   }
 

@@ -18,6 +18,7 @@ package csa.control.shopadmin;
 
 import csa.command.LmngServiceBinding;
 import csa.domain.ServiceProvider;
+import csa.model.LicenseStatus;
 import csa.service.CrmService;
 import csa.control.BaseController;
 import csa.dao.CompoundServiceProviderDao;
@@ -78,7 +79,7 @@ public class SpLnmgListController extends BaseController {
     model.put("bindings", lmngServiceBindings);
     List<LmngServiceBinding> cspOrphans = getOrphans(lmngServiceBindings);
     model.put("orphans", cspOrphans);
-    log.debug("Listing all services");
+    model.put("licenseStatuses", LicenseStatus.values());
     return new ModelAndView("shopadmin/sp-overview", model);
   }
 
@@ -191,7 +192,18 @@ public class SpLnmgListController extends BaseController {
     log.info("Updated CompoundServiceProvider(" + cspId + ") to be available for end users:" + newValue);
     return "ok";
   }
-  
+
+  @RequestMapping(value = "/update-license-status/{cspId}/{newValue}", method = RequestMethod.PUT)
+  public
+  @ResponseBody
+  String updateCspLicenseStatus(@PathVariable("cspId") Long cspId, @PathVariable("newValue") String newValue) {
+    CompoundServiceProvider csp = compoundServiceProviderDao.findOne(cspId);
+    csp.setLicenseStatus(LicenseStatus.valueOf(newValue));
+    compoundServiceProviderDao.save(csp);
+    log.info("Updated CompoundServiceProvider(" + cspId + ") license status:" + newValue);
+    return "ok";
+  }
+
   @RequestMapping(value = "/delete-csp.shtml", method = RequestMethod.POST)
   public void deleteCompoundServiceProvider(@RequestParam("cspId") String postedCspId, HttpServletResponse response) throws IOException {
     log.info("deleting compound service provider with ID " + postedCspId);

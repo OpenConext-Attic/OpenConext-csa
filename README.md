@@ -51,3 +51,8 @@ To run selenium tests:
 
     mvn verify -Pselenium
 
+### API
+
+The API can be tested in dev mode by using curl:
+
+    localhost:8080/api/protected/services.json

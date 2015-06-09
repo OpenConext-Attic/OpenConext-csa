@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import csa.model.LicenseStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,14 +55,6 @@ public class ServicesController extends BaseApiController {
 
   @Resource
   private CrmCache crmCache;
-
-  @RequestMapping(method = RequestMethod.GET, value = "/api/public/services.json")
-  public
-  @ResponseBody
-  List<Service> getPublicServices(@RequestParam(value = "lang", defaultValue = "en") String language) {
-    List<Service> allServices = servicesCache.getAllServices(language);
-    return allServices.stream().filter(service -> service.isAvailableForEndUser() && !service.isIdpVisibleOnly()).collect(Collectors.toList());
-  }
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/services.json")
   public
@@ -148,7 +141,7 @@ public class ServicesController extends BaseApiController {
     for (Service service : allServices) {
       boolean isConnected = serviceProviderIdentifiers.contains(service.getSpEntityId());
     /*
-     * If a Service is idpOnly then we do want to show it as the institutionId matches that of the Idp (meaning that
+     * If a Service is idpOnly then we do want to show it as the institutionId matches that of the Idp, meaning that
      * an admin from Groningen can see the services offered by Groningen also when they are marked idpOnly - which is often the
      * case for services offered by universities
      */
@@ -162,6 +155,10 @@ public class ServicesController extends BaseApiController {
         String institutionId = identityProvider.getInstitutionId();
         service.setLicense(crmCache.getLicense(service, institutionId));
         addArticle(crmCache.getArticle(service), service);
+
+        if (service.isHasCrmLink()) {
+          service.setLicenseStatus(service.getLicense() != null ? LicenseStatus.HAS_LICENSE_SURFMARKET : LicenseStatus.NO_LICENSE);
+        }
 
         result.add(service);
       }

@@ -46,6 +46,10 @@
             <i class="inlinehelp icon-question-sign" data-title="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.enduser" />" data-content="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.enduser.help" />"></i>
           </th>
           <th>
+            <spring:message code="jsp.lmng_binding_overview.license_status"/>
+            <i class="inlinehelp icon-question-sign" data-title="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.license_status" />" data-content="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.license_status.help" />"></i>
+          </th>
+          <th>
             <spring:message code="jsp.lmng_binding_overview.lmngid"/>
             <i class="inlinehelp icon-question-sign" data-title="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.lmngid" />" data-content="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.lmngid.help" />"></i>
           </th>
@@ -85,6 +89,14 @@
                 <input type="hidden" name="tokencheck" value="<c:out value='${tokencheck}'/>"/>
                 <c:set var="checked" value="${binding.compoundServiceProvider.availableForEndUser}"></c:set>
                 <input type="checkbox" name="availableForEndUser" value="${checked}" data-compound-service-provider-id="${binding.compoundServiceProvider.id}" ${checked ? 'checked' : ''}>
+              </td>
+              <td>
+                <input type="hidden" name="tokencheck" value="<c:out value='${tokencheck}'/>"/>
+                <select class="license-statuses" name="licenseStatus" data-compound-service-provider-id="${binding.compoundServiceProvider.id}">
+                  <c:forEach items="${licenseStatuses}" var="status">
+                    <option value="${status}" ${binding.compoundServiceProvider.licenseStatus == status ? ' selected ' : ''} ><spring:message code="jsp.lmng_binding_overview.license_status.${status}"/></option>
+                  </c:forEach>
+                </select>
               </td>
               <td>
   			  <form:form id="form-${status.index}" method="post" action="save-splmng.shtml#row${status.index}" style="margin:0" cssClass="lmng-id-edit">
