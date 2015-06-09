@@ -17,7 +17,7 @@
   limitations under the License.
   --%>
 
-<%--@elvariable id="compoundSp" type="nl.surfnet.coin.csa.domain.CompoundServiceProvider"--%>
+<%--@elvariable id="compoundSp" type="csa.domain.CompoundServiceProvider"--%>
 
 
 <jsp:include page="../head.jsp">

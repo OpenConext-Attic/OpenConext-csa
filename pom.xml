@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.2.3.RELEASE</version>
+    <version>1.2.4.RELEASE</version>
   </parent>
 
   <groupId>org.surfnet.coin</groupId>
@@ -128,7 +128,12 @@
       <scope>test</scope>
       <version>2.5.2</version>
     </dependency>
-
+    <dependency>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>1.6.3</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache-core</artifactId>
@@ -227,7 +232,6 @@
       <groupId>xml-apis</groupId>
       <artifactId>xml-apis</artifactId>
       <version>1.4.01</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>net.sf.opencsv</groupId>

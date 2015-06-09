@@ -16,7 +16,7 @@
   limitations under the License.
   --%>
 
-<%--@elvariable id="sps" type="java.util.List<nl.surfnet.coin.csa.domain.ServiceProvider>"--%>
+<%--@elvariable id="sps" type="java.util.List<csa.domain.ServiceProvider>"--%>
 <spring:message var="title" code="jsp.allidplmng.title"/>
 
     <jsp:include page="../head.jsp">

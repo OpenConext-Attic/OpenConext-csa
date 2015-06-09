@@ -14,6 +14,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
-<%@attribute name="facetValue" type="nl.surfnet.coin.csa.model.FacetValue" required="true" %>
-<%@attribute name="csp" type="nl.surfnet.coin.csa.domain.CompoundServiceProvider" required="true" %>
+<%@attribute name="facetValue" type="csa.model.FacetValue" required="true" %>
+<%@attribute name="csp" type="csa.domain.CompoundServiceProvider" required="true" %>
 <%= csp.getFacetValues().contains(facetValue) ? "checked" : "" %>

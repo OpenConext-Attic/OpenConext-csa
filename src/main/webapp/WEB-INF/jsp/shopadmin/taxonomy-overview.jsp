@@ -17,7 +17,7 @@
   limitations under the License.
   --%>
 
-<%--@elvariable id="facet" type="nl.surfnet.coin.csa.model.Facet"--%>
+<%--@elvariable id="facet" type="csa.model.Facet"--%>
 
 
 <spring:message var="title" code="jsp.taxonomy.title"/>
