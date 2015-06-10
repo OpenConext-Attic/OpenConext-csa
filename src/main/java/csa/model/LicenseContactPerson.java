@@ -1,5 +1,7 @@
 package csa.model;
 
+import org.springframework.util.StringUtils;
+
 public class LicenseContactPerson {
 
   private final String name;
@@ -12,6 +14,10 @@ public class LicenseContactPerson {
     this.email = email;
     this.phone = phone;
     this.idpEntityId = idpEntityId;
+  }
+
+  public boolean isReachable() {
+    return StringUtils.hasText(name) || StringUtils.hasText(email) || StringUtils.hasText(phone);
   }
 
   public String getName() {

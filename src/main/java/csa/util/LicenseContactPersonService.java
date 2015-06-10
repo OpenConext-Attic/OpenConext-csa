@@ -11,9 +11,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -39,19 +39,17 @@ public class LicenseContactPersonService implements ApplicationListener<ContextR
    * 5 - Categorie
    * 6 - IDP Naam
    * 7 - idp connection id
+   * 8 - idp entity id
    */
   @Override
   public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
     try {
-      BufferedReader br2 = new BufferedReader(new InputStreamReader(resource.getInputStream()));
-      List<String[]> collect = br2.lines().skip(1) //csv header
-        .map(line -> line.split("\",\"")).collect(Collectors.toList());
-    TODO - verzin een list....
       BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream()));
       this.persons = br.lines().skip(1) //csv header
-        .map(line -> line.split("\",\""))
-        .filter(columns -> columns.length == 8)
+        .map(line -> line.split(","))
+        .filter(columns -> columns.length > 8)
         .map(columns -> fromColumns(columns))
+        .filter(LicenseContactPerson::isReachable)
         .collect(groupingBy(LicenseContactPerson::getIdpEntityId));
       LOG.info("Parsed {} license contact persons", persons.size());
     } catch (IOException e) {
@@ -69,10 +67,14 @@ public class LicenseContactPersonService implements ApplicationListener<ContextR
   }
 
   private String removeQuotes(String s) {
-    return s.replaceAll("\"","");
+    return s.replaceAll("\"", "").trim();
   }
 
   public List<LicenseContactPerson> licenseContactPersons(String idpEntityID) {
     return persons.getOrDefault(idpEntityID, new ArrayList<>());
+  }
+
+  public List<LicenseContactPerson> getPersons() {
+    return persons.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
   }
 }
