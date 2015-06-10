@@ -48,6 +48,7 @@ public class Category implements Serializable {
 
   public void setValues(List<CategoryValue> values) {
     this.values = values;
+    values.forEach(value -> value.setCategory(this));
   }
 
   public String getName() {
