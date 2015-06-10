@@ -29,7 +29,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Proxy;
 
 import csa.util.DomainObject;

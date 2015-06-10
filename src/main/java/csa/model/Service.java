@@ -18,7 +18,7 @@ package csa.model;
 
 import csa.janus.domain.ARP;
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.io.Serializable;

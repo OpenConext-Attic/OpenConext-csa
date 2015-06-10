@@ -25,7 +25,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Proxy;
 
 import csa.util.DomainObject;

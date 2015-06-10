@@ -21,8 +21,7 @@ package csa.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Category implements Serializable {
 
@@ -48,7 +47,6 @@ public class Category implements Serializable {
 
   public void setValues(List<CategoryValue> values) {
     this.values = values;
-    values.forEach(value -> value.setCategory(this));
   }
 
   public String getName() {

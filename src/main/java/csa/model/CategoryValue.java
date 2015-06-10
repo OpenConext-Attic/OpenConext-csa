@@ -18,8 +18,9 @@ package csa.model;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.codehaus.jackson.annotate.JsonIgnore;
+
 import org.springframework.util.Assert;
 
 public class CategoryValue implements Comparable<CategoryValue>, Serializable {
