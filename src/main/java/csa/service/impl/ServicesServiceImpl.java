@@ -116,6 +116,7 @@ public class ServicesServiceImpl implements ServicesService {
     service.setIdpVisibleOnly(csp.getSp().isIdpVisibleOnly());
     service.setInstitutionId(csp.getSp().getInstitutionId());
     service.setPublishedInEdugain(csp.getSp().isPublishedInEdugain());
+    service.setLicenseStatus(csp.getLicenseStatus());
   }
 
   private void screenshots(CompoundServiceProvider csp, Service service) {
