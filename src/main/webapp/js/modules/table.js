@@ -59,7 +59,7 @@ app.table = function() {
       return ((x < y) ? 1 : ((x > y) ? -1 : 0));
     };
 
-    $('.table-sortable:not(#csp-statusses, #sp_overview_table, #csp-statusses-short, #request-overview-table, #notifications-overview-table)').each(
+    $('.table-sortable:not(#csp-statusses, #license_contact_persons_overview_table, #sp_overview_table, #csp-statusses-short, #request-overview-table, #notifications-overview-table)').each(
         function(index, table) {
           $(table).dataTable({
             bPaginate : false,
@@ -124,7 +124,24 @@ app.table = function() {
         {'bSortable': false},
         {'bSortable': false},
         {'bSortable': false},
+        {'bSortable': false},
         {'bSortable': false} ]
+    });
+
+    $('#license_contact_persons_overview_table').dataTable({
+      bPaginate : false,
+      bLengthChange : false,
+      bAutoWidth : false,
+      bInfo : false,
+      oLanguage : {
+        sSearch : '_INPUT_'
+      },
+      aoColumns : [
+        {'sType' : 'spnames'},
+        {'sType' : 'spnames'},
+        {'sType' : 'spnames'},
+        {'sType' : 'spnames'}]
+
     });
 
     $('#csp-statusses').dataTable({

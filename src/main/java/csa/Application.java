@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Locale;
 import javax.sql.DataSource;
 
+import csa.service.*;
+import csa.util.LicenseContactPersonService;
 import org.apache.catalina.Container;
 import org.apache.catalina.Wrapper;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.servlet.LocaleResolver;
@@ -33,8 +36,6 @@ import org.swift.common.soap.jira.JiraSoapService;
 import org.swift.common.soap.jira.JiraSoapServiceServiceLocator;
 
 import csa.janus.JanusRestClient;
-import csa.service.CrmService;
-import csa.service.VootClient;
 import csa.service.impl.JiraClientMock;
 import csa.service.impl.ServicesServiceImpl;
 import csa.util.mail.MockEmailerImpl;
@@ -43,8 +44,6 @@ import csa.dao.LmngIdentifierDao;
 import csa.interceptor.AuthorityScopeInterceptor;
 import csa.interceptor.MenuInterceptor;
 import csa.janus.Janus;
-import csa.service.EmailService;
-import csa.service.JiraClient;
 import csa.service.impl.CompoundSPService;
 import csa.service.impl.EmailServiceImpl;
 import csa.service.impl.JiraClientImpl;
@@ -64,6 +63,9 @@ public class Application extends SpringBootServletInitializer {
 
   public static final String DEV_PROFILE_NAME = "dev";
   private static final String JIRA_SOAP_SERVICE_ENDPOINT = "/rpc/soap/jirasoapservice-v2";
+
+  @Autowired
+  private ResourceLoader resourceLoader;
 
   @Override
   protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
@@ -182,6 +184,12 @@ public class Application extends SpringBootServletInitializer {
     return new ServicesCache(new ServicesServiceImpl(compoundSPService, crmService, staticBaseUrl, lmngDeepLinkBaseUrl, guids), delay, duration, callDelay);
   }
 
+  @Bean
+  @Autowired
+  public LicenseContactPersonService licenseContactPersonService(
+    @Value("${licenseContactPerson.config.path}") final String contentFileLocation) {
+    return new LicenseContactPersonService(resourceLoader.getResource(contentFileLocation));
+  }
 
   /**
    * Required because of https://github.com/spring-projects/spring-boot/issues/2825

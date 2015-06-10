@@ -16,23 +16,6 @@
 
 package csa.api.control;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import csa.domain.IdentityProvider;
 import csa.domain.ServiceProvider;
 import csa.interceptor.AuthorityScopeInterceptor;
@@ -41,6 +24,18 @@ import csa.service.ActionsService;
 import csa.service.EmailService;
 import csa.service.IdentityProviderService;
 import csa.service.ServiceProviderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 @Controller
 @RequestMapping
@@ -72,7 +67,7 @@ public class JiraController extends BaseApiController {
     return actionsService.getActions(idpEntityId);
   }
 
-  @RequestMapping(value = "/api/protected/action.json", method = RequestMethod.POST)
+  @RequestMapping(method = RequestMethod.POST, value = "/api/protected/action.json")
   public
   @ResponseBody
   Action newAction(HttpServletRequest request, @RequestBody Action action) throws IOException {
