@@ -109,7 +109,6 @@ public class JanusRestClient implements Janus {
 
   @Override
   public List<String> getAllowedSps(String idpentityid, String revision) {
-
     Assert.hasText(idpentityid, "idpentityid is a required parameter");
     Map<String, String> parameters = new HashMap<>();
     parameters.put("idpentityid", idpentityid);
@@ -120,6 +119,36 @@ public class JanusRestClient implements Janus {
     URI signedUri;
     try {
       signedUri = sign("getAllowedSps", parameters);
+
+      if (LOG.isTraceEnabled()) {
+        LOG.trace("Signed Janus-request is: {}", signedUri);
+      }
+
+      @SuppressWarnings("unchecked")
+      final List<String> restResponse = restTemplate.getForObject(signedUri, List.class);
+
+      if (LOG.isTraceEnabled()) {
+        LOG.trace("Janus-request returned: {}", objectMapper.writeValueAsString(restResponse));
+      }
+
+      return restResponse;
+
+    } catch (IOException e) {
+      LOG.error("While doing Janus-request", e);
+      throw new RuntimeException(e);
+
+    }
+  }
+
+  @Override
+  public List<String> getAllowedIdps(String spentityid) {
+    Assert.hasText(spentityid, "spentityid is a required parameter");
+    Map<String, String> parameters = new HashMap<>();
+    parameters.put("spentityid", spentityid);
+
+    URI signedUri;
+    try {
+      signedUri = sign("getAllowedIdps", parameters);
 
       if (LOG.isTraceEnabled()) {
         LOG.trace("Signed Janus-request is: {}", signedUri);

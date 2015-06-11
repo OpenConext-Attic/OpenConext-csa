@@ -44,12 +44,8 @@ public class LicenseContactPersonController extends BaseApiController {
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/licensecontactperson.json")
   public
   @ResponseBody
-  LicenseContactPerson licenseContactPerson(@RequestParam(value = "identityProviderId") String identityProviderId, final HttpServletRequest request) {
+  List<LicenseContactPerson> licenseContactPerson(@RequestParam(value = "identityProviderId") String identityProviderId) {
     LOG.info("returning licenseContactPerson for CSA");
-    List<LicenseContactPerson> licenseContactPersons = licenseContactPersonService.licenseContactPersons(identityProviderId);
-    if (licenseContactPersons.isEmpty()) {
-      throw new ResourceNotFoundException();
-    }
-    return licenseContactPersons.get(0);
+    return licenseContactPersonService.licenseContactPersons(identityProviderId);
   }
 }

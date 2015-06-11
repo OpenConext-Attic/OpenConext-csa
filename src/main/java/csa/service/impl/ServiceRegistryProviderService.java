@@ -46,6 +46,10 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   private static final Logger log = LoggerFactory.getLogger(ServiceRegistryProviderService.class);
   private static final String IN_PRODUCTION = "prodaccepted";
 
+  public void setJanusClient(Janus janusClient) {
+    this.janusClient = janusClient;
+  }
+
   @Autowired
   private Janus janusClient;
 
@@ -275,6 +279,12 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
       log.warn("Could not retrieve 'all IdPs' from Janus client", e);
     }
     return idps;
+  }
+
+  @Override
+  public List<IdentityProvider> getLinkedIdentityProviders(String spId) {
+    List<String> allowedIdps = janusClient.getAllowedIdps(spId);
+    return this.getAllIdentityProviders().stream().filter(idp -> allowedIdps.contains(idp.getId())).collect(Collectors.toList());
   }
 
 }

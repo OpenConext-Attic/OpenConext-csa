@@ -27,6 +27,8 @@ import org.codehaus.jackson.type.TypeReference;
 import org.springframework.core.io.ClassPathResource;
 
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class JanusRestClientMock implements Janus {
 
@@ -87,6 +89,11 @@ public class JanusRestClientMock implements Janus {
   @Override
   public List<String> getAllowedSps(String idpentityid, String revision) {
     return getAllowedSps(idpentityid);
+  }
+
+  @Override
+  public List<String> getAllowedIdps(String sppentityid) {
+    return spsForIdp.keySet().stream().collect(Collectors.toList());
   }
 
   @Override

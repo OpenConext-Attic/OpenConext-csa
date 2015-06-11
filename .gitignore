@@ -18,3 +18,4 @@ csa-war/src/main/webapp/css/screen.css
 ConvenientLocalTestJson.java
 style_dashboard_acc.css
 CATALINA_BASE_IS_UNDEFINED
+src/test/java/csa/janus/JanusRestIntegration.java

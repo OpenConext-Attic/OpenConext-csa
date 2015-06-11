@@ -81,6 +81,16 @@ public class ServiceRegistryController extends BaseApiController {
     return result;
   }
 
+  @RequestMapping(method = RequestMethod.GET, value = "/api/protected/services-usage.json")
+  public @ResponseBody
+  List<IdentityProvider> getIdpsUsingSp(@RequestParam(value = "spEntityId") String spEntityId,
+                                                   final HttpServletRequest request) throws IOException {
+    LOG.debug("Got request for all linked identityProviders tp {}",spEntityId);
+    List<IdentityProvider> result = identityProviderService.getLinkedIdentityProviders(spEntityId);
+    LOG.debug("Finished request for all linked identityProviders {}", result);
+    return result;
+  }
+
   private InstitutionIdentityProvider convertIdentityProviderToInstitutionIdentityProvider(IdentityProvider identityProvider) {
     return new InstitutionIdentityProvider(identityProvider.getId(), identityProvider.getName(), identityProvider.getInstitutionId());
   }

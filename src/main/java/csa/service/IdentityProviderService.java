@@ -45,6 +45,12 @@ public interface IdentityProviderService {
    */
   List<IdentityProvider> getAllIdentityProviders();
 
+  /**
+   * Get a list of all idps connected to a SP
+   * @return List&lt;IdentityProvider&gt;
+   */
+  List<IdentityProvider> getLinkedIdentityProviders(String spId);
+
 
   /**
    * Get a list of all SP identifiers linked to the Idp
