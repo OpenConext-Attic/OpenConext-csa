@@ -156,7 +156,7 @@ public class ServicesController extends BaseApiController {
         service.setLicense(crmCache.getLicense(service, institutionId));
         addArticle(crmCache.getArticle(service), service);
 
-        if (service.isHasCrmLink()) {
+        if (service.getLicenseStatus() == LicenseStatus.HAS_LICENSE_SURFMARKET) {
           service.setLicenseStatus(service.getLicense() != null ? LicenseStatus.HAS_LICENSE_SURFMARKET : LicenseStatus.NO_LICENSE);
         }
 

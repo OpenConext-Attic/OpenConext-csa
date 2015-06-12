@@ -73,7 +73,7 @@ public class VootFilter implements Filter {
       if (isFullyAuthenticated()) {
         CoinUser user = (CoinUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Boolean isAdmin = (Boolean) session.getAttribute(SESSION_KEY_GROUP_ACCESS);
-        if (isAdmin == null) {
+        if (isAdmin == null || !isAdmin) {
           isAdmin = vootClient.hasAccess(user.getUid(), adminDistributionTeam);
           LOG.info("User '{}' has access to '{}': {}", user.getUid(), adminDistributionTeam, isAdmin);
           session.setAttribute(SESSION_KEY_GROUP_ACCESS, isAdmin);
