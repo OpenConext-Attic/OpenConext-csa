@@ -29,6 +29,16 @@ public class License implements Serializable {
 
   private static final long serialVersionUID = 0L;
 
+  public enum LicenseStatus {
+
+    HAS_LICENSE_SURFMARKET,
+    HAS_LICENSE_SP,
+    NO_LICENSE,
+    NOT_NEEDED,
+    UNKNOWN
+
+  }
+
   private Date startDate;
   private Date endDate;
   private String licenseNumber;
@@ -100,13 +110,5 @@ public class License implements Serializable {
     return endDate == null || endDate.getTime() > System.currentTimeMillis();
   }
 
-  public static enum LicenseStatus {
 
-    HAS_LICENSE_SURFMARKET,
-    HAS_LICENSE_SP,
-    NO_LICENSE,
-    NOT_NEEDED,
-    UNKNOWN
-
-  }
 }
