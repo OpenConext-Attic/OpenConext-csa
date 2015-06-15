@@ -16,21 +16,20 @@
 
 package csa.service.impl;
 
-import csa.dao.impl.ActionsDaoImpl;
-import csa.domain.CoinUser;
-import csa.model.Action;
-import csa.model.JiraTask;
-import csa.service.ActionsService;
-import csa.service.JiraClient;
-import csa.service.ServiceProviderService;
+import java.io.IOException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.List;
+import csa.dao.impl.ActionsDaoImpl;
+import csa.domain.CoinUser;
+import csa.model.Action;
+import csa.model.JiraTask;
+import csa.service.ActionsService;
+import csa.service.JiraClient;
 
 @Service(value = "actionsService")
 public class ActionsServiceImpl implements ActionsService {
@@ -42,9 +41,6 @@ public class ActionsServiceImpl implements ActionsService {
 
   @Autowired
   private JiraClient jiraClient;
-
-  @Autowired
-  private ServiceProviderService providerService;
 
   @Override
   public List<Action> getActions(String identityProvider) {
