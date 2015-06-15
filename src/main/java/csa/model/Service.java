@@ -102,7 +102,7 @@ public class Service implements Comparable<Service>, Serializable {
 
   private boolean publishedInEdugain;
 
-  private LicenseStatus licenseStatus;
+  private License.LicenseStatus licenseStatus;
 
   public Service() {
   }
@@ -412,11 +412,11 @@ public class Service implements Comparable<Service>, Serializable {
     this.publishedInEdugain = publishedInEdugain;
   }
 
-  public LicenseStatus getLicenseStatus() {
+  public License.LicenseStatus getLicenseStatus() {
     return licenseStatus;
   }
 
-  public void setLicenseStatus(LicenseStatus licenseStatus) {
+  public void setLicenseStatus(License.LicenseStatus licenseStatus) {
     this.licenseStatus = licenseStatus;
   }
 

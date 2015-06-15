@@ -1,8 +1,6 @@
 package csa.control.shopadmin;
 
-import csa.command.LmngServiceBinding;
 import csa.model.LicenseContactPerson;
-import csa.model.LicenseStatus;
 import csa.util.LicenseContactPersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

@@ -19,11 +19,11 @@ package csa.api.control;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import csa.model.LicenseStatus;
+import csa.model.License;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -156,8 +156,8 @@ public class ServicesController extends BaseApiController {
         service.setLicense(crmCache.getLicense(service, institutionId));
         addArticle(crmCache.getArticle(service), service);
 
-        if (service.getLicenseStatus() == LicenseStatus.HAS_LICENSE_SURFMARKET) {
-          service.setLicenseStatus(service.getLicense() != null ? LicenseStatus.HAS_LICENSE_SURFMARKET : LicenseStatus.NO_LICENSE);
+        if (service.getLicenseStatus() == License.LicenseStatus.HAS_LICENSE_SURFMARKET) {
+          service.setLicenseStatus(service.getLicense() != null ? License.LicenseStatus.HAS_LICENSE_SURFMARKET : License.LicenseStatus.NO_LICENSE);
         }
 
         result.add(service);

@@ -21,7 +21,6 @@ package csa.model;
 import java.util.Locale;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -31,10 +30,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Proxy;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.SortNatural;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import csa.util.DomainObject;
 
@@ -45,12 +44,12 @@ import csa.util.DomainObject;
 public class Facet extends DomainObject implements Comparable<Facet> {
 
   @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "facet")
-  @Sort(type = SortType.NATURAL)
-  private SortedSet<FacetValue> facetValues = new TreeSet<FacetValue>();
+  @SortNatural
+  private SortedSet<FacetValue> facetValues = new TreeSet<>();
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "parent")
-  @Sort(type = SortType.NATURAL)
-  private SortedSet<Facet> children = new TreeSet<Facet>();
+  @SortNatural
+  private SortedSet<Facet> children = new TreeSet<>();
 
   @ManyToOne
   @JoinColumn(name = "facet_parent_id", nullable = true)

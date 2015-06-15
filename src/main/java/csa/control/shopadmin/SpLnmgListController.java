@@ -18,7 +18,7 @@ package csa.control.shopadmin;
 
 import csa.command.LmngServiceBinding;
 import csa.domain.ServiceProvider;
-import csa.model.LicenseStatus;
+import csa.model.License;
 import csa.service.CrmService;
 import csa.control.BaseController;
 import csa.dao.CompoundServiceProviderDao;
@@ -79,7 +79,7 @@ public class SpLnmgListController extends BaseController {
     model.put("bindings", lmngServiceBindings);
     List<LmngServiceBinding> cspOrphans = getOrphans(lmngServiceBindings);
     model.put("orphans", cspOrphans);
-    model.put("licenseStatuses", LicenseStatus.values());
+    model.put("licenseStatuses", License.LicenseStatus.values());
     return new ModelAndView("shopadmin/sp-overview", model);
   }
 
@@ -198,7 +198,7 @@ public class SpLnmgListController extends BaseController {
   @ResponseBody
   String updateCspLicenseStatus(@PathVariable("cspId") Long cspId, @PathVariable("newValue") String newValue) {
     CompoundServiceProvider csp = compoundServiceProviderDao.findOne(cspId);
-    csp.setLicenseStatus(LicenseStatus.valueOf(newValue));
+    csp.setLicenseStatus(License.LicenseStatus.valueOf(newValue));
     compoundServiceProviderDao.save(csp);
     log.info("Updated CompoundServiceProvider(" + cspId + ") license status:" + newValue);
     return "ok";

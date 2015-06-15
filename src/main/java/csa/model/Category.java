@@ -56,7 +56,7 @@ public class Category implements Serializable {
   @JsonIgnore
   public void addCategoryValue(CategoryValue value) {
     if (values == null) {
-      values = new ArrayList<CategoryValue>();
+      values = new ArrayList<>();
     }
     values.add(value);
   }

@@ -15,29 +15,43 @@
  */
 package csa.domain;
 
-import csa.model.LicenseStatus;
-import csa.util.DomainObject;
-import csa.model.FacetValue;
-import csa.model.License;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static org.springframework.util.StringUtils.hasText;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.annotations.Proxy;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.SortNatural;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
-import javax.persistence.*;
-import java.io.IOException;
-import java.util.*;
-
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-import static org.springframework.util.StringUtils.hasText;
+import csa.model.FacetValue;
+import csa.model.License;
+import csa.util.DomainObject;
 
 
 @SuppressWarnings("serial")
@@ -52,11 +66,11 @@ public class CompoundServiceProvider extends DomainObject {
 
   @Transient
   private Article article;
-  
+
   @Transient
   private List<License> licenses;
 
-  @Column (unique = true)
+  @Column(unique = true)
   private String serviceProviderEntityId;
 
   @Column
@@ -66,26 +80,26 @@ public class CompoundServiceProvider extends DomainObject {
   private boolean availableForEndUser;
 
   @Column
-  private LicenseStatus licenseStatus = LicenseStatus.NOT_NEEDED;
+  private License.LicenseStatus licenseStatus = License.LicenseStatus.NOT_NEEDED;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "compoundServiceProvider")
-  @Sort(type = SortType.NATURAL)
-  private SortedSet<FieldString> fields = new TreeSet<FieldString>();
+  @SortNatural
+  private SortedSet<FieldString> fields = new TreeSet<>();
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "compoundServiceProvider")
-  @Sort(type = SortType.NATURAL)
-  private SortedSet<FieldImage> fieldImages = new TreeSet<FieldImage>();
+  @SortNatural
+  private SortedSet<FieldImage> fieldImages = new TreeSet<>();
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "compoundServiceProvider")
-  private Set<Screenshot> screenShotsImages = new HashSet<Screenshot>();
+  private Set<Screenshot> screenShotsImages = new HashSet<>();
 
   @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @JoinTable(name = "facet_value_compound_service_provider", joinColumns = {
-          @JoinColumn(name = "compound_service_provider_id", nullable = false, updatable = false) },
-          inverseJoinColumns = { @JoinColumn(name = "facet_value_id",
-                  nullable = false, updatable = false) })
-  @Sort(type = SortType.NATURAL)
-  private SortedSet<FacetValue> facetValues = new TreeSet<FacetValue>();
+    @JoinColumn(name = "compound_service_provider_id", nullable = false, updatable = false)},
+    inverseJoinColumns = {@JoinColumn(name = "facet_value_id",
+      nullable = false, updatable = false)})
+  @SortNatural
+  private SortedSet<FacetValue> facetValues = new TreeSet<>();
 
 
   public static CompoundServiceProvider builder(ServiceProvider serviceProvider, Article article) {
@@ -174,11 +188,11 @@ public class CompoundServiceProvider extends DomainObject {
   public String getTitleNl() {
     return (String) getFieldValue(Field.Key.TITLE_NL);
   }
-  
+
   public String getTitleEn() {
     return (String) getFieldValue(Field.Key.TITLE_EN);
   }
-  
+
   public String getServiceDescriptionNl() {
     return (String) getFieldValue(Field.Key.SERVICE_DESCRIPTION_NL);
   }
@@ -290,28 +304,28 @@ public class CompoundServiceProvider extends DomainObject {
     for (FieldString f : this.fields) {
       if (key.equals(f.getKey())) {
         switch (f.getSource()) {
-        case LMNG:
-          return getLmngProperty(key);
-        case SURFCONEXT:
-          return getSurfConextProperty(key);
-        case DISTRIBUTIONCHANNEL:
-          return getDistributionChannelProperty(f);
-        default:
-          throw new RuntimeException("Unknow Source ('" + f.getSource() + "')");
+          case LMNG:
+            return getLmngProperty(key);
+          case SURFCONEXT:
+            return getSurfConextProperty(key);
+          case DISTRIBUTIONCHANNEL:
+            return getDistributionChannelProperty(f);
+          default:
+            throw new RuntimeException("Unknow Source ('" + f.getSource() + "')");
         }
       }
     }
     for (FieldImage f : this.fieldImages) {
       if (key.equals(f.getKey())) {
         switch (f.getSource()) {
-        case LMNG:
-          return getLmngProperty(key);
-        case SURFCONEXT:
-          return getSurfConextProperty(key);
-        case DISTRIBUTIONCHANNEL:
-          return getDistributionChannelProperty(f);
-        default:
-          throw new RuntimeException("Unknow Source ('" + f.getSource() + "')");
+          case LMNG:
+            return getLmngProperty(key);
+          case SURFCONEXT:
+            return getSurfConextProperty(key);
+          case DISTRIBUTIONCHANNEL:
+            return getDistributionChannelProperty(f);
+          default:
+            throw new RuntimeException("Unknow Source ('" + f.getSource() + "')");
         }
       }
     }
@@ -342,7 +356,7 @@ public class CompoundServiceProvider extends DomainObject {
 
   /**
    * Convenience method for JSP access
-   * 
+   *
    * @return Map with all Keys currently supported by SURFconext
    */
   private Map<Field.Key, String> getFieldValues(Field.Source source) {
@@ -360,15 +374,15 @@ public class CompoundServiceProvider extends DomainObject {
       for (Field.Key key : values) {
         try {
           switch (source) {
-          case SURFCONEXT:
-            result.put(key, (String) getSurfConextProperty(key));
-            break;
-          case LMNG:
-            result.put(key, (String) getLmngProperty(key));
-            break;
-          case DISTRIBUTIONCHANNEL:
-            // already covered
-            break;
+            case SURFCONEXT:
+              result.put(key, (String) getSurfConextProperty(key));
+              break;
+            case LMNG:
+              result.put(key, (String) getLmngProperty(key));
+              break;
+            case DISTRIBUTIONCHANNEL:
+              // already covered
+              break;
           }
         } catch (RuntimeException e) {
           // not a problem here
@@ -380,58 +394,58 @@ public class CompoundServiceProvider extends DomainObject {
 
   private Object getSurfConextProperty(Field.Key key) {
     switch (key) {
-    case SERVICE_DESCRIPTION_NL:
-      return this.serviceProvider.getDescription(Provider.Language.NL);
-    case SERVICE_DESCRIPTION_EN:
-      return this.serviceProvider.getDescription(Provider.Language.EN);
-    case APPSTORE_LOGO:
+      case SERVICE_DESCRIPTION_NL:
+        return this.serviceProvider.getDescription(Provider.Language.NL);
+      case SERVICE_DESCRIPTION_EN:
+        return this.serviceProvider.getDescription(Provider.Language.EN);
+      case APPSTORE_LOGO:
         return this.serviceProvider.getLogoUrl();
-    case DETAIL_LOGO:
-      return this.serviceProvider.getLogoUrl();
-    case APP_URL:
-      return this.serviceProvider.getApplicationUrl();
-    case SERVICE_URL:
-      return getServiceUrl(this.serviceProvider);
-    case SUPPORT_URL_NL:
-      return getSupportUrl(this.serviceProvider, Provider.Language.NL);
-    case SUPPORT_URL_EN:
-      return getSupportUrl(this.serviceProvider, Provider.Language.EN);
-    case SUPPORT_MAIL:
-      ContactPerson helpCP = this.serviceProvider.getContactPerson(ContactPersonType.help);
-      return helpCP != null ? helpCP.getEmailAddress() : null;
-    case TECHNICAL_SUPPORTMAIL:
-      ContactPerson cp = this.serviceProvider.getContactPerson(ContactPersonType.technical);
-      return cp != null ? cp.getEmailAddress() : null;
-    case EULA_URL:
-      return this.serviceProvider.getEulaURL();
-    case TITLE_EN:
-      return null != this.serviceProvider ? this.serviceProvider.getName(Provider.Language.EN) : this.serviceProviderEntityId;
-    case TITLE_NL:
-      return null != this.serviceProvider ? this.serviceProvider.getName(Provider.Language.NL) : this.serviceProviderEntityId;
-    default:
-      throw new RuntimeException("SURFConext does not support property: " + key);
+      case DETAIL_LOGO:
+        return this.serviceProvider.getLogoUrl();
+      case APP_URL:
+        return this.serviceProvider.getApplicationUrl();
+      case SERVICE_URL:
+        return getServiceUrl(this.serviceProvider);
+      case SUPPORT_URL_NL:
+        return getSupportUrl(this.serviceProvider, Provider.Language.NL);
+      case SUPPORT_URL_EN:
+        return getSupportUrl(this.serviceProvider, Provider.Language.EN);
+      case SUPPORT_MAIL:
+        ContactPerson helpCP = this.serviceProvider.getContactPerson(ContactPersonType.help);
+        return helpCP != null ? helpCP.getEmailAddress() : null;
+      case TECHNICAL_SUPPORTMAIL:
+        ContactPerson cp = this.serviceProvider.getContactPerson(ContactPersonType.technical);
+        return cp != null ? cp.getEmailAddress() : null;
+      case EULA_URL:
+        return this.serviceProvider.getEulaURL();
+      case TITLE_EN:
+        return null != this.serviceProvider ? this.serviceProvider.getName(Provider.Language.EN) : this.serviceProviderEntityId;
+      case TITLE_NL:
+        return null != this.serviceProvider ? this.serviceProvider.getName(Provider.Language.NL) : this.serviceProviderEntityId;
+      default:
+        throw new RuntimeException("SURFConext does not support property: " + key);
     }
   }
 
   private Object getLmngProperty(Field.Key key) {
     switch (key) {
-    case ENDUSER_DESCRIPTION_NL:
-      return this.article.getEndUserDescriptionNl();
-    case INSTITUTION_DESCRIPTION_NL:
-      return this.article.getInstitutionDescriptionNl();
-    case SERVICE_DESCRIPTION_NL:
-      return this.article.getServiceDescriptionNl();
-    case DETAIL_LOGO:
-      return this.article.getDetailLogo();
-    default:
-      throw new RuntimeException("LMNG does not support property: " + key);
+      case ENDUSER_DESCRIPTION_NL:
+        return this.article.getEndUserDescriptionNl();
+      case INSTITUTION_DESCRIPTION_NL:
+        return this.article.getInstitutionDescriptionNl();
+      case SERVICE_DESCRIPTION_NL:
+        return this.article.getServiceDescriptionNl();
+      case DETAIL_LOGO:
+        return this.article.getDetailLogo();
+      default:
+        throw new RuntimeException("LMNG does not support property: " + key);
     }
   }
 
   @Override
   public String toString() {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("id", getId()).append("serviceProvider", serviceProvider)
-        .append("serviceProviderEntityId", serviceProviderEntityId).append("lmngId", lmngId).toString();
+      .append("serviceProviderEntityId", serviceProviderEntityId).append("lmngId", lmngId).toString();
   }
 
   private static byte[] getImageBytesFromClasspath(String filename) {
@@ -465,13 +479,14 @@ public class CompoundServiceProvider extends DomainObject {
   public boolean isArticleAvailable() {
     return article != null && !Article.NONE.equals(this.article);
   }
-  
+
   public List<License> getLicenses() {
     return licenses;
   }
-  
+
   /**
    * Convenience method for the first (and only?) license belonging to an idp and a service
+   *
    * @return the first license found or null
    */
   public License getLicense() {
@@ -498,11 +513,11 @@ public class CompoundServiceProvider extends DomainObject {
     this.availableForEndUser = availableForEndUser;
   }
 
-  public LicenseStatus getLicenseStatus() {
+  public License.LicenseStatus getLicenseStatus() {
     return licenseStatus;
   }
 
-  public void setLicenseStatus(LicenseStatus licenseStatus) {
+  public void setLicenseStatus(License.LicenseStatus licenseStatus) {
     this.licenseStatus = licenseStatus;
   }
 
@@ -515,7 +530,7 @@ public class CompoundServiceProvider extends DomainObject {
     } else {
       fieldString = new FieldString(Field.Source.DISTRIBUTIONCHANNEL, key, null);
     }
-    
+
     updatePossibleFieldOrigin(fieldString);
     provider.addFieldString(fieldString);
   }
@@ -530,11 +545,11 @@ public class CompoundServiceProvider extends DomainObject {
     } else {
       fieldImage = new FieldImage(Field.Source.DISTRIBUTIONCHANNEL, key, distributionChannel);
     }
-    
+
     updatePossibleFieldOrigin(fieldImage);
     provider.addFieldImage(fieldImage);
   }
-  
+
   private static void updatePossibleFieldOrigin(Field field) {
     // Cloud Distribution is always a possible origin for fields
     if (isAllowedCombination(field.getKey(), Field.Source.LMNG)) {
@@ -553,12 +568,12 @@ public class CompoundServiceProvider extends DomainObject {
     for (Field current : this.fields) {
       updatePossibleFieldOrigin(current);
     }
-    
+
     for (Field current : this.fieldImages) {
       updatePossibleFieldOrigin(current);
     }
   }
-  
+
   private static String getServiceUrl(ServiceProvider sp) {
     Map<String, String> homeUrls = sp.getHomeUrls();
     if (!CollectionUtils.isEmpty(homeUrls)) {
@@ -592,22 +607,22 @@ public class CompoundServiceProvider extends DomainObject {
     provider.setArticle(Article.NONE);
     provider.setServiceProvider(new ServiceProvider(null));
     switch (source) {
-    case LMNG:
-      try {
-        provider.getLmngProperty(key);
+      case LMNG:
+        try {
+          provider.getLmngProperty(key);
+          return true;
+        } catch (RuntimeException e) {
+          return false;
+        }
+      case SURFCONEXT:
+        try {
+          provider.getSurfConextProperty(key);
+          return true;
+        } catch (RuntimeException e) {
+          return false;
+        }
+      default:
         return true;
-      } catch (RuntimeException e) {
-        return false;
-      }
-    case SURFCONEXT:
-      try {
-        provider.getSurfConextProperty(key);
-        return true;
-      } catch (RuntimeException e) {
-        return false;
-      }
-    default:
-      return true;
     }
   }
 
