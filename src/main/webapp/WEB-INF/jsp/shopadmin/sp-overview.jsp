@@ -93,13 +93,13 @@
               <td>
                 <input type="hidden" name="tokencheck" value="<c:out value='${tokencheck}'/>"/>
                 <select class="license-statuses" name="licenseStatus" data-compound-service-provider-id="${binding.compoundServiceProvider.id}">
-                  <c:forEach items="${licenseStatuses}" var="status">
-                    <option value="${status}" ${binding.compoundServiceProvider.licenseStatus == status ? ' selected ' : ''} ><spring:message code="jsp.lmng_binding_overview.license_status.${status}"/></option>
+                  <c:forEach items="${licenseStatuses}" var="licenseStatus">
+                    <option value="${licenseStatus}" ${binding.compoundServiceProvider.licenseStatus == licenseStatus ? ' selected ' : ''} ><spring:message code="jsp.lmng_binding_overview.license_status.${licenseStatus}"/></option>
                   </c:forEach>
                 </select>
               </td>
               <td>
-  			  <form:form id="form-${status.index}" method="post" action="save-splmng.shtml#row${status.index}" style="margin:0" cssClass="lmng-id-edit">
+  			      <form:form id="form-${status.index}" method="post" action="save-splmng.shtml#row${status.index}" style="margin:0" cssClass="lmng-id-edit">
                 <input type="hidden" name="tokencheck" value="<c:out value='${tokencheck}'/>"/>
                 <input type="hidden" name="index" value="${status.index}"/>
               	<input type="hidden" id="spId-${status.index}" value="${binding.serviceProvider.id}" name="spIdentifier"/>
@@ -114,7 +114,7 @@
                 </div>
                 <c:if test="${(status.index eq messageIndex) && (not empty errorMessage)}"><p class="error"><spring:message code="${errorMessage}" /></p></c:if>
                 <c:if test="${(status.index eq messageIndex) && (not empty infoMessage)}"><p class="info"><spring:message code="jsp.lmng_binding_overview.new.sp.guid" /><c:out value="${infoMessage}" /></p></c:if>
-  			  </form:form>
+  			      </form:form>
               </td>
               <td>
                 <a href="${detailUrl}"><spring:message code="jsp.lmng_binding_overview.data_decision" /></a>

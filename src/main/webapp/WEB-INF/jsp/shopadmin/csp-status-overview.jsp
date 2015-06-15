@@ -50,6 +50,7 @@
                       <th class="html sorting_asc"><spring:message code="jsp.cspstatus.csp.name"/></th>
 	                      <th><spring:message code="jsp.cspstatus.csp.lmnglink"/></th>
 	                      <th><spring:message code="jsp.cspstatus.csp.haslicense"/></th>
+                        <th><spring:message code="jsp.cspstatus.csp.licenseStatus"/></th>
 	                      <th><spring:message code="jsp.cspstatus.csp.grouplicense"/></th>
 	                      <th><spring:message code="jsp.cspstatus.csp.license.expire"/></th>
 		                    <th><spring:message code="jsp.cspstatus.csp.islinked"/></th>
@@ -85,6 +86,9 @@
 	                            </c:otherwise>
 	                          </c:choose>
 	                        </td>
+                          <td>
+                            <p>${compoundSp.licenseStatus}</p>
+                          </td>
 	                        <td>
 	                          <c:if test="${not empty compoundSp.license}">
 	                            <c:choose>
