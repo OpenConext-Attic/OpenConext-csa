@@ -37,7 +37,7 @@ app.forms = function() {
       }
     }
 
-    var forms = $('.lmng-id-edit');
+    var forms = $("form[id^='form-lmng-id-edit']");
     $('button[name="submitbutton"]', forms).on('click', editSubmit);
     $('button[name="clearbutton"]', forms).on('click', confirmDeletion);
     forms.on('submit', performSubmit);

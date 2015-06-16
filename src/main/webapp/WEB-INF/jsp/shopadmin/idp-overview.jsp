@@ -58,7 +58,7 @@
                 <tags:providername provider="${binding.identityProvider}"/>
               </td>
               <td class="text-overflow">
-          <form:form id="form-${status.index}" method="post" action="save-idplmng.shtml#row${status.index}" class="lmng-id-edit">
+              <form:form id="form-lmng-id-edit-${status.index}" method="post" action="save-idplmng.shtml#row${status.index}" class="lmng-id-edit">
                 <input type="hidden" name="tokencheck" value="<c:out value='${tokencheck}'/>"/>
                 <input type="hidden" name="index" value="${status.index}"/>
                 <input type="hidden" id="idpId-${status.index}" value="${binding.identityProvider.institutionId}" name="idpIdentifier"/>

@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.*;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import javax.persistence.Column;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -103,6 +104,11 @@ public class Service implements Comparable<Service>, Serializable {
   private boolean publishedInEdugain;
 
   private License.LicenseStatus licenseStatus;
+
+  private boolean normenkaderPresent;
+
+  private String normenkaderUrl;
+
 
   public Service() {
   }
@@ -418,6 +424,22 @@ public class Service implements Comparable<Service>, Serializable {
 
   public void setLicenseStatus(License.LicenseStatus licenseStatus) {
     this.licenseStatus = licenseStatus;
+  }
+
+  public boolean isNormenkaderPresent() {
+    return normenkaderPresent;
+  }
+
+  public void setNormenkaderPresent(boolean normenkaderPresent) {
+    this.normenkaderPresent = normenkaderPresent;
+  }
+
+  public String getNormenkaderUrl() {
+    return normenkaderUrl;
+  }
+
+  public void setNormenkaderUrl(String normenkaderUrl) {
+    this.normenkaderUrl = normenkaderUrl;
   }
 
   @Override

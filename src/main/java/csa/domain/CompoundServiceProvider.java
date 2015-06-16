@@ -82,6 +82,12 @@ public class CompoundServiceProvider extends DomainObject {
   @Column
   private License.LicenseStatus licenseStatus = License.LicenseStatus.NOT_NEEDED;
 
+  @Column
+  private boolean normenkaderPresent;
+
+  @Column
+  private String normenkaderUrl;
+
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "compoundServiceProvider")
   @SortNatural
   private SortedSet<FieldString> fields = new TreeSet<>();
@@ -519,6 +525,22 @@ public class CompoundServiceProvider extends DomainObject {
 
   public void setLicenseStatus(License.LicenseStatus licenseStatus) {
     this.licenseStatus = licenseStatus;
+  }
+
+  public boolean isNormenkaderPresent() {
+    return normenkaderPresent;
+  }
+
+  public void setNormenkaderPresent(boolean normenkaderPresent) {
+    this.normenkaderPresent = normenkaderPresent;
+  }
+
+  public String getNormenkaderUrl() {
+    return normenkaderUrl;
+  }
+
+  public void setNormenkaderUrl(String normenkaderUrl) {
+    this.normenkaderUrl = normenkaderUrl;
   }
 
   private static void buildFieldString(Field.Key key, String lmng, String surfconext, CompoundServiceProvider provider) {

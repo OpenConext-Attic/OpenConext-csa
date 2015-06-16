@@ -17,19 +17,19 @@
 package csa.control.shopadmin;
 
 import csa.command.LmngServiceBinding;
-import csa.domain.ServiceProvider;
-import csa.model.License;
-import csa.service.CrmService;
 import csa.control.BaseController;
 import csa.dao.CompoundServiceProviderDao;
 import csa.dao.LmngIdentifierDao;
 import csa.domain.CompoundServiceProvider;
+import csa.domain.ServiceProvider;
+import csa.model.License;
+import csa.service.CrmService;
 import csa.service.ExportService;
 import csa.service.ServiceProviderService;
 import csa.service.impl.CompoundSPService;
 import csa.service.impl.LmngUtil;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,11 +67,13 @@ public class SpLnmgListController extends BaseController {
 
   @Autowired
   private CompoundServiceProviderDao compoundServiceProviderDao;
-  
+
   @Autowired
   private ExportService exportService;
 
   private LmngUtil lmngUtil = new LmngUtil();
+
+  private UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"});
 
   @RequestMapping(value = "/all-spslmng")
   public ModelAndView listAllSpsLmng(Map<String, Object> model) {
@@ -85,8 +87,8 @@ public class SpLnmgListController extends BaseController {
 
   private List<LmngServiceBinding> getOrphans(List<LmngServiceBinding> lmngServiceBindings) {
     Set<String> spEntitySet = lmngServiceBindings.stream().
-      filter( lmngServiceBinding -> lmngServiceBinding.getCompoundServiceProvider() != null).
-      map( lmngServiceBinding -> lmngServiceBinding.getCompoundServiceProvider().getServiceProviderEntityId()).
+      filter(lmngServiceBinding -> lmngServiceBinding.getCompoundServiceProvider() != null).
+      map(lmngServiceBinding -> lmngServiceBinding.getCompoundServiceProvider().getServiceProviderEntityId()).
       collect(Collectors.toSet());
 
     Iterable<CompoundServiceProvider> csps = compoundServiceProviderDao.findAll();
@@ -97,7 +99,7 @@ public class SpLnmgListController extends BaseController {
         cspIter.remove();
       }
     }
-    
+
     return StreamSupport.stream(csps.spliterator(), false).
       map(csp -> new LmngServiceBinding(csp.getLmngId(), csp.getServiceProvider(), csp)).
       collect(Collectors.toList());
@@ -112,13 +114,15 @@ public class SpLnmgListController extends BaseController {
     }
     return lmngServiceBindings;
   }
-  
+
   @RequestMapping(value = "/export/csv")
-  public @ResponseBody String exportToCSV(HttpServletRequest request, HttpServletResponse response, @RequestParam(value="type", required=false) String type) throws URISyntaxException {
+  public
+  @ResponseBody
+  String exportToCSV(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "type", required = false) String type) throws URISyntaxException {
     String result;
     List<LmngServiceBinding> lmngServiceBindings = getAllBindings();
     String baseUrl = getBaseUrl(request);
-    
+
     if (StringUtils.isEmpty(type)) {
       result = exportService.exportServiceBindingsCsv(lmngServiceBindings, baseUrl);
     } else if (type.equalsIgnoreCase("orphans")) {
@@ -127,23 +131,23 @@ public class SpLnmgListController extends BaseController {
     } else {
       throw new IllegalArgumentException("Unknown type given: " + type);
     }
-    
+
     // set content headers for CSV
     response.setHeader("Content-Disposition", "attachment; filename=\"spEntityExport.csv\"");
     response.setContentType("text/csv");
     response.setContentLength(result.length());
     return result;
   }
-  
+
   private String getBaseUrl(HttpServletRequest request) throws URISyntaxException {
     String result = "";
-    
+
     URI myUri = new URI(request.getRequestURL().toString());
-    result += myUri.getScheme()+"://"+myUri.getHost();
+    result += myUri.getScheme() + "://" + myUri.getHost();
     if (myUri.getPort() > 0) {
-      result += ":"+myUri.getPort();
+      result += ":" + myUri.getPort();
     }
-    
+
     return result;
   }
 
@@ -182,6 +186,30 @@ public class SpLnmgListController extends BaseController {
     return listAllSpsLmng(model);
   }
 
+  @RequestMapping(value = "/save-normenkader-url", method = RequestMethod.POST)
+  public ModelAndView saveNormenKaderUrl(HttpServletRequest req) {
+    Map<String, Object> model = new HashMap<>();
+
+    Long cspId = Long.parseLong(req.getParameter("cspId"));
+    String normenKaderUrl = req.getParameter("normenkaderUrl");
+    Integer index = Integer.valueOf(req.getParameter("index"));
+
+    String isClearPressed = req.getParameter("clearbutton");
+    if (StringUtils.isBlank(normenKaderUrl) || StringUtils.isNotBlank(isClearPressed)) {
+      log.debug("Clearing normenKaderUrl for CompoundServiceProvider with ID " + cspId);
+      normenKaderUrl = null;
+    } else if (!urlValidator.isValid(normenKaderUrl)) {
+      model.put("errorNormenKaderMessage", "jsp.lmng_binding_overview.normenkader.url.error");
+      model.put("messageNormenKaderIndex", index);
+      return listAllSpsLmng(model);
+    }
+    CompoundServiceProvider csp = compoundServiceProviderDao.findOne(cspId);
+    csp.setNormenkaderUrl(normenKaderUrl);
+    compoundServiceProviderDao.save(csp);
+    log.info("Updated CompoundServiceProvider(" + cspId + ") to have normenkader URL:" + normenKaderUrl);
+    return listAllSpsLmng(model);
+  }
+
   @RequestMapping(value = "/update-enduser-visible/{cspId}/{newValue}", method = RequestMethod.PUT)
   public
   @ResponseBody
@@ -190,6 +218,17 @@ public class SpLnmgListController extends BaseController {
     csp.setAvailableForEndUser(newValue);
     compoundServiceProviderDao.save(csp);
     log.info("Updated CompoundServiceProvider(" + cspId + ") to be available for end users:" + newValue);
+    return "ok";
+  }
+
+  @RequestMapping(value = "/update-normenkader-present/{cspId}/{newValue}", method = RequestMethod.PUT)
+  public
+  @ResponseBody
+  String updateCspNormenKaderPresent(@PathVariable("cspId") Long cspId, @PathVariable("newValue") boolean newValue) {
+    CompoundServiceProvider csp = compoundServiceProviderDao.findOne(cspId);
+    csp.setNormenkaderPresent(newValue);
+    compoundServiceProviderDao.save(csp);
+    log.info("Updated CompoundServiceProvider(" + cspId + ") to normenkader present:" + newValue);
     return "ok";
   }
 
@@ -210,7 +249,7 @@ public class SpLnmgListController extends BaseController {
     Long cspId = Long.parseLong(postedCspId);
     CompoundServiceProvider csp = compoundServiceProviderDao.findOne(cspId);
     compoundServiceProviderDao.delete(csp);
-    
+
     //redirect to services page
     response.sendRedirect("all-spslmng.shtml");
   }
