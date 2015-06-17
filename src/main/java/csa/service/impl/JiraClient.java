@@ -16,7 +16,6 @@
 
 package csa.service.impl;
 
-import java.io.IOException;
 import java.util.List;
 
 import csa.domain.CoinUser;
@@ -29,18 +28,16 @@ public interface JiraClient {
    *
    * @param task the task you want to create
    * @param user the user which issued the request
-   * @return the new task key
-   * @throws IOException when communicating with jira fails
+   * @return the new task key if creation succeeded
    */
-  String create(final JiraTask task, CoinUser user) throws IOException;
+  String create(final JiraTask task, CoinUser user) throws IllegalStateException;
 
   /**
    * Retrieve specific tasks from Jira.
    *
    * @param keys a list of the task keys you want to retrieve
-   * @return a list of tasks
-   * @throws IOException when communicating with jira fails
+   * @return a list of tasks.
    */
-  List<JiraTask> getTasks(final List<String> keys) throws IOException;
+  List<JiraTask> getTasks(final List<String> keys);
 
 }

@@ -33,8 +33,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.swift.common.soap.jira.JiraSoapService;
-import org.swift.common.soap.jira.JiraSoapServiceServiceLocator;
 
 import csa.janus.JanusRestClient;
 import csa.service.impl.JiraClientMock;
@@ -115,21 +113,13 @@ public class Application extends SpringBootServletInitializer {
 
   @Bean
   @Autowired
-  public JiraClient jiraClient(Environment environment, @Value("${jiraBaseUrl}") String url,
+  public JiraClient jiraClient(Environment environment, @Value("${jiraBaseUrl}") String baseUrl,
                                  @Value("${jiraUsername") String username,
                                  @Value("${jiraPassword") String password, @Value("${jiraProjectKey") String projectKey) throws Exception{
-    if (environment.acceptsProfiles(DEV_PROFILE_NAME)) {
-      return new JiraClientMock();
-    }
-    @SuppressWarnings("serial")
-    JiraSoapServiceServiceLocator jiraSoapServiceGetter = new JiraSoapServiceServiceLocator() {
-      {
-        setJirasoapserviceV2EndpointAddress(url + JIRA_SOAP_SERVICE_ENDPOINT);
-        setMaintainSession(true);
-      }
-    };
-    final JiraSoapService jiraSoapService = jiraSoapServiceGetter.getJirasoapserviceV2();
-    return new JiraClientImpl(jiraSoapService, username, password, projectKey);
+    //if (environment.acceptsProfiles(DEV_PROFILE_NAME)) {
+      //return new JiraClientMock();
+    //}
+    return new JiraClientImpl(baseUrl, username, password, projectKey);
   }
 
 

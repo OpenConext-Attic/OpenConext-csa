@@ -16,23 +16,30 @@
 
 package csa.service.impl;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.swift.common.soap.jira.JiraSoapService;
-import org.swift.common.soap.jira.RemoteCustomFieldValue;
-import org.swift.common.soap.jira.RemoteIssue;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
 
 import csa.domain.CoinUser;
 import csa.model.JiraTask;
+import csa.service.impl.deprecated.RemoteCustomFieldValue;
+import csa.service.impl.deprecated.RemoteIssue;
 
 public class JiraClientImpl implements JiraClient {
   private static final Logger LOG = LoggerFactory.getLogger(JiraClientImpl.class);
@@ -49,23 +56,36 @@ public class JiraClientImpl implements JiraClient {
   public static final String TYPE_UNLINKREQUEST = "17";
   public static final String TYPE_QUESTION = "16";
 
+  private static final Map<JiraTask.Type, String> TASKTYPE_TO_ISSUETYPE_CODE = ImmutableMap.of(
+    JiraTask.Type.QUESTION, "16",
+    JiraTask.Type.LINKREQUEST, "13",
+    JiraTask.Type.UNLINKREQUEST, "17");
+
   public static final String PRIORITY_MEDIUM = "3";
 
   private final String username;
   private final String password;
+  private final String baseUrl;
 
-  private final JiraSoapService jiraSoapService;
+  private final RestTemplate restTemplate;
   private final String projectKey;
 
-  public JiraClientImpl(JiraSoapService jiraSoapService, String username, String password, String projectKey) {
+  public JiraClientImpl(final String baseUrl, final String username, final String password, final String projectKey) {
     this.username = username;
     this.password = password;
     this.projectKey = projectKey;
-    this.jiraSoapService = jiraSoapService;
+    this.baseUrl = baseUrl;
+
+    HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+    BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
+    basicCredentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+    httpClientBuilder.setDefaultCredentialsProvider(basicCredentialsProvider);
+    CloseableHttpClient httpClient = httpClientBuilder.build();
+    this.restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient));
   }
 
   @Override
-  public String create(final JiraTask task, CoinUser user) throws IOException {
+  public String create(final JiraTask task, CoinUser user) {
     RemoteIssue remoteIssue;
     switch (task.getIssueType()) {
       case LINKREQUEST:
@@ -76,7 +96,11 @@ public class JiraClientImpl implements JiraClient {
         remoteIssue = createQuestion(task, user);
         break;
     }
-    final RemoteIssue createdIssue = jiraSoapService.createIssueWithSecurityLevel(getToken(), remoteIssue, DEFAULT_SECURITY_LEVEL);
+    //TODO hans call REST api here with DEFAULT_SECURITY_LEVEL
+    // jiraSoapService.createIssueWithSecurityLevel(getToken(), remoteIssue, DEFAULT_SECURITY_LEVEL);
+    final RemoteIssue createdIssue = null;
+
+
     if (createdIssue == null) {
       return null;
     }
@@ -102,22 +126,9 @@ public class JiraClientImpl implements JiraClient {
     return remoteIssue;
   }
 
-  private String getIssueTypeByJiraTaskType(JiraTask.Type t) {
-    switch (t) {
-      case QUESTION:
-        return TYPE_QUESTION;
-      case LINKREQUEST:
-        return TYPE_LINKREQUEST;
-      case UNLINKREQUEST:
-        return TYPE_UNLINKREQUEST;
-      default:
-        throw new IllegalStateException("Unknown type: " + t);
-    }
-  }
-
   private RemoteIssue createRequest(final JiraTask task, CoinUser user) {
     RemoteIssue remoteIssue = new RemoteIssue();
-    remoteIssue.setType(getIssueTypeByJiraTaskType(task.getIssueType()));
+    remoteIssue.setType(TASKTYPE_TO_ISSUETYPE_CODE.get(task.getIssueType()));
     if (remoteIssue.getType().equals(TYPE_LINKREQUEST)) {
       remoteIssue.setSummary("New connection for IdP " + task.getIdentityProvider() + " to SP " + task.getServiceProvider());
     } else if (remoteIssue.getType().equals(TYPE_UNLINKREQUEST)) {
@@ -157,7 +168,7 @@ public class JiraClientImpl implements JiraClient {
   }
 
   @Override
-  public List<JiraTask> getTasks(final List<String> keys) throws IOException {
+  public List<JiraTask> getTasks(final List<String> keys)  {
     if (keys == null || keys.size() == 0) {
       return Collections.emptyList();
     }
@@ -170,7 +181,9 @@ public class JiraClientImpl implements JiraClient {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Sending query to JIRA: " + query.toString());
     }
-    final RemoteIssue[] issuesFromJqlSearch = jiraSoapService.getIssuesFromJqlSearch(getToken(), query.toString(), 1000);
+    final RemoteIssue[] issuesFromJqlSearch = null;
+    //final RemoteIssue[] issuesFromJqlSearch = jiraSoapService.getIssuesFromJqlSearch(getToken(), query.toString(), 1000);
+
     for (RemoteIssue remoteIssue : issuesFromJqlSearch) {
       String identityProvider = fetchValue(IDP_CUSTOM_FIELD, remoteIssue.getCustomFieldValues());
       String serviceProvider = fetchValue(SP_CUSTOM_FIELD, remoteIssue.getCustomFieldValues());
@@ -198,8 +211,5 @@ public class JiraClientImpl implements JiraClient {
     return "";
   }
 
-  private String getToken() throws IOException {
-    return jiraSoapService.login(username, password);
-  }
 
 }

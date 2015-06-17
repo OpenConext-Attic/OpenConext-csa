@@ -16,7 +16,6 @@
 
 package csa.service.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,17 +39,17 @@ public class JiraClientMock implements JiraClient {
   }
 
   @Override
-  public String create(final JiraTask task, CoinUser user) throws IOException {
+  public String create(final JiraTask task, CoinUser user) {
     String key = generateKey();
     repository.put(key, new JiraTask.Builder()
-            .key(key)
-            .identityProvider(task.getIdentityProvider())
-            .serviceProvider(task.getServiceProvider())
-            .institution(task.getInstitution())
-            .issueType(task.getIssueType())
-            .body(task.getBody())
-            .status(JiraTask.Status.OPEN)
-            .build());
+      .key(key)
+      .identityProvider(task.getIdentityProvider())
+      .serviceProvider(task.getServiceProvider())
+      .institution(task.getInstitution())
+      .issueType(task.getIssueType())
+      .body(task.getBody())
+      .status(JiraTask.Status.OPEN)
+      .build());
     LOG.debug("Added task (key '{}') to repository: {}", key, task);
     return key;
   }
@@ -60,11 +59,11 @@ public class JiraClientMock implements JiraClient {
   }
 
   @Override
-  public List<JiraTask> getTasks(final List<String> keys) throws IOException {
+  public List<JiraTask> getTasks(final List<String> keys) {
     List<JiraTask> tasks = new ArrayList<>();
     for (String key : keys) {
       final JiraTask task = repository.get(key);
-      if (task != null ) {
+      if (task != null) {
         tasks.add(task);
       }
     }
