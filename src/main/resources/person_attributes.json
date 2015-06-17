@@ -148,8 +148,8 @@
     "en":"DAI"
   },
   "Description":{
-    "nl":"Digital Author Identifier (DAI) zoals beschreven op: http:\/\/www.surffoundation.nl\/smartsite.dws?ch=eng&id=13480",
-    "en":"Digital Author Identifier (DAI) as described at: http:\/\/www.surffoundation.nl\/smartsite.dws?ch=eng&id=13480"
+    "nl":"Digital Author Identifier (DAI)",
+    "en":"Digital Author Identifier (DAI)"
   }
 }, "urn:mace:surffederatie_nl:attribute-def:nlEduPersonHomeOrganization":{
   "Name":{
@@ -193,8 +193,8 @@
     "en":"DAI"
   },
   "Description":{
-    "nl":"Digital Author Identifier (DAI) zoals beschreven op: http:\/\/www.surffoundation.nl\/smartsite.dws?ch=eng&id=13480",
-    "en":"Digital Author Identifier (DAI) as described at: http:\/\/www.surffoundation.nl\/smartsite.dws?ch=eng&id=13480"
+    "nl":"Digital Author Identifier (DAI)",
+    "en":"Digital Author Identifier (DAI)"
   }
 }, "urn:oid:1.3.6.1.4.1.1076.20.100.10.10.1":{
   "Name":{
