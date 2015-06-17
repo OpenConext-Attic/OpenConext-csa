@@ -60,44 +60,6 @@ public class JiraClientMock implements JiraClient {
   }
 
   @Override
-  public void delete(final String key) throws IOException {
-    repository.remove(key);
-  }
-
-  @Override
-  public void doAction(final String key, final JiraTask.Action action) throws IOException {
-    JiraTask jiraTask = repository.get(key);
-    JiraTask newTask;
-    switch (action) {
-      case CLOSE:
-        newTask = new JiraTask.Builder()
-            .key(jiraTask.getKey())
-            .identityProvider(jiraTask.getIdentityProvider())
-            .serviceProvider(jiraTask.getServiceProvider())
-            .institution(jiraTask.getInstitution())
-            .issueType(jiraTask.getIssueType())
-            .body(jiraTask.getBody())
-            .status(JiraTask.Status.CLOSED)
-            .build();
-        break;
-      case REOPEN:
-      default:
-        newTask = new JiraTask.Builder()
-            .key(jiraTask.getKey())
-            .identityProvider(jiraTask.getIdentityProvider())
-            .serviceProvider(jiraTask.getServiceProvider())
-            .institution(jiraTask.getInstitution())
-            .issueType(jiraTask.getIssueType())
-            .body(jiraTask.getBody())
-            .status(JiraTask.Status.OPEN)
-            .build();
-        break;
-    }
-    repository.remove(key);
-    repository.put(key, newTask);
-  }
-
-  @Override
   public List<JiraTask> getTasks(final List<String> keys) throws IOException {
     List<JiraTask> tasks = new ArrayList<>();
     for (String key : keys) {

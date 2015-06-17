@@ -35,23 +35,6 @@ public interface JiraClient {
   String create(final JiraTask task, CoinUser user) throws IOException;
 
   /**
-   * Delete a task from Jira.
-   *
-   * @param key the task key
-   * @throws IOException when communicating with jira fails
-   */
-  void delete(String key) throws IOException;
-
-  /**
-   * Re-open or close a Jira task.
-   *
-   * @param key    the task key
-   * @param action what action to undertake
-   * @throws IOException when communicating with jira fails
-   */
-  void doAction(String key, JiraTask.Action action) throws IOException;
-
-  /**
    * Retrieve specific tasks from Jira.
    *
    * @param keys a list of the task keys you want to retrieve

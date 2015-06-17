@@ -27,20 +27,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.swift.common.soap.jira.JiraSoapService;
 import org.swift.common.soap.jira.RemoteCustomFieldValue;
-import org.swift.common.soap.jira.RemoteFieldValue;
 import org.swift.common.soap.jira.RemoteIssue;
 
 import com.google.common.base.Joiner;
 
-import csa.model.JiraTask;
 import csa.domain.CoinUser;
+import csa.model.JiraTask;
 
 public class JiraClientImpl implements JiraClient {
   private static final Logger LOG = LoggerFactory.getLogger(JiraClientImpl.class);
 
   private final static String STATUS_CLOSED = "6";
 
-  public static final RemoteFieldValue[] EMPTY_REMOTE_FIELD_VALUES = new RemoteFieldValue[0];
   public static final String[] EMPTY_STRINGS = new String[0];
   public static final RemoteCustomFieldValue[] EMPTY_REMOTE_CUSTOM_FIELD_VALUES = new RemoteCustomFieldValue[0];
   public static final String SP_CUSTOM_FIELD = "customfield_10100";
@@ -52,8 +50,6 @@ public class JiraClientImpl implements JiraClient {
   public static final String TYPE_QUESTION = "16";
 
   public static final String PRIORITY_MEDIUM = "3";
-  public static final String CLOSE_ACTION_IDENTIFIER = "2";
-  public static final String REOPEN_ACTION_IDENTIFIER = "3";
 
   private final String username;
   private final String password;
@@ -68,6 +64,7 @@ public class JiraClientImpl implements JiraClient {
     this.jiraSoapService = jiraSoapService;
   }
 
+  @Override
   public String create(final JiraTask task, CoinUser user) throws IOException {
     RemoteIssue remoteIssue;
     switch (task.getIssueType()) {
@@ -151,7 +148,7 @@ public class JiraClientImpl implements JiraClient {
   }
 
   private void appendSpAndIdp(final JiraTask task, final RemoteIssue remoteIssue) {
-    final List<RemoteCustomFieldValue> customFieldValues = new ArrayList<RemoteCustomFieldValue>();
+    final List<RemoteCustomFieldValue> customFieldValues = new ArrayList<>();
     final List<String> spValue = Collections.singletonList(task.getServiceProvider());
     final List<String> idpValue = Collections.singletonList(task.getIdentityProvider());
     customFieldValues.add(new RemoteCustomFieldValue(SP_CUSTOM_FIELD, null, spValue.toArray(EMPTY_STRINGS)));
@@ -159,30 +156,12 @@ public class JiraClientImpl implements JiraClient {
     remoteIssue.setCustomFieldValues(customFieldValues.toArray(EMPTY_REMOTE_CUSTOM_FIELD_VALUES));
   }
 
-  public void delete(final String key) throws IOException {
-    jiraSoapService.deleteIssue(getToken(), key);
-  }
-
-  public void doAction(String key, JiraTask.Action update) throws IOException {
-    String action;
-    switch (update) {
-      case CLOSE:
-        action = CLOSE_ACTION_IDENTIFIER;
-        break;
-      case REOPEN:
-        action = REOPEN_ACTION_IDENTIFIER;
-        break;
-      default:
-        throw new IllegalArgumentException("Action must be either close or reopen");
-    }
-    jiraSoapService.progressWorkflowAction(getToken(), key, action, Collections.emptyList().toArray(EMPTY_REMOTE_FIELD_VALUES));
-  }
-
+  @Override
   public List<JiraTask> getTasks(final List<String> keys) throws IOException {
     if (keys == null || keys.size() == 0) {
       return Collections.emptyList();
     }
-    List<JiraTask> jiraTasks = new ArrayList<JiraTask>();
+    List<JiraTask> jiraTasks = new ArrayList<>();
     StringBuilder query = new StringBuilder("project = ");
     query.append(projectKey);
     query.append(" AND key IN(");
