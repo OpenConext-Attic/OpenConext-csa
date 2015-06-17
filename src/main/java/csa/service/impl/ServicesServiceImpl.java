@@ -117,6 +117,8 @@ public class ServicesServiceImpl implements ServicesService {
     service.setInstitutionId(csp.getSp().getInstitutionId());
     service.setPublishedInEdugain(csp.getSp().isPublishedInEdugain());
     service.setLicenseStatus(csp.getLicenseStatus());
+    service.setNormenkaderUrl(csp.getNormenkaderUrl());
+    service.setNormenkaderPresent(csp.isNormenkaderPresent());
   }
 
   private void screenshots(CompoundServiceProvider csp, Service service) {

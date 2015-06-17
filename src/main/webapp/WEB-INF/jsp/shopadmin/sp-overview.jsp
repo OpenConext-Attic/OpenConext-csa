@@ -46,6 +46,14 @@
             <i class="inlinehelp icon-question-sign" data-title="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.enduser" />" data-content="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.enduser.help" />"></i>
           </th>
           <th>
+            <spring:message code="jsp.lmng_binding_overview.normenkader"/>
+            <i class="inlinehelp icon-question-sign" data-title="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.normenkader" />" data-content="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.normenkader.help" />"></i>
+          </th>
+          <th>
+            <spring:message code="jsp.lmng_binding_overview.normenkader.url"/>
+            <i class="inlinehelp icon-question-sign" data-title="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.normenkader.url" />" data-content="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.normenkader.url.help" />"></i>
+          </th>
+          <th>
             <spring:message code="jsp.lmng_binding_overview.license_status"/>
             <i class="inlinehelp icon-question-sign" data-title="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.license_status" />" data-content="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.license_status.help" />"></i>
           </th>
@@ -65,6 +73,7 @@
         </thead>
         <tbody>
 
+        <c:set var="confirmationMessageNormenKader" scope="request"><spring:message code="jsp.lmng_binding_overview.normenkader.url.confirm" /></c:set>
         <c:set var="confirmationMessage" scope="request"><spring:message code="jsp.lmng_binding_overview.confirm" /></c:set>
         <c:set var="clearButtonTitle" scope="request"><spring:message code="jsp.lmng_binding_overview.clearbutton" /></c:set>
         <c:set var="submitButtonTitle" scope="request"><spring:message code="jsp.lmng_binding_overview.submitbutton" /></c:set>
@@ -90,6 +99,28 @@
                 <c:set var="checked" value="${binding.compoundServiceProvider.availableForEndUser}"></c:set>
                 <input type="checkbox" name="availableForEndUser" value="${checked}" data-compound-service-provider-id="${binding.compoundServiceProvider.id}" ${checked ? 'checked' : ''}>
               </td>
+              <td class="center">
+                <input type="hidden" name="tokencheck" value="<c:out value='${tokencheck}'/>"/>
+                <c:set var="checked" value="${binding.compoundServiceProvider.normenkaderPresent}"></c:set>
+                <input type="checkbox" name="normenkaderPresent" value="${checked}" data-compound-service-provider-id="${binding.compoundServiceProvider.id}" ${checked ? 'checked' : ''}>
+              </td>
+              <td>
+              <form:form id="form-normenkader-${status.index}" method="post" action="save-normenkader-url.shtml#row${status.index}" style="margin:0" cssClass="lmng-id-edit">
+                <input type="hidden" name="tokencheck" value="<c:out value='${tokencheck}'/>"/>
+                <input type="hidden" name="index" value="${status.index}"/>
+                <input type="hidden" id="cspId-${status.index}" value="${binding.compoundServiceProvider.id}" name="cspId"/>
+                <input id="normenkader-${status.index}" value="${binding.compoundServiceProvider.normenkaderUrl}" class="lmngIdentifier" type="text" name="normenkaderUrl"/>
+                <div class="btn-group">
+                  <button class="btn btn-small" id="clear-${status.index}" type="submit" value="clear" title="${clearButtonTitle}" name="clearbutton" onclick="return confirm('${confirmationMessageNormenKader}');">
+                    <i class="icon-ban-circle"></i>
+                  </button>
+                  <button class="btn btn-small" id="submit-${status.index}" type="submit" value="submit" title="${submitButtonTitle}" name="submitbutton">
+                    <i class="icon-ok"></i>
+                  </button>
+                </div>
+                <c:if test="${(status.index eq messageNormenKaderIndex) && (not empty errorNormenKaderMessage)}"><p class="error"><spring:message code="${errorNormenKaderMessage}" /></p></c:if>
+              </form:form>
+              </td>
               <td>
                 <input type="hidden" name="tokencheck" value="<c:out value='${tokencheck}'/>"/>
                 <select class="license-statuses" name="licenseStatus" data-compound-service-provider-id="${binding.compoundServiceProvider.id}">
@@ -99,7 +130,7 @@
                 </select>
               </td>
               <td>
-  			      <form:form id="form-${status.index}" method="post" action="save-splmng.shtml#row${status.index}" style="margin:0" cssClass="lmng-id-edit">
+  			      <form:form id="form-lmng-id-edit-${status.index}" method="post" action="save-splmng.shtml#row${status.index}" style="margin:0" cssClass="lmng-id-edit">
                 <input type="hidden" name="tokencheck" value="<c:out value='${tokencheck}'/>"/>
                 <input type="hidden" name="index" value="${status.index}"/>
               	<input type="hidden" id="spId-${status.index}" value="${binding.serviceProvider.id}" name="spIdentifier"/>

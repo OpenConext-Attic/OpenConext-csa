@@ -114,12 +114,13 @@ public class Application extends SpringBootServletInitializer {
   @Bean
   @Autowired
   public JiraClient jiraClient(Environment environment, @Value("${jiraBaseUrl}") String baseUrl,
-                                 @Value("${jiraUsername") String username,
-                                 @Value("${jiraPassword") String password, @Value("${jiraProjectKey") String projectKey) throws Exception{
-    //if (environment.acceptsProfiles(DEV_PROFILE_NAME)) {
-      //return new JiraClientMock();
-    //}
+                                 @Value("${jiraUsername}") String username,
+                                 @Value("${jiraPassword}") String password, @Value("${jiraProjectKey}") String projectKey) throws Exception{
+//    if (environment.acceptsProfiles(DEV_PROFILE_NAME)) {
+//      return new JiraClientMock();
+//    }
     return new JiraClientImpl(baseUrl, username, password, projectKey);
+
   }
 
 

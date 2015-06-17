@@ -9,6 +9,16 @@ app.spServices = function () {
       return;
     }
 
+    var toggleFormElements = function(checkboxes) {
+      checkboxes.each(function(){
+        var me = $(this);
+        var formElements = me.closest('tr').find("form[id^='form-normenkader']").find('input,button');
+        me.is(':checked') ? formElements.removeProp("disabled") : formElements.prop('disabled','disabled') ;
+      });
+    };
+
+    toggleFormElements($('#sp_overview_table').find("input[type='checkbox'][name='normenkaderPresent']"));
+
     var performAjaxUpdate = function(elem, methodPart, newValue) {
       var $elm = $(elem);
       var tokencheck = $elm.parent("td").find("input[name='tokencheck']").val();
@@ -30,6 +40,11 @@ app.spServices = function () {
 
     $('#sp_overview_table').find("input[type='checkbox'][name='availableForEndUser']").click(function () {
       performAjaxUpdate(this, "update-enduser-visible", $(this).is(':checked'));
+    });
+
+    $('#sp_overview_table').find("input[type='checkbox'][name='normenkaderPresent']").click(function () {
+      toggleFormElements($(this));
+      performAjaxUpdate(this, "update-normenkader-present", $(this).is(':checked'));
     });
 
     $('#sp_overview_table').find("select[name='licenseStatus']").change(function () {
