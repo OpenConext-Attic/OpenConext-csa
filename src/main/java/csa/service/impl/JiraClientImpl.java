@@ -22,15 +22,16 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.security.crypto.codec.Base64;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.base.Joiner;
@@ -43,8 +44,6 @@ import csa.service.impl.deprecated.RemoteIssue;
 
 public class JiraClientImpl implements JiraClient {
   private static final Logger LOG = LoggerFactory.getLogger(JiraClientImpl.class);
-
-  private final static String STATUS_CLOSED = "6";
 
   public static final String[] EMPTY_STRINGS = new String[0];
   public static final RemoteCustomFieldValue[] EMPTY_REMOTE_CUSTOM_FIELD_VALUES = new RemoteCustomFieldValue[0];
@@ -63,25 +62,22 @@ public class JiraClientImpl implements JiraClient {
 
   public static final String PRIORITY_MEDIUM = "3";
 
-  private final String username;
-  private final String password;
   private final String baseUrl;
 
   private final RestTemplate restTemplate;
   private final String projectKey;
+  private final HttpHeaders defaultHeaders;
+
 
   public JiraClientImpl(final String baseUrl, final String username, final String password, final String projectKey) {
-    this.username = username;
-    this.password = password;
     this.projectKey = projectKey;
     this.baseUrl = baseUrl;
 
-    HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
-    BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
-    basicCredentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
-    httpClientBuilder.setDefaultCredentialsProvider(basicCredentialsProvider);
-    CloseableHttpClient httpClient = httpClientBuilder.build();
-    this.restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient));
+    defaultHeaders = new HttpHeaders();
+    defaultHeaders.setContentType(MediaType.APPLICATION_JSON);
+    final byte[] encoded = Base64.encode((username + ":" + password).getBytes());
+    defaultHeaders.add("Authorization", "Basic " + new String(encoded));
+    this.restTemplate = new RestTemplate();
   }
 
   @Override
@@ -168,48 +164,43 @@ public class JiraClientImpl implements JiraClient {
   }
 
   @Override
-  public List<JiraTask> getTasks(final List<String> keys)  {
+  public List<JiraTask> getTasks(final List<String> keys) {
     if (keys == null || keys.size() == 0) {
       return Collections.emptyList();
     }
-    List<JiraTask> jiraTasks = new ArrayList<>();
     StringBuilder query = new StringBuilder("project = ");
     query.append(projectKey);
-    query.append(" AND key IN(");
+    query.append(" AND key IN (");
     Joiner.on(",").skipNulls().appendTo(query, keys);
     query.append(")");
     if (LOG.isDebugEnabled()) {
       LOG.debug("Sending query to JIRA: " + query.toString());
     }
-    final RemoteIssue[] issuesFromJqlSearch = null;
-    //final RemoteIssue[] issuesFromJqlSearch = jiraSoapService.getIssuesFromJqlSearch(getToken(), query.toString(), 1000);
+    final Map<String, String> searchArgs = ImmutableMap.of("jql", query.toString());
 
-    for (RemoteIssue remoteIssue : issuesFromJqlSearch) {
-      String identityProvider = fetchValue(IDP_CUSTOM_FIELD, remoteIssue.getCustomFieldValues());
-      String serviceProvider = fetchValue(SP_CUSTOM_FIELD, remoteIssue.getCustomFieldValues());
-      final JiraTask jiraTask = new JiraTask.Builder().key(remoteIssue.getKey()).identityProvider(identityProvider)
-        .serviceProvider(serviceProvider).institution("???").status(fetchStatus(remoteIssue)).body(remoteIssue.getDescription()).build();
-      jiraTasks.add(jiraTask);
+    try {
+      HttpEntity<Map<String, String>> entity = new HttpEntity<>(searchArgs, defaultHeaders);
+      Map<String, Object> result = restTemplate.postForObject(baseUrl + "/search?expand=all", entity, Map.class);
+
+      List<Map<String, Object>> issues = (List<Map<String, Object>>) result.get("issues");
+      return issues.stream().
+        map(issue -> {
+          final String key = (String) issue.get("key");
+
+          final Map<String, Object> fields = (Map<String, Object>) issue.get("fields");
+          final Optional<String> identityProvider = Optional.ofNullable((String) fields.get(IDP_CUSTOM_FIELD));
+          final Optional<String> serviceProvider = Optional.ofNullable((String) fields.get(SP_CUSTOM_FIELD));
+          final String description = (String) fields.get("description");
+
+          final Map<String, Object> statusInfo = (Map<String, Object>) fields.get("status");
+          final JiraTask.Status status = JiraTask.Status.valueOf(((String) statusInfo.get("name")).toUpperCase());
+          return new JiraTask.Builder().key(key).identityProvider(identityProvider.orElse(""))
+            .serviceProvider(serviceProvider.orElse("")).institution("???").status(status).body(description).build();
+        }).
+        collect(Collectors.toList());
+    } catch (RestClientException e) {
+      LOG.error("Error communicating with Jira, return empty list", e);
+      return Collections.emptyList();
     }
-    return jiraTasks;
   }
-
-  private JiraTask.Status fetchStatus(final RemoteIssue remoteIssue) {
-    if (STATUS_CLOSED.equals(remoteIssue.getStatus())) {
-      return JiraTask.Status.CLOSED;
-    } else {
-      return JiraTask.Status.OPEN;
-    }
-  }
-
-  private String fetchValue(final String name, final RemoteCustomFieldValue[] customFieldValues) {
-    for (RemoteCustomFieldValue customFieldValue : customFieldValues) {
-      if (name.equals(customFieldValue.getCustomfieldId())) {
-        return customFieldValue.getValues()[0];
-      }
-    }
-    return "";
-  }
-
-
 }
