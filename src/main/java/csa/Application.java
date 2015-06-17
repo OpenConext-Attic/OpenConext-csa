@@ -6,6 +6,7 @@ import java.util.Locale;
 import javax.sql.DataSource;
 
 import csa.service.*;
+import csa.service.impl.JiraClient;
 import csa.util.LicenseContactPersonService;
 import org.apache.catalina.Container;
 import org.apache.catalina.Wrapper;

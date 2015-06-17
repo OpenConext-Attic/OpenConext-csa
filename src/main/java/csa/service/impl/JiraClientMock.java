@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import csa.domain.CoinUser;
 import csa.model.JiraTask;
-import csa.service.JiraClient;
 
 public class JiraClientMock implements JiraClient {
 

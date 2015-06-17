@@ -29,7 +29,6 @@ import csa.domain.CoinUser;
 import csa.model.Action;
 import csa.model.JiraTask;
 import csa.service.ActionsService;
-import csa.service.JiraClient;
 
 @Service(value = "actionsService")
 public class ActionsServiceImpl implements ActionsService {

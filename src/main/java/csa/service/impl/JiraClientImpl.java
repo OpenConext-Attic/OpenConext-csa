@@ -33,7 +33,6 @@ import org.swift.common.soap.jira.RemoteIssue;
 import com.google.common.base.Joiner;
 
 import csa.model.JiraTask;
-import csa.service.JiraClient;
 import csa.domain.CoinUser;
 
 public class JiraClientImpl implements JiraClient {
