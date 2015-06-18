@@ -137,7 +137,8 @@ public class Application extends SpringBootServletInitializer {
 
   @Bean
   @Autowired
-  public EmailService emailService(Environment environment, JavaMailSender mailSender, @Value("${coin-administrative-email}") String administrativeEmail) {
+  public EmailService emailService(Environment environment, JavaMailSender mailSender,
+                                   @Value("${coin-administrative-email}") String administrativeEmail) {
     Emailer emailer = environment.acceptsProfiles(DEV_PROFILE_NAME) ? new MockEmailerImpl() : new EmailerImpl(mailSender);
     return new EmailServiceImpl(administrativeEmail, emailer);
   }

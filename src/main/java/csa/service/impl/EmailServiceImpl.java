@@ -16,6 +16,7 @@ public class EmailServiceImpl implements EmailService {
     this.emailer = emailer;
   }
 
+  @Override
   public void sendMail(String from, String subject, String body) {
     StringBuilder content = new StringBuilder("The following question was posted on self service portal:\n\n");
     content.append(body);
