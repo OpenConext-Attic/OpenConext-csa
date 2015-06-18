@@ -63,7 +63,6 @@ public class Application extends SpringBootServletInitializer {
   private static final Logger LOG = LoggerFactory.getLogger(Application.class);
 
   public static final String DEV_PROFILE_NAME = "dev";
-  private static final String JIRA_SOAP_SERVICE_ENDPOINT = "/rpc/soap/jirasoapservice-v2";
 
   @Autowired
   private ResourceLoader resourceLoader;
