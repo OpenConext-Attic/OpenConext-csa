@@ -5,9 +5,6 @@ import java.util.Arrays;
 import java.util.Locale;
 import javax.sql.DataSource;
 
-import csa.service.*;
-import csa.service.impl.JiraClient;
-import csa.util.LicenseContactPersonService;
 import org.apache.catalina.Container;
 import org.apache.catalina.Wrapper;
 import org.slf4j.Logger;
@@ -34,26 +31,31 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import csa.janus.JanusRestClient;
-import csa.service.impl.JiraClientMock;
-import csa.service.impl.ServicesServiceImpl;
-import csa.util.mail.MockEmailerImpl;
 import csa.api.cache.ServicesCache;
 import csa.dao.LmngIdentifierDao;
 import csa.interceptor.AuthorityScopeInterceptor;
 import csa.interceptor.MenuInterceptor;
 import csa.janus.Janus;
+import csa.janus.JanusRestClient;
+import csa.service.CrmService;
+import csa.service.EmailService;
+import csa.service.VootClient;
 import csa.service.impl.CompoundSPService;
 import csa.service.impl.EmailServiceImpl;
+import csa.service.impl.JiraClient;
 import csa.service.impl.JiraClientImpl;
+import csa.service.impl.JiraClientMock;
 import csa.service.impl.LmngServiceImpl;
 import csa.service.impl.LmngServiceMock;
+import csa.service.impl.ServicesServiceImpl;
 import csa.service.impl.VootClientImpl;
 import csa.service.impl.VootClientMock;
 import csa.util.JanusRestClientMock;
+import csa.util.LicenseContactPersonService;
 import csa.util.SpringMvcConfiguration;
 import csa.util.mail.Emailer;
 import csa.util.mail.EmailerImpl;
+import csa.util.mail.MockEmailerImpl;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class Application extends SpringBootServletInitializer {
@@ -114,11 +116,11 @@ public class Application extends SpringBootServletInitializer {
   @Bean
   @Autowired
   public JiraClient jiraClient(Environment environment, @Value("${jiraBaseUrl}") String baseUrl,
-                                 @Value("${jiraUsername}") String username,
-                                 @Value("${jiraPassword}") String password, @Value("${jiraProjectKey}") String projectKey) throws Exception{
-//    if (environment.acceptsProfiles(DEV_PROFILE_NAME)) {
-//      return new JiraClientMock();
-//    }
+                               @Value("${jiraUsername}") String username,
+                               @Value("${jiraPassword}") String password, @Value("${jiraProjectKey}") String projectKey) throws Exception {
+    if (environment.acceptsProfiles(DEV_PROFILE_NAME)) {
+      return new JiraClientMock();
+    }
     return new JiraClientImpl(baseUrl, username, password, projectKey);
 
   }
@@ -172,7 +174,7 @@ public class Application extends SpringBootServletInitializer {
                                      @Value("${static.baseurl}") String staticBaseUrl,
                                      @Value("${lmngDeepLinkBaseUrl}") String lmngDeepLinkBaseUrl,
                                      @Value("${public.api.lmng.guids}") String[] guids
-                                     ) {
+  ) {
     return new ServicesCache(new ServicesServiceImpl(compoundSPService, crmService, staticBaseUrl, lmngDeepLinkBaseUrl, guids), delay, duration, callDelay);
   }
 

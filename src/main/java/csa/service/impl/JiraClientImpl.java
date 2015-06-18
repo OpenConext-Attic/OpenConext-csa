@@ -16,10 +16,14 @@
 
 package csa.service.impl;
 
+import static csa.model.JiraTask.Type.LINKREQUEST;
+import static csa.model.JiraTask.Type.QUESTION;
+import static csa.model.JiraTask.Type.UNLINKREQUEST;
+
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,39 +35,32 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.codec.Base64;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
 import csa.domain.CoinUser;
 import csa.model.JiraTask;
-import csa.service.impl.deprecated.RemoteCustomFieldValue;
-import csa.service.impl.deprecated.RemoteIssue;
 
 public class JiraClientImpl implements JiraClient {
   private static final Logger LOG = LoggerFactory.getLogger(JiraClientImpl.class);
 
-  public static final String[] EMPTY_STRINGS = new String[0];
-  public static final RemoteCustomFieldValue[] EMPTY_REMOTE_CUSTOM_FIELD_VALUES = new RemoteCustomFieldValue[0];
-  public static final String SP_CUSTOM_FIELD = "customfield_10100";
-  public static final String IDP_CUSTOM_FIELD = "customfield_10101";
-  private static final long DEFAULT_SECURITY_LEVEL = 10100L;
-
-  public static final String TYPE_LINKREQUEST = "13";
-  public static final String TYPE_UNLINKREQUEST = "17";
-  public static final String TYPE_QUESTION = "16";
+  private static final String SP_CUSTOM_FIELD = "customfield_10100";
+  private static final String IDP_CUSTOM_FIELD = "customfield_10101";
+  private static final String DEFAULT_SECURITY_LEVEL_ID = "10100";
 
   private static final Map<JiraTask.Type, String> TASKTYPE_TO_ISSUETYPE_CODE = ImmutableMap.of(
-    JiraTask.Type.QUESTION, "16",
-    JiraTask.Type.LINKREQUEST, "13",
-    JiraTask.Type.UNLINKREQUEST, "17");
+    QUESTION, "16",
+    LINKREQUEST, "13",
+    UNLINKREQUEST, "17");
 
-  public static final String PRIORITY_MEDIUM = "3";
+  private static final String PRIORITY_MEDIUM_ID = "3";
 
   private final String baseUrl;
-
   private final RestTemplate restTemplate;
   private final String projectKey;
   private final HttpHeaders defaultHeaders;
@@ -80,90 +77,38 @@ public class JiraClientImpl implements JiraClient {
     this.restTemplate = new RestTemplate();
   }
 
-  @Override
-  public String create(final JiraTask task, CoinUser user) {
-    RemoteIssue remoteIssue;
-    switch (task.getIssueType()) {
-      case LINKREQUEST:
-      case UNLINKREQUEST:
-        remoteIssue = createRequest(task, user);
-        break;
-      default:
-        remoteIssue = createQuestion(task, user);
-        break;
-    }
-    //TODO hans call REST api here with DEFAULT_SECURITY_LEVEL
-    // jiraSoapService.createIssueWithSecurityLevel(getToken(), remoteIssue, DEFAULT_SECURITY_LEVEL);
-    final RemoteIssue createdIssue = null;
-
-
-    if (createdIssue == null) {
-      return null;
-    }
-    return createdIssue.getKey();
-  }
-
-  private RemoteIssue createQuestion(final JiraTask task, CoinUser user) {
-    RemoteIssue remoteIssue = new RemoteIssue();
-    remoteIssue.setType(TYPE_QUESTION);
-    remoteIssue.setSummary(new StringBuilder().append("Question about ").append(task.getServiceProvider()).toString());
-    remoteIssue.setProject(projectKey);
-    remoteIssue.setPriority(PRIORITY_MEDIUM);
-    StringBuilder description = new StringBuilder();
-    description.append("Applicant name: ").append(user.getDisplayName()).append("\n");
-    description.append("Applicant email: ").append(user.getEmail()).append("\n");
-    description.append("Identity Provider: ").append(task.getIdentityProvider()).append("\n");
-    description.append("Service Provider: ").append(task.getServiceProvider()).append("\n");
-    description.append("Time: ").append(new SimpleDateFormat("HH:mm dd-MM-yy").format(new Date())).append("\n");
-    description.append("Service Provider: ").append(task.getServiceProvider()).append("\n");
-    description.append("Request: ").append(task.getBody()).append("\n");
-    remoteIssue.setDescription(description.toString());
-    appendSpAndIdp(task, remoteIssue);
-    return remoteIssue;
-  }
-
-  private RemoteIssue createRequest(final JiraTask task, CoinUser user) {
-    RemoteIssue remoteIssue = new RemoteIssue();
-    remoteIssue.setType(TASKTYPE_TO_ISSUETYPE_CODE.get(task.getIssueType()));
-    if (remoteIssue.getType().equals(TYPE_LINKREQUEST)) {
-      remoteIssue.setSummary("New connection for IdP " + task.getIdentityProvider() + " to SP " + task.getServiceProvider());
-    } else if (remoteIssue.getType().equals(TYPE_UNLINKREQUEST)) {
-      remoteIssue.setSummary("Disconnect IdP " + task.getIdentityProvider() + " and SP " + task.getServiceProvider());
-    } else {
-      throw new IllegalStateException("Unknown type: " + remoteIssue.getType());
-    }
-
-    remoteIssue.setProject(projectKey);
-    remoteIssue.setPriority(PRIORITY_MEDIUM);
-    StringBuilder description = new StringBuilder();
-    if (task.getIssueType() == JiraTask.Type.LINKREQUEST) {
-      description.append("Request: Create a new connection").append("\n");
-    } else {
-      description.append("Request: terminate a connection").append("\n");
-    }
-
-    description.append("Applicant name: ").append(user.getDisplayName()).append("\n");
-    description.append("Applicant email: ").append(user.getEmail()).append("\n");
-    description.append("Identity Provider: ").append(task.getIdentityProvider()).append("\n");
-    description.append("Service Provider: ").append(task.getServiceProvider()).append("\n");
-    description.append("Time: ").append(new SimpleDateFormat("HH:mm dd-MM-yy").format(new Date())).append("\n");
-    description.append("Service Provider: ").append(task.getServiceProvider()).append("\n");
-    description.append("Remark from user: ").append(task.getBody()).append("\n");
-    remoteIssue.setDescription(description.toString());
-    appendSpAndIdp(task, remoteIssue);
-    return remoteIssue;
-  }
-
-  private void appendSpAndIdp(final JiraTask task, final RemoteIssue remoteIssue) {
-    final List<RemoteCustomFieldValue> customFieldValues = new ArrayList<>();
-    final List<String> spValue = Collections.singletonList(task.getServiceProvider());
-    final List<String> idpValue = Collections.singletonList(task.getIdentityProvider());
-    customFieldValues.add(new RemoteCustomFieldValue(SP_CUSTOM_FIELD, null, spValue.toArray(EMPTY_STRINGS)));
-    customFieldValues.add(new RemoteCustomFieldValue(IDP_CUSTOM_FIELD, null, idpValue.toArray(EMPTY_STRINGS)));
-    remoteIssue.setCustomFieldValues(customFieldValues.toArray(EMPTY_REMOTE_CUSTOM_FIELD_VALUES));
-  }
 
   @Override
+  @SuppressWarnings("unchecked")
+  public String create(final JiraTask task, final CoinUser user) {
+    final Map<String, Object> issue = new HashMap<>();
+
+    final Map<String, Object> fields = new HashMap<>();
+    issue.put("fields", fields);
+    fields.put("priority", ImmutableMap.of("id", PRIORITY_MEDIUM_ID));
+    fields.put("project", ImmutableMap.of("key", projectKey));
+    fields.put("security", ImmutableMap.of("id", DEFAULT_SECURITY_LEVEL_ID));
+    fields.put(SP_CUSTOM_FIELD, task.getServiceProvider());
+    fields.put(IDP_CUSTOM_FIELD, task.getIdentityProvider());
+
+    fields.put("issuetype", ImmutableMap.of("id", TASKTYPE_TO_ISSUETYPE_CODE.get(task.getIssueType())));
+
+    final SummaryAndDescription summaryAndDescription = buildSummaryAndDescription(task, user);
+    fields.put("summary", summaryAndDescription.summary);
+    fields.put("description", summaryAndDescription.description);
+
+    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(issue, defaultHeaders);
+    try {
+      Map<String, String> result = restTemplate.postForObject(baseUrl + "/issue", entity, Map.class);
+      return result.get("key");
+    } catch (HttpClientErrorException e) {
+      throw new RuntimeException(e.getResponseBodyAsString());
+    }
+  }
+
+
+  @Override
+  @SuppressWarnings("unchecked")
   public List<JiraTask> getTasks(final List<String> keys) {
     if (keys == null || keys.size() == 0) {
       return Collections.emptyList();
@@ -201,6 +146,57 @@ public class JiraClientImpl implements JiraClient {
     } catch (RestClientException e) {
       LOG.error("Error communicating with Jira, return empty list", e);
       return Collections.emptyList();
+    }
+  }
+
+  private SummaryAndDescription buildSummaryAndDescription(final JiraTask task, final CoinUser user) {
+    Preconditions.checkNotNull(task.getIssueType());
+    Preconditions.checkNotNull(user);
+
+    StringBuilder description = new StringBuilder();
+
+    final StringBuilder summary = new StringBuilder();
+
+    if (task.getIssueType().equals(QUESTION)) {
+      description.append("Question: ").append(task.getBody()).append("\n");
+      summary.
+        append("Question about ").
+        append(task.getServiceProvider());
+    } else if (LINKREQUEST.equals(task.getIssueType())) {
+      description.append("Request: Create a new connection").append("\n");
+      summary.
+        append("New connection for IdP ").
+        append(task.getIdentityProvider()).
+        append(" to SP ").
+        append(task.getServiceProvider());
+    } else if (UNLINKREQUEST.equals(task.getIssueType())) {
+      description.append("Request: terminate a connection").append("\n");
+      summary.
+        append("Disconnect IdP ").
+        append(task.getIdentityProvider()).
+        append(" and SP ").
+        append(task.getServiceProvider());
+    } else {
+      throw new IllegalArgumentException("Don't know how to handle tasks of type " + task.getIssueType());
+    }
+
+    description.append("Applicant name: ").append(user.getDisplayName()).append("\n");
+    description.append("Applicant email: ").append(user.getEmail()).append("\n");
+    description.append("Identity Provider: ").append(task.getIdentityProvider()).append("\n");
+    description.append("Service Provider: ").append(task.getServiceProvider()).append("\n");
+    description.append("Time: ").append(new SimpleDateFormat("HH:mm dd-MM-yy").format(new Date())).append("\n");
+    description.append("Service Provider: ").append(task.getServiceProvider()).append("\n");
+
+    return new SummaryAndDescription(summary.toString(), description.toString());
+  }
+
+  private static class SummaryAndDescription {
+    public final String summary;
+    public final String description;
+
+    public SummaryAndDescription(String summary, String description) {
+      this.summary = summary;
+      this.description = description;
     }
   }
 }
