@@ -16,7 +16,6 @@
 
 package csa.service.impl;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -29,7 +28,6 @@ import csa.domain.CoinUser;
 import csa.model.Action;
 import csa.model.JiraTask;
 import csa.service.ActionsService;
-import csa.service.JiraClient;
 
 @Service(value = "actionsService")
 public class ActionsServiceImpl implements ActionsService {
@@ -44,11 +42,11 @@ public class ActionsServiceImpl implements ActionsService {
 
   @Override
   public List<Action> getActions(String identityProvider) {
-    try {
-      synchronizeWithJira(identityProvider);
-    } catch (IOException e) {
-      LOG.error("Could not synchronize with JIRA", e);
-    }
+    List<String> openTasks = actionsDao.getKeys(identityProvider);
+    final List<JiraTask> tasks = jiraClient.getTasks(openTasks);
+    tasks.stream().
+      filter(task -> JiraTask.Status.CLOSED.equals(task.getStatus())).
+      forEach(task -> actionsDao.close(task.getKey()));
     return actionsDao.findActionsByIdP(identityProvider);
   }
 
@@ -59,12 +57,14 @@ public class ActionsServiceImpl implements ActionsService {
       .identityProvider(action.getIdpId()).serviceProvider(action.getSpId())
       .institution(action.getInstitutionId()).issueType(action.getType())
       .status(JiraTask.Status.OPEN).build();
-    try {
-      String jiraKey = jiraClient.create(task, createUser(action));
-      action.setJiraKey(jiraKey);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+
+    CoinUser coinUser = new CoinUser();
+    coinUser.setDisplayName(action.getUserName());
+    coinUser.setEmail(action.getUserEmail());
+    coinUser.setUid(action.getUserId());
+
+    String jiraKey = jiraClient.create(task, coinUser);
+    action.setJiraKey(jiraKey);
   }
 
   @Override
@@ -73,21 +73,4 @@ public class ActionsServiceImpl implements ActionsService {
     return action;
   }
 
-  private CoinUser createUser(Action action) {
-    CoinUser coinUser = new CoinUser();
-    coinUser.setDisplayName(action.getUserName());
-    coinUser.setEmail(action.getUserEmail());
-    coinUser.setUid(action.getUserId());
-    return coinUser;
-  }
-
-  private void synchronizeWithJira(String identityProvider) throws IOException {
-    List<String> openTasks = actionsDao.getKeys(identityProvider);
-    final List<JiraTask> tasks = jiraClient.getTasks(openTasks);
-    for (JiraTask task : tasks) {
-      if (task.getStatus() == JiraTask.Status.CLOSED) {
-        actionsDao.close(task.getKey());
-      }
-    }
-  }
 }

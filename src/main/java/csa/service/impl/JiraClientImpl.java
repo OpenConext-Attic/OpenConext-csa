@@ -16,212 +16,187 @@
 
 package csa.service.impl;
 
-import java.io.IOException;
+import static csa.model.JiraTask.Type.LINKREQUEST;
+import static csa.model.JiraTask.Type.QUESTION;
+import static csa.model.JiraTask.Type.UNLINKREQUEST;
+
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.swift.common.soap.jira.JiraSoapService;
-import org.swift.common.soap.jira.RemoteCustomFieldValue;
-import org.swift.common.soap.jira.RemoteFieldValue;
-import org.swift.common.soap.jira.RemoteIssue;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.security.crypto.codec.Base64;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 
-import csa.model.JiraTask;
-import csa.service.JiraClient;
 import csa.domain.CoinUser;
+import csa.model.JiraTask;
 
 public class JiraClientImpl implements JiraClient {
   private static final Logger LOG = LoggerFactory.getLogger(JiraClientImpl.class);
 
-  private final static String STATUS_CLOSED = "6";
+  private static final String SP_CUSTOM_FIELD = "customfield_10100";
+  private static final String IDP_CUSTOM_FIELD = "customfield_10101";
+  private static final String DEFAULT_SECURITY_LEVEL_ID = "10100";
 
-  public static final RemoteFieldValue[] EMPTY_REMOTE_FIELD_VALUES = new RemoteFieldValue[0];
-  public static final String[] EMPTY_STRINGS = new String[0];
-  public static final RemoteCustomFieldValue[] EMPTY_REMOTE_CUSTOM_FIELD_VALUES = new RemoteCustomFieldValue[0];
-  public static final String SP_CUSTOM_FIELD = "customfield_10100";
-  public static final String IDP_CUSTOM_FIELD = "customfield_10101";
-  private static final long DEFAULT_SECURITY_LEVEL = 10100L;
+  private static final Map<JiraTask.Type, String> TASKTYPE_TO_ISSUETYPE_CODE = ImmutableMap.of(
+    QUESTION, "16",
+    LINKREQUEST, "13",
+    UNLINKREQUEST, "17");
 
-  public static final String TYPE_LINKREQUEST = "13";
-  public static final String TYPE_UNLINKREQUEST = "17";
-  public static final String TYPE_QUESTION = "16";
+  private static final String PRIORITY_MEDIUM_ID = "3";
 
-  public static final String PRIORITY_MEDIUM = "3";
-  public static final String CLOSE_ACTION_IDENTIFIER = "2";
-  public static final String REOPEN_ACTION_IDENTIFIER = "3";
-
-  private final String username;
-  private final String password;
-
-  private final JiraSoapService jiraSoapService;
+  private final String baseUrl;
+  private final RestTemplate restTemplate;
   private final String projectKey;
+  private final HttpHeaders defaultHeaders;
 
-  public JiraClientImpl(JiraSoapService jiraSoapService, String username, String password, String projectKey) {
-    this.username = username;
-    this.password = password;
+
+  public JiraClientImpl(final String baseUrl, final String username, final String password, final String projectKey) {
     this.projectKey = projectKey;
-    this.jiraSoapService = jiraSoapService;
+    this.baseUrl = baseUrl;
+
+    defaultHeaders = new HttpHeaders();
+    defaultHeaders.setContentType(MediaType.APPLICATION_JSON);
+    final byte[] encoded = Base64.encode((username + ":" + password).getBytes());
+    defaultHeaders.add("Authorization", "Basic " + new String(encoded));
+    this.restTemplate = new RestTemplate();
   }
 
-  public String create(final JiraTask task, CoinUser user) throws IOException {
-    RemoteIssue remoteIssue;
-    switch (task.getIssueType()) {
-      case LINKREQUEST:
-      case UNLINKREQUEST:
-        remoteIssue = createRequest(task, user);
-        break;
-      default:
-        remoteIssue = createQuestion(task, user);
-        break;
-    }
-    final RemoteIssue createdIssue = jiraSoapService.createIssueWithSecurityLevel(getToken(), remoteIssue, DEFAULT_SECURITY_LEVEL);
-    if (createdIssue == null) {
-      return null;
-    }
-    return createdIssue.getKey();
-  }
 
-  private RemoteIssue createQuestion(final JiraTask task, CoinUser user) {
-    RemoteIssue remoteIssue = new RemoteIssue();
-    remoteIssue.setType(TYPE_QUESTION);
-    remoteIssue.setSummary(new StringBuilder().append("Question about ").append(task.getServiceProvider()).toString());
-    remoteIssue.setProject(projectKey);
-    remoteIssue.setPriority(PRIORITY_MEDIUM);
-    StringBuilder description = new StringBuilder();
-    description.append("Applicant name: ").append(user.getDisplayName()).append("\n");
-    description.append("Applicant email: ").append(user.getEmail()).append("\n");
-    description.append("Identity Provider: ").append(task.getIdentityProvider()).append("\n");
-    description.append("Service Provider: ").append(task.getServiceProvider()).append("\n");
-    description.append("Time: ").append(new SimpleDateFormat("HH:mm dd-MM-yy").format(new Date())).append("\n");
-    description.append("Service Provider: ").append(task.getServiceProvider()).append("\n");
-    description.append("Request: ").append(task.getBody()).append("\n");
-    remoteIssue.setDescription(description.toString());
-    appendSpAndIdp(task, remoteIssue);
-    return remoteIssue;
-  }
+  @Override
+  @SuppressWarnings("unchecked")
+  public String create(final JiraTask task, final CoinUser user) {
+    final Map<String, Object> issue = new HashMap<>();
 
-  private String getIssueTypeByJiraTaskType(JiraTask.Type t) {
-    switch (t) {
-      case QUESTION:
-        return TYPE_QUESTION;
-      case LINKREQUEST:
-        return TYPE_LINKREQUEST;
-      case UNLINKREQUEST:
-        return TYPE_UNLINKREQUEST;
-      default:
-        throw new IllegalStateException("Unknown type: " + t);
+    final Map<String, Object> fields = new HashMap<>();
+    issue.put("fields", fields);
+    fields.put("priority", ImmutableMap.of("id", PRIORITY_MEDIUM_ID));
+    fields.put("project", ImmutableMap.of("key", projectKey));
+    fields.put("security", ImmutableMap.of("id", DEFAULT_SECURITY_LEVEL_ID));
+    fields.put(SP_CUSTOM_FIELD, task.getServiceProvider());
+    fields.put(IDP_CUSTOM_FIELD, task.getIdentityProvider());
+
+    fields.put("issuetype", ImmutableMap.of("id", TASKTYPE_TO_ISSUETYPE_CODE.get(task.getIssueType())));
+
+    final SummaryAndDescription summaryAndDescription = buildSummaryAndDescription(task, user);
+    fields.put("summary", summaryAndDescription.summary);
+    fields.put("description", summaryAndDescription.description);
+
+    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(issue, defaultHeaders);
+    try {
+      Map<String, String> result = restTemplate.postForObject(baseUrl + "/issue", entity, Map.class);
+      return result.get("key");
+    } catch (HttpClientErrorException e) {
+      throw new RuntimeException(e.getResponseBodyAsString());
     }
   }
 
-  private RemoteIssue createRequest(final JiraTask task, CoinUser user) {
-    RemoteIssue remoteIssue = new RemoteIssue();
-    remoteIssue.setType(getIssueTypeByJiraTaskType(task.getIssueType()));
-    if (remoteIssue.getType().equals(TYPE_LINKREQUEST)) {
-      remoteIssue.setSummary("New connection for IdP " + task.getIdentityProvider() + " to SP " + task.getServiceProvider());
-    } else if (remoteIssue.getType().equals(TYPE_UNLINKREQUEST)) {
-      remoteIssue.setSummary("Disconnect IdP " + task.getIdentityProvider() + " and SP " + task.getServiceProvider());
-    } else {
-      throw new IllegalStateException("Unknown type: " + remoteIssue.getType());
-    }
 
-    remoteIssue.setProject(projectKey);
-    remoteIssue.setPriority(PRIORITY_MEDIUM);
-    StringBuilder description = new StringBuilder();
-    if (task.getIssueType() == JiraTask.Type.LINKREQUEST) {
-      description.append("Request: Create a new connection").append("\n");
-    } else {
-      description.append("Request: terminate a connection").append("\n");
-    }
-
-    description.append("Applicant name: ").append(user.getDisplayName()).append("\n");
-    description.append("Applicant email: ").append(user.getEmail()).append("\n");
-    description.append("Identity Provider: ").append(task.getIdentityProvider()).append("\n");
-    description.append("Service Provider: ").append(task.getServiceProvider()).append("\n");
-    description.append("Time: ").append(new SimpleDateFormat("HH:mm dd-MM-yy").format(new Date())).append("\n");
-    description.append("Service Provider: ").append(task.getServiceProvider()).append("\n");
-    description.append("Remark from user: ").append(task.getBody()).append("\n");
-    remoteIssue.setDescription(description.toString());
-    appendSpAndIdp(task, remoteIssue);
-    return remoteIssue;
-  }
-
-  private void appendSpAndIdp(final JiraTask task, final RemoteIssue remoteIssue) {
-    final List<RemoteCustomFieldValue> customFieldValues = new ArrayList<RemoteCustomFieldValue>();
-    final List<String> spValue = Collections.singletonList(task.getServiceProvider());
-    final List<String> idpValue = Collections.singletonList(task.getIdentityProvider());
-    customFieldValues.add(new RemoteCustomFieldValue(SP_CUSTOM_FIELD, null, spValue.toArray(EMPTY_STRINGS)));
-    customFieldValues.add(new RemoteCustomFieldValue(IDP_CUSTOM_FIELD, null, idpValue.toArray(EMPTY_STRINGS)));
-    remoteIssue.setCustomFieldValues(customFieldValues.toArray(EMPTY_REMOTE_CUSTOM_FIELD_VALUES));
-  }
-
-  public void delete(final String key) throws IOException {
-    jiraSoapService.deleteIssue(getToken(), key);
-  }
-
-  public void doAction(String key, JiraTask.Action update) throws IOException {
-    String action;
-    switch (update) {
-      case CLOSE:
-        action = CLOSE_ACTION_IDENTIFIER;
-        break;
-      case REOPEN:
-        action = REOPEN_ACTION_IDENTIFIER;
-        break;
-      default:
-        throw new IllegalArgumentException("Action must be either close or reopen");
-    }
-    jiraSoapService.progressWorkflowAction(getToken(), key, action, Collections.emptyList().toArray(EMPTY_REMOTE_FIELD_VALUES));
-  }
-
-  public List<JiraTask> getTasks(final List<String> keys) throws IOException {
+  @Override
+  @SuppressWarnings("unchecked")
+  public List<JiraTask> getTasks(final List<String> keys) {
     if (keys == null || keys.size() == 0) {
       return Collections.emptyList();
     }
-    List<JiraTask> jiraTasks = new ArrayList<JiraTask>();
     StringBuilder query = new StringBuilder("project = ");
     query.append(projectKey);
-    query.append(" AND key IN(");
+    query.append(" AND key IN (");
     Joiner.on(",").skipNulls().appendTo(query, keys);
     query.append(")");
     if (LOG.isDebugEnabled()) {
       LOG.debug("Sending query to JIRA: " + query.toString());
     }
-    final RemoteIssue[] issuesFromJqlSearch = jiraSoapService.getIssuesFromJqlSearch(getToken(), query.toString(), 1000);
-    for (RemoteIssue remoteIssue : issuesFromJqlSearch) {
-      String identityProvider = fetchValue(IDP_CUSTOM_FIELD, remoteIssue.getCustomFieldValues());
-      String serviceProvider = fetchValue(SP_CUSTOM_FIELD, remoteIssue.getCustomFieldValues());
-      final JiraTask jiraTask = new JiraTask.Builder().key(remoteIssue.getKey()).identityProvider(identityProvider)
-        .serviceProvider(serviceProvider).institution("???").status(fetchStatus(remoteIssue)).body(remoteIssue.getDescription()).build();
-      jiraTasks.add(jiraTask);
+    final Map<String, String> searchArgs = ImmutableMap.of("jql", query.toString());
+
+    try {
+      HttpEntity<Map<String, String>> entity = new HttpEntity<>(searchArgs, defaultHeaders);
+      Map<String, Object> result = restTemplate.postForObject(baseUrl + "/search?expand=all", entity, Map.class);
+
+      List<Map<String, Object>> issues = (List<Map<String, Object>>) result.get("issues");
+      return issues.stream().
+        map(issue -> {
+          final String key = (String) issue.get("key");
+
+          final Map<String, Object> fields = (Map<String, Object>) issue.get("fields");
+          final Optional<String> identityProvider = Optional.ofNullable((String) fields.get(IDP_CUSTOM_FIELD));
+          final Optional<String> serviceProvider = Optional.ofNullable((String) fields.get(SP_CUSTOM_FIELD));
+          final String description = (String) fields.get("description");
+
+          final Map<String, Object> statusInfo = (Map<String, Object>) fields.get("status");
+          final JiraTask.Status status = JiraTask.Status.valueOf(((String) statusInfo.get("name")).toUpperCase());
+          return new JiraTask.Builder().key(key).identityProvider(identityProvider.orElse(""))
+            .serviceProvider(serviceProvider.orElse("")).institution("???").status(status).body(description).build();
+        }).
+        collect(Collectors.toList());
+    } catch (RestClientException e) {
+      LOG.error("Error communicating with Jira, return empty list", e);
+      return Collections.emptyList();
     }
-    return jiraTasks;
   }
 
-  private JiraTask.Status fetchStatus(final RemoteIssue remoteIssue) {
-    if (STATUS_CLOSED.equals(remoteIssue.getStatus())) {
-      return JiraTask.Status.CLOSED;
+  private SummaryAndDescription buildSummaryAndDescription(final JiraTask task, final CoinUser user) {
+    Preconditions.checkNotNull(task.getIssueType());
+    Preconditions.checkNotNull(user);
+
+    StringBuilder description = new StringBuilder();
+
+    final StringBuilder summary = new StringBuilder();
+
+    if (task.getIssueType().equals(QUESTION)) {
+      description.append("Question: ").append(task.getBody()).append("\n");
+      summary.
+        append("Question about ").
+        append(task.getServiceProvider());
+    } else if (LINKREQUEST.equals(task.getIssueType())) {
+      description.append("Request: Create a new connection").append("\n");
+      summary.
+        append("New connection for IdP ").
+        append(task.getIdentityProvider()).
+        append(" to SP ").
+        append(task.getServiceProvider());
+    } else if (UNLINKREQUEST.equals(task.getIssueType())) {
+      description.append("Request: terminate a connection").append("\n");
+      summary.
+        append("Disconnect IdP ").
+        append(task.getIdentityProvider()).
+        append(" and SP ").
+        append(task.getServiceProvider());
     } else {
-      return JiraTask.Status.OPEN;
+      throw new IllegalArgumentException("Don't know how to handle tasks of type " + task.getIssueType());
+    }
+
+    description.append("Applicant name: ").append(user.getDisplayName()).append("\n");
+    description.append("Applicant email: ").append(user.getEmail()).append("\n");
+    description.append("Identity Provider: ").append(task.getIdentityProvider()).append("\n");
+    description.append("Service Provider: ").append(task.getServiceProvider()).append("\n");
+    description.append("Time: ").append(new SimpleDateFormat("HH:mm dd-MM-yy").format(new Date())).append("\n");
+    description.append("Service Provider: ").append(task.getServiceProvider()).append("\n");
+
+    return new SummaryAndDescription(summary.toString(), description.toString());
+  }
+
+  private static class SummaryAndDescription {
+    public final String summary;
+    public final String description;
+
+    public SummaryAndDescription(String summary, String description) {
+      this.summary = summary;
+      this.description = description;
     }
   }
-
-  private String fetchValue(final String name, final RemoteCustomFieldValue[] customFieldValues) {
-    for (RemoteCustomFieldValue customFieldValue : customFieldValues) {
-      if (name.equals(customFieldValue.getCustomfieldId())) {
-        return customFieldValue.getValues()[0];
-      }
-    }
-    return "";
-  }
-
-  private String getToken() throws IOException {
-    return jiraSoapService.login(username, password);
-  }
-
 }

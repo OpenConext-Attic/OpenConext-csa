@@ -16,7 +16,6 @@
 
 package csa.service.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import csa.domain.CoinUser;
 import csa.model.JiraTask;
-import csa.service.JiraClient;
 
 public class JiraClientMock implements JiraClient {
 
@@ -41,17 +39,17 @@ public class JiraClientMock implements JiraClient {
   }
 
   @Override
-  public String create(final JiraTask task, CoinUser user) throws IOException {
+  public String create(final JiraTask task, CoinUser user) {
     String key = generateKey();
     repository.put(key, new JiraTask.Builder()
-            .key(key)
-            .identityProvider(task.getIdentityProvider())
-            .serviceProvider(task.getServiceProvider())
-            .institution(task.getInstitution())
-            .issueType(task.getIssueType())
-            .body(task.getBody())
-            .status(JiraTask.Status.OPEN)
-            .build());
+      .key(key)
+      .identityProvider(task.getIdentityProvider())
+      .serviceProvider(task.getServiceProvider())
+      .institution(task.getInstitution())
+      .issueType(task.getIssueType())
+      .body(task.getBody())
+      .status(JiraTask.Status.OPEN)
+      .build());
     LOG.debug("Added task (key '{}') to repository: {}", key, task);
     return key;
   }
@@ -61,49 +59,11 @@ public class JiraClientMock implements JiraClient {
   }
 
   @Override
-  public void delete(final String key) throws IOException {
-    repository.remove(key);
-  }
-
-  @Override
-  public void doAction(final String key, final JiraTask.Action action) throws IOException {
-    JiraTask jiraTask = repository.get(key);
-    JiraTask newTask;
-    switch (action) {
-      case CLOSE:
-        newTask = new JiraTask.Builder()
-            .key(jiraTask.getKey())
-            .identityProvider(jiraTask.getIdentityProvider())
-            .serviceProvider(jiraTask.getServiceProvider())
-            .institution(jiraTask.getInstitution())
-            .issueType(jiraTask.getIssueType())
-            .body(jiraTask.getBody())
-            .status(JiraTask.Status.CLOSED)
-            .build();
-        break;
-      case REOPEN:
-      default:
-        newTask = new JiraTask.Builder()
-            .key(jiraTask.getKey())
-            .identityProvider(jiraTask.getIdentityProvider())
-            .serviceProvider(jiraTask.getServiceProvider())
-            .institution(jiraTask.getInstitution())
-            .issueType(jiraTask.getIssueType())
-            .body(jiraTask.getBody())
-            .status(JiraTask.Status.OPEN)
-            .build();
-        break;
-    }
-    repository.remove(key);
-    repository.put(key, newTask);
-  }
-
-  @Override
-  public List<JiraTask> getTasks(final List<String> keys) throws IOException {
+  public List<JiraTask> getTasks(final List<String> keys) {
     List<JiraTask> tasks = new ArrayList<>();
     for (String key : keys) {
       final JiraTask task = repository.get(key);
-      if (task != null ) {
+      if (task != null) {
         tasks.add(task);
       }
     }

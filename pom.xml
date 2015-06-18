@@ -77,12 +77,10 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-tomcat</artifactId>
-      <!--<scope>provided</scope>-->
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-jasper</artifactId>
-      <!--<scope>provided</scope>-->
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -143,18 +141,6 @@
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache-core</artifactId>
       <version>${ehcache.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.swift.common</groupId>
-      <artifactId>jira-soap</artifactId>
-      <version>5.0.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>

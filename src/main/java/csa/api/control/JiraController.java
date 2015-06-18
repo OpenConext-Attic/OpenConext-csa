@@ -62,7 +62,7 @@ public class JiraController extends BaseApiController {
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/actions.json")
   public
   @ResponseBody
-  List<Action> listActions(@RequestParam(value = "idpEntityId") String idpEntityId, HttpServletRequest request) throws IOException {
+  List<Action> listActions(@RequestParam("idpEntityId") String idpEntityId, HttpServletRequest request) throws IOException {
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_ACTIONS);
     return actionsService.getActions(idpEntityId);
   }
