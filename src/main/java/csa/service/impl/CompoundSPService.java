@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.hibernate.HibernateException;
 import org.slf4j.Logger;
@@ -37,6 +40,9 @@ import csa.domain.CompoundServiceProvider;
 import csa.domain.IdentityProvider;
 import csa.model.License;
 import csa.service.ServiceProviderService;
+
+import static java.util.function.Function.*;
+import static java.util.stream.StreamSupport.*;
 
 /**
  * Abstraction for the Compound Service Providers. This deals with persistence
@@ -84,8 +90,7 @@ public class CompoundSPService {
     // Reference data: all compound service providers
     Iterable<CompoundServiceProvider> allBareCSPs = compoundServiceProviderDao.findAll();
     // Mapped by its SP entity ID
-    Map<String, CompoundServiceProvider> mapByServiceProviderEntityId = mapByServiceProviderEntityId(allBareCSPs);
-
+    Map<String, CompoundServiceProvider> mapByServiceProviderEntityId = stream(allBareCSPs.spliterator(), false).collect(Collectors.toMap(csp -> csp.getServiceProviderEntityId(), identity()));
     // Build a list of CSPs. Create new ones for SPs that have no CSP yet.
     List<CompoundServiceProvider> all = new ArrayList<>();
     for (ServiceProvider sp : allServiceProviders) {
@@ -139,14 +144,6 @@ public class CompoundSPService {
       }
     }
     return csp;
-  }
-
-  private Map<String, CompoundServiceProvider> mapByServiceProviderEntityId(Iterable<CompoundServiceProvider> allCSPs) {
-    Map<String, CompoundServiceProvider> map = new HashMap<>();
-    for (CompoundServiceProvider csp : allCSPs) {
-      map.put(csp.getServiceProviderEntityId(), csp);
-    }
-    return map;
   }
 
   public CompoundServiceProvider getCSPById(IdentityProvider idp, long compoundSpId) {

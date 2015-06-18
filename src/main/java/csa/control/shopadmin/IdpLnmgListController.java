@@ -25,6 +25,7 @@ import csa.control.BaseController;
 import csa.dao.LmngIdentifierDao;
 import csa.domain.IdentityProvider;
 import csa.service.IdentityProviderService;
+import csa.service.ServiceProviderService;
 import csa.service.impl.LmngUtil;
 
 import org.apache.commons.lang3.StringUtils;
@@ -66,6 +67,9 @@ public class IdpLnmgListController extends BaseController {
 
   @Resource
   private CrmCache crmCache;
+
+  @Resource
+  private ServiceProviderService serviceProviderService;
 
   private LmngUtil lmngUtil = new LmngUtil();
 
@@ -127,6 +131,7 @@ public class IdpLnmgListController extends BaseController {
   @RequestMapping(value = "/clean-cache", method = RequestMethod.GET)
   public RedirectView cleanCrmCache() {
     log.info("Cleaning caches");
+    serviceProviderService.refreshExampleSingleTenants();
     licensingService.evictCache();
     servicesCache.evict();
     providerCache.evict();

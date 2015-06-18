@@ -121,6 +121,7 @@ app.table = function() {
       aoColumns : [
         {'sType' : 'spnames'},
         {'sType' : 'boolean'},
+        {'sType' : 'boolean'},
         {'bSortable': false},
         {'bSortable': false},
         {'bSortable': false},

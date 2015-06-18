@@ -42,6 +42,10 @@
             <i class="inlinehelp icon-question-sign" data-title="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.idponly" />" data-content="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.idponly.help" />"></i>
           </th>
           <th>
+            <spring:message code="jsp.lmng_binding_overview.dummy"/>
+            <i class="inlinehelp icon-question-sign" data-title="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.dummy" />" data-content="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.dummy.help" />"></i>
+          </th>
+          <th>
             <spring:message code="jsp.lmng_binding_overview.enduser"/>
             <i class="inlinehelp icon-question-sign" data-title="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.enduser" />" data-content="<spring:message htmlEscape="true" code="jsp.lmng_binding_overview.enduser.help" />"></i>
           </th>
@@ -93,6 +97,9 @@
               </td>
               <td class="center">
                 ${binding.serviceProvider.idpVisibleOnly == true ? "<i class='icon-ok'> </i>" : "<i class='icon-remove icon-greyed-out'> </i>"}
+              </td>
+              <td class="center">
+                  ${binding.compoundServiceProvider.exampleSingleTenant == true ? "<i class='icon-ok'> </i>" : "<i class='icon-remove icon-greyed-out'> </i>"}
               </td>
               <td class="center">
                 <input type="hidden" name="tokencheck" value="<c:out value='${tokencheck}'/>"/>

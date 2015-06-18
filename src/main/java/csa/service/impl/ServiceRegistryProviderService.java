@@ -16,42 +16,58 @@
 
 package csa.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import csa.domain.ContactPerson;
+import csa.domain.ContactPersonType;
+import csa.domain.IdentityProvider;
+import csa.domain.ServiceProvider;
+import csa.janus.Janus;
+import csa.janus.domain.ARP;
+import csa.janus.domain.Contact;
+import csa.janus.domain.EntityMetadata;
+import csa.janus.domain.JanusEntity;
+import csa.service.IdentityProviderService;
+import csa.service.ServiceProviderService;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestClientException;
 
-import csa.domain.ContactPerson;
-import csa.domain.ServiceProvider;
-import csa.janus.Janus;
-import csa.janus.domain.Contact;
-import csa.janus.domain.EntityMetadata;
-import csa.janus.domain.JanusEntity;
-import csa.domain.ContactPersonType;
-import csa.domain.IdentityProvider;
-import csa.janus.domain.ARP;
-import csa.service.IdentityProviderService;
-import csa.service.ServiceProviderService;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
-public class ServiceRegistryProviderService implements ServiceProviderService, IdentityProviderService {
+public class ServiceRegistryProviderService implements ServiceProviderService, IdentityProviderService, ApplicationListener<ContextRefreshedEvent> {
 
-  private static final Logger log = LoggerFactory.getLogger(ServiceRegistryProviderService.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ServiceRegistryProviderService.class);
   private static final String IN_PRODUCTION = "prodaccepted";
 
-  public void setJanusClient(Janus janusClient) {
-    this.janusClient = janusClient;
-  }
+  private ObjectMapper objectMapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+    .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+
+  private List<ServiceProvider> exampleSingleTenants = new ArrayList<>();
 
   @Autowired
   private Janus janusClient;
+
+  @Autowired
+  private ResourceLoader resourceLoader;
+
+  @Value("${singleTenants.config.path}")
+  private String singleTenantsConfigPath;
 
   @Override
   public List<ServiceProvider> getAllServiceProviders(String idpId) {
@@ -84,12 +100,17 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   }
 
   @Override
+  public void refreshExampleSingleTenants() {
+    this.onApplicationEvent(null);
+  }
+
+  @Override
   public List<String> getLinkedServiceProviderIDs(String idpId) {
     List<String> spList = new ArrayList<>();
     try {
       spList = janusClient.getAllowedSps(idpId);
     } catch (RestClientException e) {
-      log.error("Could not retrieve allowed SPs from Janus client", e);
+      LOG.error("Could not retrieve allowed SPs from Janus client", e);
     }
     return spList;
   }
@@ -111,13 +132,18 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
         }
       }
     } catch (RestClientException e) {
-      log.error("Could not retrieve 'all SPs' from Janus client", e);
+      LOG.error("Could not retrieve 'all SPs' from Janus client", e);
     }
+    spList.addAll(exampleSingleTenants);
     return spList;
   }
 
   @Override
   public ServiceProvider getServiceProvider(String spEntityId, String idpEntityId) {
+    List<ServiceProvider> sps = exampleSingleTenants.stream().filter(sp -> sp.getId().equals(spEntityId)).collect(Collectors.toList());
+    if (!sps.isEmpty()) {
+      return sps.get(0);
+    }
     try {
       // first get JanusEntity. This holds the information about the workflow
       // only allow production status
@@ -134,10 +160,9 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
         final boolean linked = janusClient.isConnectionAllowed(spEntityId, idpEntityId);
         serviceProvider.setLinked(linked);
       }
-
       return serviceProvider;
     } catch (RestClientException e) {
-      log.error("Could not retrieve metadata from Janus client", e);
+      LOG.error("Could not retrieve metadata from Janus client", e);
     }
     return null;
   }
@@ -150,12 +175,17 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   /**
    * Create a ServiceProvider and inflate it with the given metadata attributes.
    *
-   * @param metadata    Janus metadata
+   * @param metadata Janus metadata
    * @return {@link ServiceProvider}
    */
   public ServiceProvider buildServiceProviderByMetadata(EntityMetadata metadata, boolean includeArps) {
     Assert.notNull(metadata, "metadata cannot be null");
     final String appEntityId = metadata.getAppEntityId();
+    // Get the ARP (if there is any)
+    return doBuildServiceProviderByMetadata(metadata, appEntityId, includeArps ? Optional.of(janusClient.getArp(appEntityId)) : Optional.empty());
+  }
+
+  private ServiceProvider doBuildServiceProviderByMetadata(EntityMetadata metadata, String appEntityId, Optional<ARP> arp) {
     String name = metadata.getNames().get("en");
     if (StringUtils.isBlank(name)) {
       name = appEntityId;
@@ -180,10 +210,8 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
       p.setTelephoneNumber(c.getTelephoneNumber());
       sp.addContactPerson(p);
     }
-    // Get the ARP (if there is any)
-    if (includeArps) {
-      final ARP arp = janusClient.getArp(appEntityId);
-      sp.setArp(arp);
+    if (arp.isPresent()) {
+      sp.setArp(arp.get());
     }
     return sp;
   }
@@ -250,7 +278,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
       EntityMetadata metadataByEntityId = janusClient.getMetadataByEntityId(idpEntityId);
       return buildIdentityProviderByMetadata(metadataByEntityId);
     } catch (Exception e) {
-      log.error("Unable to getIdentityProvider " + idpEntityId, e);
+      LOG.error("Unable to getIdentityProvider " + idpEntityId, e);
       return null;
     }
   }
@@ -276,7 +304,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
         }
       }
     } catch (RestClientException e) {
-      log.warn("Could not retrieve 'all IdPs' from Janus client", e);
+      LOG.warn("Could not retrieve 'all IdPs' from Janus client", e);
     }
     return idps;
   }
@@ -287,4 +315,35 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
     return this.getAllIdentityProviders().stream().filter(idp -> allowedIdps.contains(idp.getId())).collect(Collectors.toList());
   }
 
+  @Override
+  public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+    Resource resource = resourceLoader.getResource(singleTenantsConfigPath);
+    try {
+      List<File> dummySps = Arrays.asList(resource.getFile().listFiles((dir, name) -> name.endsWith("json")));
+      this.exampleSingleTenants = dummySps.stream().map(sp -> parse(sp)).collect(Collectors.toList());
+      this.exampleSingleTenants.forEach(sp -> sp.setExampleSingleTenant(true));
+      LOG.info("Read {} example single tenant services from {}", exampleSingleTenants.size(), resource.getFilename());
+    } catch (Exception e) {
+      throw new RuntimeException("Unable to read example single tenants services", e);
+    }
+  }
+
+  private ServiceProvider parse(File file) {
+    try {
+      Map map = objectMapper.readValue(file, Map.class);
+      EntityMetadata metadata = EntityMetadata.fromMetadataMap(map);
+      ARP arp = map.containsKey("attributes") ? ARP.fromAttributes((List) map.get("attributes")) : ARP.fromRestResponse(new HashedMap());
+      return doBuildServiceProviderByMetadata(metadata, (String) map.get("entityid"),Optional.of(arp));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void setJanusClient(Janus janusClient) {
+    this.janusClient = janusClient;
+  }
+
+  public void setSingleTenantsConfigPath(String singleTenantsConfigPath) {
+    this.singleTenantsConfigPath = singleTenantsConfigPath;
+  }
 }
