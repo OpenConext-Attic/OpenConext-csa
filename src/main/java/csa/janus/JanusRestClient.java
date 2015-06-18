@@ -60,8 +60,8 @@ public class JanusRestClient implements Janus {
     this.secret = secret;
 
     this.restTemplate = new RestTemplate();
-    restTemplate
-      .setMessageConverters(Arrays.<HttpMessageConverter<?>>asList(new MappingJackson2HttpMessageConverter()));
+//    restTemplate
+//      .setMessageConverters(Arrays.<HttpMessageConverter<?>>asList(new MappingJackson2HttpMessageConverter()));
   }
 
   /**
@@ -187,7 +187,8 @@ public class JanusRestClient implements Janus {
       }
 
       @SuppressWarnings("unchecked")
-      final Map<String, Map<String, Object>> restResponse = restTemplate.getForObject(signedUri, Map.class);
+      String json = restTemplate.getForObject(signedUri, String.class);
+      final Map<String, Map<String, Object>> restResponse = objectMapper.readValue(json, Map.class);//restTemplate.getForObject(signedUri, Map.class);
 
       if (LOG.isTraceEnabled()) {
         LOG.trace("Janus-request returned: {}", objectMapper.writeValueAsString(restResponse));

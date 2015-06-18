@@ -88,6 +88,9 @@ public class CompoundServiceProvider extends DomainObject {
   @Column
   private String normenkaderUrl;
 
+  @Column
+  private boolean exampleSingleTenant;
+
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "compoundServiceProvider")
   @SortNatural
   private SortedSet<FieldString> fields = new TreeSet<>();
@@ -119,6 +122,7 @@ public class CompoundServiceProvider extends DomainObject {
     provider.setServiceProvider(serviceProvider);
     provider.setArticle(article);
     provider.setAvailableForEndUser(!serviceProvider.isIdpVisibleOnly());
+    provider.setExampleSingleTenant(serviceProvider.isExampleSingleTenant());
 
     buildFieldString(Field.Key.TITLE_EN, null, serviceProvider.getName(Provider.Language.EN), provider);
     buildFieldString(Field.Key.TITLE_NL, null, serviceProvider.getName(Provider.Language.NL), provider);
@@ -541,6 +545,14 @@ public class CompoundServiceProvider extends DomainObject {
 
   public void setNormenkaderUrl(String normenkaderUrl) {
     this.normenkaderUrl = normenkaderUrl;
+  }
+
+  public boolean isExampleSingleTenant() {
+    return exampleSingleTenant;
+  }
+
+  public void setExampleSingleTenant(boolean exampleSingleTenant) {
+    this.exampleSingleTenant = exampleSingleTenant;
   }
 
   private static void buildFieldString(Field.Key key, String lmng, String surfconext, CompoundServiceProvider provider) {

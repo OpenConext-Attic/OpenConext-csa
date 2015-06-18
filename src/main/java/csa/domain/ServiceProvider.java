@@ -46,6 +46,8 @@ public class ServiceProvider extends Provider implements Serializable {
 
   private boolean publishedInEdugain;
 
+  private boolean exampleSingleTenant;
+
   public ServiceProvider(String id) {
     this.id = id;
   }
@@ -116,6 +118,14 @@ public class ServiceProvider extends Provider implements Serializable {
 
   public void setPublishedInEdugain(boolean publishedInEdugain) {
     this.publishedInEdugain = publishedInEdugain;
+  }
+
+  public boolean isExampleSingleTenant() {
+    return exampleSingleTenant;
+  }
+
+  public void setExampleSingleTenant(boolean exampleSingleTenant) {
+    this.exampleSingleTenant = exampleSingleTenant;
   }
 
   @Override

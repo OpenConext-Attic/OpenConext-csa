@@ -19,6 +19,7 @@ package csa.service;
 import static org.junit.Assert.assertEquals;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +30,7 @@ import java.util.List;
 import csa.domain.IdentityProvider;
 import csa.domain.ServiceProvider;
 import csa.janus.Janus;
+import csa.janus.domain.ARP;
 import csa.janus.domain.EntityMetadata;
 import csa.service.impl.ServiceRegistryProviderService;
 import csa.util.JanusRestClientMock;
@@ -38,11 +40,16 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ResourceLoader;
 
 public class ServiceRegistryProviderServiceTest {
 
   @Mock
   private Janus janus;
+
+  @Mock
+  private ResourceLoader resourceLoader;
 
   @InjectMocks
   private ServiceRegistryProviderService serviceRegistryProviderService;
@@ -136,6 +143,7 @@ public class ServiceRegistryProviderServiceTest {
   public void testNameAttributeRetrieval() {
     JanusRestClientMock janusMock = new JanusRestClientMock();
     EntityMetadata metadata = janusMock.getMetadataByEntityId("http://mock-sp");
+    when(janus.getArp("http://mock-sp")).thenReturn(new ARP());
     ServiceProvider spFound = serviceRegistryProviderService.buildServiceProviderByMetadata(metadata, true);
     assertEquals("Populair SP (name en)",spFound.getName());
     
@@ -164,5 +172,19 @@ public class ServiceRegistryProviderServiceTest {
     final List<IdentityProvider> instituteIdentityProviders = this.serviceRegistryProviderService.getInstituteIdentityProviders(institutionId);
     assertThat(instituteIdentityProviders.size(), is(1));
     assertThat("only the idps with the correct institution id must remain", instituteIdentityProviders.get(0).getInstitutionId(), is(institutionId));
+  }
+
+  @Test
+  public void testReadingExampleSingleTenants() {
+    String path = "dummy-single-tenants-services";
+    serviceRegistryProviderService.setSingleTenantsConfigPath(path);
+    when(resourceLoader.getResource(path)).thenReturn(new ClassPathResource(path));
+    serviceRegistryProviderService.onApplicationEvent(null);
+
+    when(janus.getSpList()).thenReturn(new ArrayList<>());
+    List<ServiceProvider> serviceProviders = serviceRegistryProviderService.getAllServiceProviders(true);
+    assertEquals(3, serviceProviders.size());
+    assertTrue(serviceProviders.stream().allMatch(ServiceProvider::isExampleSingleTenant));
+
   }
 }

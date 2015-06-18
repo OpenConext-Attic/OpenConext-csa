@@ -59,4 +59,6 @@ public interface ServiceProviderService {
   List<ServiceProvider> getAllServiceProviders(boolean includeArps);
 
   List<ServiceProvider> getAllServiceProvidersRateLimited(long rateDelay);
+
+  void refreshExampleSingleTenants();
 }

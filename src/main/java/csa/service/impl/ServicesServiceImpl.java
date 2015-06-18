@@ -119,6 +119,7 @@ public class ServicesServiceImpl implements ServicesService {
     service.setLicenseStatus(csp.getLicenseStatus());
     service.setNormenkaderUrl(csp.getNormenkaderUrl());
     service.setNormenkaderPresent(csp.isNormenkaderPresent());
+    service.setExampleSingleTenant(csp.isExampleSingleTenant());
   }
 
   private void screenshots(CompoundServiceProvider csp, Service service) {
