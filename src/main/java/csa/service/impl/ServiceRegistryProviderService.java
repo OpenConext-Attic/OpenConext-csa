@@ -311,6 +311,10 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
 
   @Override
   public List<IdentityProvider> getLinkedIdentityProviders(String spId) {
+    //We can't answer this question for single tenant sp as they are virtual
+    if (this.exampleSingleTenants.stream().anyMatch(sp -> sp.getId().equals(spId))) {
+      return new ArrayList<>();
+    }
     List<String> allowedIdps = janusClient.getAllowedIdps(spId);
     return this.getAllIdentityProviders().stream().filter(idp -> allowedIdps.contains(idp.getId())).collect(Collectors.toList());
   }

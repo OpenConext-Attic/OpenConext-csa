@@ -66,7 +66,7 @@ public abstract class BaseApiController {
 
   @ExceptionHandler(Exception.class)
   public void handleGenericException(Exception ex, HttpServletResponse response) throws IOException {
-    LOG.info("Will return 409 Not found", ex);
+    LOG.info("Will return 409 Conflict", ex);
     response.sendError(HttpServletResponse.SC_CONFLICT, "The request could not be completed due to a conflict with the current state of the resource.");
     response.flushBuffer();
   }

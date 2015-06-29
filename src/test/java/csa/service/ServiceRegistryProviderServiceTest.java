@@ -123,20 +123,9 @@ public class ServiceRegistryProviderServiceTest {
    */
   @Test
   public void testFilterWorkflowstate() {
-
-    List<EntityMetadata> ems = new ArrayList<>();
-    EntityMetadata e = new EntityMetadata();
-    e.setWorkflowState("prodaccepted");
-    e.setAppEntityId("e1");
-    ems.add(e);
-
-    e = new EntityMetadata();
-    e.setWorkflowState("notprodaccepted");
-    e.setAppEntityId("e2");
-    ems.add(e);
-    when(janus.getSpList()).thenReturn(ems);
+    when(janus.getSpList()).thenReturn(Arrays.asList(entityMetadata("prodaccepted","e1"),entityMetadata("not","e2")));
     final List<ServiceProvider> sps = serviceRegistryProviderService.getAllServiceProviders("myIdpId");
-    assertThat("nr of sps that have workflow state 'prodaccepted'", sps.size(), is(1));
+    assertEquals(1, sps.size());
   }
   
   @Test
@@ -179,12 +168,41 @@ public class ServiceRegistryProviderServiceTest {
     String path = "dummy-single-tenants-services";
     serviceRegistryProviderService.setSingleTenantsConfigPath(path);
     when(resourceLoader.getResource(path)).thenReturn(new ClassPathResource(path));
-    serviceRegistryProviderService.onApplicationEvent(null);
+    serviceRegistryProviderService.refreshExampleSingleTenants();
 
     when(janus.getSpList()).thenReturn(new ArrayList<>());
     List<ServiceProvider> serviceProviders = serviceRegistryProviderService.getAllServiceProviders(true);
     assertEquals(3, serviceProviders.size());
     assertTrue(serviceProviders.stream().allMatch(ServiceProvider::isExampleSingleTenant));
+  }
 
+  @Test
+  public void testGetLinkedIdentityProvidersFromJanus() {
+    String spId = "http://mock-sp";
+
+    when(janus.getAllowedIdps(spId)).thenReturn(Arrays.asList("http://mock-idp"));
+    when(janus.getIdpList()).thenReturn(Arrays.asList(entityMetadata("prodaccepted","http://mock-idp"), entityMetadata("prodaccepted","http://not-linked-idp")));
+
+    List<IdentityProvider> idps = serviceRegistryProviderService.getLinkedIdentityProviders(spId);
+    assertEquals(1, idps.size());
+  }
+
+  @Test
+  public void testGetLinkedIdentityProvidersForSingleTenantService() {
+    String path = "dummy-single-tenants-services";
+    serviceRegistryProviderService.setSingleTenantsConfigPath(path);
+    when(resourceLoader.getResource(path)).thenReturn(new ClassPathResource(path));
+    serviceRegistryProviderService.refreshExampleSingleTenants();
+
+    List<IdentityProvider> idps = serviceRegistryProviderService.getLinkedIdentityProviders("https://bod.dummy.sp");
+    assertTrue(idps.isEmpty());
+  }
+
+
+  private EntityMetadata entityMetadata(String status, String appEntityId) {
+    EntityMetadata e = new EntityMetadata();
+    e.setWorkflowState(status);
+    e.setAppEntityId(appEntityId);
+    return e;
   }
 }
