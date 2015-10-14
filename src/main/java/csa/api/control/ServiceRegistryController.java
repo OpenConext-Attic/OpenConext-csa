@@ -40,7 +40,6 @@ import java.util.List;
 @RequestMapping
 public class ServiceRegistryController extends BaseApiController {
 
-
   private static final Logger LOG = LoggerFactory.getLogger(ServiceRegistryController.class);
 
   @Resource
