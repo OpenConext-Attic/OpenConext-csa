@@ -62,30 +62,30 @@ public class EntityMetadata implements Serializable {
   public static EntityMetadata fromMetadataMap(Map<String, Object> metadata) {
     EntityMetadata em = new EntityMetadata();
 
-    em.addName(LANG_EN, (String) metadata.get(Janus.Metadata.NAME.val()));
-    em.addName(LANG_NL, (String) metadata.get(Janus.Metadata.NAME_NL.val()));
-    em.addDescription(LANG_EN, (String) metadata.get(Janus.Metadata.DESCRIPTION.val()));
-    em.addDescription(LANG_NL, (String) metadata.get(Janus.Metadata.DESCRIPTION_NL.val()));
+    em.addName(LANG_EN, convertToString(metadata, Janus.Metadata.NAME));
+    em.addName(LANG_NL, convertToString(metadata,Janus.Metadata.NAME_NL));
+    em.addDescription(LANG_EN, convertToString(metadata,Janus.Metadata.DESCRIPTION));
+    em.addDescription(LANG_NL, convertToString(metadata,Janus.Metadata.DESCRIPTION_NL));
 
-    em.setOauthConsumerSecret((String) metadata.get(Janus.Metadata.OAUTH_SECRET.val()));
-    em.setOauthConsumerKey((String) metadata.get(Janus.Metadata.OAUTH_CONSUMERKEY.val()));
-    em.setAppDescription((String) metadata.get(Janus.Metadata.OAUTH_APPDESCRIPTION.val()));
-    em.setAppIcon((String) metadata.get(Janus.Metadata.OAUTH_APPICON.val()));
-    em.setAppThumbNail((String) metadata.get(Janus.Metadata.OAUTH_APPTHUMBNAIL.val()));
-    em.setAppTitle((String) metadata.get(Janus.Metadata.OAUTH_APPTITLE.val()));
-    em.setOauthCallbackUrl((String) metadata.get(Janus.Metadata.OAUTH_CALLBACKURL.val()));
+    em.setOauthConsumerSecret(convertToString(metadata,Janus.Metadata.OAUTH_SECRET));
+    em.setOauthConsumerKey(convertToString(metadata,Janus.Metadata.OAUTH_CONSUMERKEY));
+    em.setAppDescription(convertToString(metadata,Janus.Metadata.OAUTH_APPDESCRIPTION));
+    em.setAppIcon(convertToString(metadata,Janus.Metadata.OAUTH_APPICON));
+    em.setAppThumbNail(convertToString(metadata,Janus.Metadata.OAUTH_APPTHUMBNAIL));
+    em.setAppTitle(convertToString(metadata,Janus.Metadata.OAUTH_APPTITLE));
+    em.setOauthCallbackUrl(convertToString(metadata,Janus.Metadata.OAUTH_CALLBACKURL));
 
-    em.addAppHomeUrl(LANG_EN, (String) metadata.get(Janus.Metadata.ORGANIZATION_URL.val()));
-    em.addAppHomeUrl(LANG_NL, (String) metadata.get(Janus.Metadata.ORGANIZATION_URL_NL.val()));
-    em.setAppLogoUrl((String) metadata.get(Janus.Metadata.LOGO_URL.val()));
-    em.setEula((String) metadata.get(Janus.Metadata.EULA.val()));
-    em.setInstutionId((String) metadata.get(Janus.Metadata.INSITUTION_ID.val()));  
-    em.setApplicationUrl((String) metadata.get(Janus.Metadata.APPLICATION_URL.val()));
+    em.addAppHomeUrl(LANG_EN, convertToString(metadata,Janus.Metadata.ORGANIZATION_URL));
+    em.addAppHomeUrl(LANG_NL, convertToString(metadata,Janus.Metadata.ORGANIZATION_URL_NL));
+    em.setAppLogoUrl(convertToString(metadata,Janus.Metadata.LOGO_URL));
+    em.setEula(convertToString(metadata,Janus.Metadata.EULA));
+    em.setInstutionId(convertToString(metadata,Janus.Metadata.INSITUTION_ID));
+    em.setApplicationUrl(convertToString(metadata,Janus.Metadata.APPLICATION_URL));
     
-    em.addUrl(LANG_EN, (String) metadata.get(Janus.Metadata.URL_EN.val()));
-    em.addUrl(LANG_NL, (String) metadata.get(Janus.Metadata.URL_NL.val()));
+    em.addUrl(LANG_EN, convertToString(metadata,Janus.Metadata.URL_EN));
+    em.addUrl(LANG_NL, convertToString(metadata,Janus.Metadata.URL_NL));
 
-    em.setWorkflowState((String) metadata.get(Janus.Metadata.WORKFLOWSTATE.val()));
+    em.setWorkflowState(convertToString(metadata,Janus.Metadata.WORKFLOWSTATE));
     em.setTwoLeggedOauthAllowed(false);
     if (metadata.get(Janus.Metadata.OAUTH_TWOLEGGEDALLOWED.val()) != null) {
       em.setTwoLeggedOauthAllowed((Boolean) metadata.get(Janus.Metadata.OAUTH_TWOLEGGEDALLOWED.val()));
@@ -126,6 +126,11 @@ public class EntityMetadata implements Serializable {
       em.setPublishedInEduGain((Boolean) publishedInEduGain);
     }
     return em;
+  }
+
+  private static String convertToString(Map<String, Object> metadata, Janus.Metadata key ) {
+    Object value = metadata.get(key.val());
+    return value != null ? value.toString() : null;
   }
 
   private static boolean emptyString(Object o) {
