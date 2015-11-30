@@ -18,14 +18,12 @@ package csa.domain;
 
 /**
 <pre>
- <![CDATA[
- <xs:enumeration value="saml20"/>
- <xs:enumeration value="aselect"/>
- <xs:enumeration value="wsfed1x"/>
- <xs:enumeration value="proxy"/>
- <xs:enumeration value="radius"/>
- <xs:enumeration value="shib13"/>
- ]]>
+ &lt;xs:enumeration value="saml20"/&gt;
+ &lt;xs:enumeration value="aselect"/&gt;
+ &lt;xs:enumeration value="wsfed1x"/&gt;
+ &lt;xs:enumeration value="proxy"/&gt;
+ &lt;xs:enumeration value="radius"/&gt;
+ &lt;xs:enumeration value="shib13"/&gt;
  </pre>
  */
 public enum ProviderType {
