@@ -5,7 +5,10 @@ package csa.shibboleth;
  */
 public enum ShibbolethRequestHeaders {
 
-  UID("shib-user"), DISPLAY_NAME("shib-displayname"), EMAIL("shib-email"), IDP_ID("shib-identity-provider");
+  UID("name-id"),
+  DISPLAY_NAME("shib-displayname"),
+  EMAIL("shib-email"),
+  IDP_ID("shib-identity-provider");
 
   private final String headerName;
 
