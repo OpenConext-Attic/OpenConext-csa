@@ -18,12 +18,13 @@ package csa.interceptor;
 
 import static csa.domain.CoinAuthority.Authority.ROLE_DISTRIBUTION_CHANNEL_ADMIN;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
@@ -37,7 +38,7 @@ import csa.domain.CompoundServiceProvider;
 /**
  * Interceptor to de-scope the visibility {@link CompoundServiceProvider}
  * objects for display
- * 
+ *
  * See <a
  * href="https://wiki.surfnetlabs.nl/display/services/App-omschrijving">https
  * ://wiki.surfnetlabs.nl/display/services/App-omschrijving</a>
@@ -59,16 +60,17 @@ public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
    */
   public static final String OAUTH_CLIENT_SCOPE_STATISTICS = "stats";
 
-  @SuppressWarnings("unchecked")
   @Override
-  public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)
-      throws Exception {
-    final Optional<Authentication> authentication = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication());
-    if (modelAndView != null && authentication.isPresent()) {
-      CoinUser coinUser = (CoinUser) authentication.get().getPrincipal();
+  public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+    if (modelAndView == null) {
+      return ;
+    }
+
+    Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication()).ifPresent(authentication -> {
+      CoinUser coinUser = (CoinUser) authentication.getPrincipal();
       ModelMap map = modelAndView.getModelMap();
       scopeGeneralAuthCons(map, coinUser.getAuthorityEnums());
-    }
+    });
   }
 
   protected void scopeGeneralAuthCons(ModelMap map, List<Authority> authorities) {
@@ -78,14 +80,9 @@ public class AuthorityScopeInterceptor extends HandlerInterceptorAdapter {
     map.put(BaseController.DEEPLINK_TO_SURFMARKET_ALLOWED, isAdmin);
     map.put(BaseController.IS_GOD, isAdmin);
   }
-  
+
   protected static boolean containsRole(List<Authority> authorities, Authority... authority) {
-    for (Authority auth : authority) {
-      if (authorities.contains(auth)) {
-        return true;
-      }
-    }
-    return false;
+    return Arrays.stream(authority).anyMatch(authorities::contains);
   }
 
 }

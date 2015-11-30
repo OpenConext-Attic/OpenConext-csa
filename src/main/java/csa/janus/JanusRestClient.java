@@ -182,12 +182,10 @@ public class JanusRestClient implements Janus {
     try {
       signedUri = sign("getSpList", parameters);
 
-      if (LOG.isTraceEnabled()) {
-        LOG.trace("Signed Janus-request is: {}", signedUri);
-      }
+      LOG.trace("Signed Janus-request is: {}", signedUri);
 
-      @SuppressWarnings("unchecked")
       String json = restTemplate.getForObject(signedUri, String.class);
+      @SuppressWarnings("unchecked")
       final Map<String, Map<String, Object>> restResponse = objectMapper.readValue(json, Map.class);//restTemplate.getForObject(signedUri, Map.class);
 
       if (LOG.isTraceEnabled()) {
@@ -223,9 +221,7 @@ public class JanusRestClient implements Janus {
     try {
       signedUri = sign("getIdpList", parameters);
 
-      if (LOG.isTraceEnabled()) {
-        LOG.trace("Signed Janus-request is: {}", signedUri);
-      }
+      LOG.trace("Signed Janus-request is: {}", signedUri);
 
       @SuppressWarnings("unchecked")
       final Map<String, Map<String, Object>> restResponse = restTemplate.getForObject(signedUri, Map.class);

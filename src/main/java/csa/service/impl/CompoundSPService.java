@@ -16,13 +16,13 @@
 
 package csa.service.impl;
 
+import static java.util.function.Function.identity;
+import static java.util.stream.StreamSupport.stream;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.hibernate.HibernateException;
 import org.slf4j.Logger;
@@ -32,17 +32,14 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import csa.domain.Article;
-import csa.domain.ServiceProvider;
-import csa.service.CrmService;
 import csa.dao.CompoundServiceProviderDao;
+import csa.domain.Article;
 import csa.domain.CompoundServiceProvider;
 import csa.domain.IdentityProvider;
+import csa.domain.ServiceProvider;
 import csa.model.License;
+import csa.service.CrmService;
 import csa.service.ServiceProviderService;
-
-import static java.util.function.Function.*;
-import static java.util.stream.StreamSupport.*;
 
 /**
  * Abstraction for the Compound Service Providers. This deals with persistence

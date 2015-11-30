@@ -21,7 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.*;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import javax.persistence.Column;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;

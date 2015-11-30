@@ -30,17 +30,13 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
     if (environment.acceptsProfiles(Application.DEV_PROFILE_NAME)) {
       return new ShibbolethPrincipal("csa_admin", "dev admin", "admin@local", "http://mock-idp");
     }
-    final Optional<String> uid = Optional.ofNullable(request.getHeader(ShibbolethRequestHeaders.UID.getHeaderName()));
-    if (uid.isPresent()) {
-      LOG.debug("Found user with uid {}", uid.get());
-      final String displayName = request.getHeader(ShibbolethRequestHeaders.DISPLAY_NAME.getHeaderName());
-      final String email = request.getHeader(ShibbolethRequestHeaders.EMAIL.getHeaderName());
-      final String idpId = request.getHeader(ShibbolethRequestHeaders.IDP_ID.getHeaderName());
-      return new ShibbolethPrincipal(uid.get(), displayName, email, idpId);
-    } else {
-      LOG.debug("No principal found. This should trigger shibboleth.");
-      return null;
-    }
+
+    return Optional.ofNullable(request.getHeader(ShibbolethRequestHeaders.UID.getHeaderName())).map(uid -> {
+      String displayName = request.getHeader(ShibbolethRequestHeaders.DISPLAY_NAME.getHeaderName());
+      String email = request.getHeader(ShibbolethRequestHeaders.EMAIL.getHeaderName());
+      String idpId = request.getHeader(ShibbolethRequestHeaders.IDP_ID.getHeaderName());
+      return new ShibbolethPrincipal(uid, displayName, email, idpId);
+    }).orElse(null);
   }
 
   @Override

@@ -36,9 +36,9 @@ public class AuthorizationServerFilter extends GenericFilterBean {
   private static final String BEARER = "bearer";
 
   /*
-     * Details needed so that we may check tokens presented to us by clients. This application uses them to authenticate via
-     * Basic authentication with the oAuth server.
-     */
+   * Details needed so that we may check tokens presented to us by clients. This application uses them to authenticate via
+   * Basic authentication with the oAuth server.
+   */
   private final String oauthCheckTokenEndpointUrl;
   private final String oauthCheckTokenClientId;
   private final String oauthCheckTokenSecret;
@@ -50,7 +50,6 @@ public class AuthorizationServerFilter extends GenericFilterBean {
     this.oauthCheckTokenClientId = oauthCheckTokenClientId;
     this.oauthCheckTokenSecret = oauthCheckTokenSecret;
   }
-
 
   @Override
   public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
@@ -89,10 +88,6 @@ public class AuthorizationServerFilter extends GenericFilterBean {
     return new CheckTokenResponse(authenticatingAuthority, scopes);
   }
 
-  @Override
-  public void destroy() {
-  }
-
   private String getAuthorizationHeader(String clientId, String clientSecret) {
     String creds = String.format("%s:%s", clientId, clientSecret);
     try {
@@ -106,8 +101,7 @@ public class AuthorizationServerFilter extends GenericFilterBean {
     if (headers.getContentType() == null) {
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     }
-    return restTemplate.exchange(path, HttpMethod.POST,
-      new HttpEntity<>(formData, headers), Map.class).getBody();
+    return restTemplate.exchange(path, HttpMethod.POST, new HttpEntity<>(formData, headers), Map.class).getBody();
   }
 
   private String getAccessToken(HttpServletRequest request) {
