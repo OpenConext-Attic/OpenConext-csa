@@ -15,8 +15,7 @@
   limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -29,7 +28,7 @@
   <artifactId>csa</artifactId>
   <packaging>war</packaging>
   <name>OpenConext : Cloud Services API</name>
-  <version>4.0.9-SNAPSHOT</version>
+  <version>4.0.9</version>
   <properties>
     <!--
     TODO use the git-sha in the url when restrieving css file. Spring boot has a way of providing this
@@ -48,7 +47,7 @@
     <connection>scm:git:git@github.com:OpenConext/OpenConext-csa.git</connection>
     <url>scm:git:git@github.com:OpenConext/OpenConext-csa.git</url>
     <developerConnection>scm:git:git@github.com:OpenConext/OpenConext-csa.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>v4.0.9</tag>
   </scm>
   <dependencies>
     <dependency>
