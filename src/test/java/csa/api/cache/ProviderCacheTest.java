@@ -19,9 +19,11 @@
 package csa.api.cache;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static com.jayway.awaitility.Duration.FIVE_SECONDS;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hibernate.validator.util.Contracts.assertNotNull;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -29,10 +31,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.jayway.awaitility.Duration;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import com.jayway.awaitility.Duration;
 
 import csa.domain.IdentityProvider;
 import csa.service.IdentityProviderService;
@@ -55,11 +57,11 @@ public class ProviderCacheTest {
 
     when(identityProviderService.getLinkedServiceProviderIDs(IDP_ID)).thenReturn(sps);
 
-    await().atMost(Duration.FIVE_SECONDS).until(() -> subject.getServiceProviderIdentifiers(IDP_ID).size(), is(1));
+    await().atMost(FIVE_SECONDS).until(() -> subject.getServiceProviderIdentifiers(IDP_ID).size(), is(1));
     sps.add("sp2");
 
     //now wait for the cache to be updated
-    await().atMost(Duration.FIVE_SECONDS).until(() -> subject.getServiceProviderIdentifiers(IDP_ID).size(), is(2));
+    await().atMost(FIVE_SECONDS).until(() -> subject.getServiceProviderIdentifiers(IDP_ID).size(), is(2));
   }
 
   @Test
@@ -70,7 +72,8 @@ public class ProviderCacheTest {
 
     when(identityProviderService.getIdentityProvider(idpEntityId)).thenReturn(new IdentityProvider(idpEntityId, "institution", "idp1"));
     identityProvider = subject.getIdentityProvider(idpEntityId);
-    assertNotNull(identityProvider);
+
+    assertThat(identityProvider, notNullValue(IdentityProvider.class));
   }
 
   @Test
@@ -83,7 +86,7 @@ public class ProviderCacheTest {
     List<IdentityProvider> listWithThreeIdps = Arrays.asList(idp1, idp2, idp3);
 
     when(identityProviderService.getAllIdentityProviders()).thenReturn(listWithTwoIdps);
-    await().atMost(Duration.FIVE_SECONDS).until(() ->
+    await().atMost(FIVE_SECONDS).until(() ->
         subject.getIdentityProvider("idp1") != null &&
           subject.getIdentityProvider("idp2") != null &&
           subject.getIdentityProvider("idp3") == null

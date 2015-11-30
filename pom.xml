@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.2.4.RELEASE</version>
+    <version>1.2.7.RELEASE</version>
   </parent>
 
   <groupId>org.surfnet.coin</groupId>
@@ -41,9 +41,7 @@
     <!-- default webdriver for selenium tests. To be overridden on a per
       profile base -->
     <selenium.webdriver>firefox</selenium.webdriver>
-    <httpclient.version>4.4.1</httpclient.version>
     <ehcache.version>2.5.1</ehcache.version>
-    <mysql-connector-java.version>5.1.35</mysql-connector-java.version>
     <spring-security-oauth2.version>2.0.7.RELEASE</spring-security-oauth2.version>
   </properties>
   <scm>
@@ -157,7 +155,6 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>${httpclient.version}</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -169,7 +166,6 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
-      <version>4.2.0.Final</version>
     </dependency>
 
     <dependency>
@@ -227,7 +223,6 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>${mysql-connector-java.version}</version>
     </dependency>
     <dependency>
       <groupId>xml-apis</groupId>
@@ -260,7 +255,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
         <configuration>
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
