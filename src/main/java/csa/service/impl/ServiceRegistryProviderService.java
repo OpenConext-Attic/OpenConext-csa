@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestClientException;
+
+import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
@@ -290,7 +293,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
       return idps;
     }
     // first get all identity providers, then filter the ones we need.
-    return this.getAllIdentityProviders().stream().filter(idp -> instituteId.equals(idp.getInstitutionId())).collect(Collectors.toList());
+    return this.getAllIdentityProviders().stream().filter(idp -> instituteId.equals(idp.getInstitutionId())).collect(toList());
   }
 
   @Override
@@ -323,8 +326,8 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
   public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
     Resource resource = resourceLoader.getResource(singleTenantsConfigPath);
     try {
-      List<File> dummySps = Arrays.asList(resource.getFile().listFiles((dir, name) -> name.endsWith("json")));
-      this.exampleSingleTenants = dummySps.stream().map(sp -> parse(sp)).collect(Collectors.toList());
+      File[] dummySps = resource.getFile().listFiles((dir, name) -> name.endsWith("json"));
+      this.exampleSingleTenants = Arrays.stream(dummySps).map(this::parse).collect(toList());
       this.exampleSingleTenants.forEach(sp -> sp.setExampleSingleTenant(true));
       LOG.info("Read {} example single tenant services from {}", exampleSingleTenants.size(), resource.getFilename());
     } catch (Exception e) {
@@ -334,7 +337,7 @@ public class ServiceRegistryProviderService implements ServiceProviderService, I
 
   private ServiceProvider parse(File file) {
     try {
-      Map map = objectMapper.readValue(file, Map.class);
+      Map<String, Object> map = objectMapper.readValue(file, new TypeReference<Map<String, Object>>() {});
       EntityMetadata metadata = EntityMetadata.fromMetadataMap(map);
       ARP arp = map.containsKey("attributes") ? ARP.fromAttributes((List) map.get("attributes")) : ARP.fromRestResponse(new HashedMap());
       return doBuildServiceProviderByMetadata(metadata, (String) map.get("entityid"),Optional.of(arp));

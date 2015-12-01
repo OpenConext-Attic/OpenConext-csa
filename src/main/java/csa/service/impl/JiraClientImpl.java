@@ -16,9 +16,11 @@
 
 package csa.service.impl;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static csa.model.JiraTask.Type.LINKREQUEST;
 import static csa.model.JiraTask.Type.QUESTION;
 import static csa.model.JiraTask.Type.UNLINKREQUEST;
+import static java.util.stream.Collectors.toList;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -27,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,12 +36,12 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.codec.Base64;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
 import csa.domain.CoinUser;
@@ -70,32 +71,30 @@ public class JiraClientImpl implements JiraClient {
     this.projectKey = projectKey;
     this.baseUrl = baseUrl;
 
-    defaultHeaders = new HttpHeaders();
-    defaultHeaders.setContentType(MediaType.APPLICATION_JSON);
-    final byte[] encoded = Base64.encode((username + ":" + password).getBytes());
-    defaultHeaders.add("Authorization", "Basic " + new String(encoded));
+    this.defaultHeaders = new HttpHeaders();
+    this.defaultHeaders.setContentType(MediaType.APPLICATION_JSON);
+    byte[] encoded = Base64.encode((username + ":" + password).getBytes());
+    this.defaultHeaders.add(HttpHeaders.AUTHORIZATION, "Basic " + new String(encoded));
     this.restTemplate = new RestTemplate();
   }
-
 
   @Override
   @SuppressWarnings("unchecked")
   public String create(final JiraTask task, final CoinUser user) {
-    final Map<String, Object> issue = new HashMap<>();
-
     final Map<String, Object> fields = new HashMap<>();
-    issue.put("fields", fields);
     fields.put("priority", ImmutableMap.of("id", PRIORITY_MEDIUM_ID));
     fields.put("project", ImmutableMap.of("key", projectKey));
     fields.put("security", ImmutableMap.of("id", DEFAULT_SECURITY_LEVEL_ID));
     fields.put(SP_CUSTOM_FIELD, task.getServiceProvider());
     fields.put(IDP_CUSTOM_FIELD, task.getIdentityProvider());
-
     fields.put("issuetype", ImmutableMap.of("id", TASKTYPE_TO_ISSUETYPE_CODE.get(task.getIssueType())));
 
     final SummaryAndDescription summaryAndDescription = buildSummaryAndDescription(task, user);
     fields.put("summary", summaryAndDescription.summary);
     fields.put("description", summaryAndDescription.description);
+
+    final Map<String, Object> issue = new HashMap<>();
+    issue.put("fields", fields);
 
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(issue, defaultHeaders);
     try {
@@ -106,21 +105,21 @@ public class JiraClientImpl implements JiraClient {
     }
   }
 
-
   @Override
   @SuppressWarnings("unchecked")
   public List<JiraTask> getTasks(final List<String> keys) {
-    if (keys == null || keys.size() == 0) {
+    if (CollectionUtils.isEmpty(keys)) {
       return Collections.emptyList();
     }
+
     StringBuilder query = new StringBuilder("project = ");
     query.append(projectKey);
     query.append(" AND key IN (");
     Joiner.on(",").skipNulls().appendTo(query, keys);
     query.append(")");
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Sending query to JIRA: " + query.toString());
-    }
+
+    LOG.debug("Sending query to JIRA: {}", query.toString());
+
     final Map<String, String> searchArgs = ImmutableMap.of("jql", query.toString());
 
     try {
@@ -128,21 +127,18 @@ public class JiraClientImpl implements JiraClient {
       Map<String, Object> result = restTemplate.postForObject(baseUrl + "/search?expand=all", entity, Map.class);
 
       List<Map<String, Object>> issues = (List<Map<String, Object>>) result.get("issues");
-      return issues.stream().
-        map(issue -> {
-          final String key = (String) issue.get("key");
+      return issues.stream().map(issue -> {
+          Map<String, Object> fields = (Map<String, Object>) issue.get("fields");
+          Map<String, Object> statusInfo = (Map<String, Object>) fields.get("status");
 
-          final Map<String, Object> fields = (Map<String, Object>) issue.get("fields");
-          final Optional<String> identityProvider = Optional.ofNullable((String) fields.get(IDP_CUSTOM_FIELD));
-          final Optional<String> serviceProvider = Optional.ofNullable((String) fields.get(SP_CUSTOM_FIELD));
-          final String description = (String) fields.get("description");
-
-          final Map<String, Object> statusInfo = (Map<String, Object>) fields.get("status");
-          final JiraTask.Status status = JiraTask.Status.valueOf(((String) statusInfo.get("name")).toUpperCase());
-          return new JiraTask.Builder().key(key).identityProvider(identityProvider.orElse(""))
-            .serviceProvider(serviceProvider.orElse("")).institution("???").status(status).body(description).build();
-        }).
-        collect(Collectors.toList());
+          return new JiraTask.Builder()
+              .key((String) issue.get("key"))
+              .identityProvider(Optional.ofNullable((String) fields.get(IDP_CUSTOM_FIELD)).orElse(""))
+              .serviceProvider(Optional.ofNullable((String) fields.get(SP_CUSTOM_FIELD)).orElse(""))
+              .institution("???")
+              .status(JiraTask.Status.valueOf(((String) statusInfo.get("name")).toUpperCase()))
+              .body((String) fields.get("description")).build();
+        }).collect(toList());
     } catch (RestClientException e) {
       LOG.error("Error communicating with Jira, return empty list", e);
       return Collections.emptyList();
@@ -150,8 +146,8 @@ public class JiraClientImpl implements JiraClient {
   }
 
   private SummaryAndDescription buildSummaryAndDescription(final JiraTask task, final CoinUser user) {
-    Preconditions.checkNotNull(task.getIssueType());
-    Preconditions.checkNotNull(user);
+    checkNotNull(task.getIssueType());
+    checkNotNull(user);
 
     StringBuilder description = new StringBuilder();
 

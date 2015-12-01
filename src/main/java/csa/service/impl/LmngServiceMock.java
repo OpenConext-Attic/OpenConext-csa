@@ -30,10 +30,6 @@ import csa.service.CrmService;
 import csa.domain.IdentityProvider;
 import csa.model.License;
 
-/**
- * LicensingServiceMock.java
- */
-@SuppressWarnings("unused")
 public class LmngServiceMock implements CrmService {
 
   private ObjectMapper objectMapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
@@ -47,14 +43,11 @@ public class LmngServiceMock implements CrmService {
   @SuppressWarnings("unchecked")
   public LmngServiceMock() {
     try {
-      TypeReference<List<Article>> articleTypeReference = new TypeReference<List<Article>>() {
-      };
+      TypeReference<List<Article>> articleTypeReference = new TypeReference<List<Article>>() {};
       this.articles = (List<Article>) parseJsonData(articleTypeReference, "lmng-json/articles.json");
-      TypeReference<License> licenseTypeReference = new TypeReference<License>() {
-      };
+      TypeReference<License> licenseTypeReference = new TypeReference<License>() {};
       this.license = (License) parseJsonData(licenseTypeReference, "lmng-json/licenses.json");
-      TypeReference<List<Account>> accountTypeReference = new TypeReference<List<Account>>() {
-      };
+      TypeReference<List<Account>> accountTypeReference = new TypeReference<List<Account>>() {};
       this.institutions = (List<Account>) parseJsonData(accountTypeReference, "lmng-json/institutions.json");
       this.services = (List<Account>) parseJsonData(accountTypeReference, "lmng-json/services.json");
     } catch (Exception e) {
@@ -79,7 +72,6 @@ public class LmngServiceMock implements CrmService {
   public void evictCache() {
   }
 
-
   @Override
   public String getInstitutionName(String guid) {
     return services.stream().filter(institute -> institute.getGuid().equals(guid)).findFirst().orElseGet(Account::new).getGuid();
@@ -90,7 +82,7 @@ public class LmngServiceMock implements CrmService {
     Article article = getService(lmngId);
     return article == null ? null : article.getArticleName();
   }
-  
+
   @Override
   public Article getService(String guid) {
     for (Article current : articles) {
