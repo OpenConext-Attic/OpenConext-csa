@@ -24,6 +24,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -81,8 +82,7 @@ public class LmngServiceImpl implements CrmService {
 
   @Cacheable(value = "crm")
   @Override
-  public List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier)
-    throws LmngException {
+  public List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier) {
     List<License> result = new ArrayList<>();
     Preconditions.checkNotNull(identityProvider);
     Preconditions.checkNotNull(articleIdentifier);
@@ -110,11 +110,9 @@ public class LmngServiceImpl implements CrmService {
           return result;
         }
       }
-
-
     } catch (Exception e) {
       log.error("Exception while retrieving licenses for article " + articleIdentifier, e);
-      throw new LmngException(e.getMessage(), e);
+      return Collections.emptyList();
     }
     return result;
   }
@@ -255,7 +253,6 @@ public class LmngServiceImpl implements CrmService {
   protected String getWebServiceResult(final String soapRequest) throws IOException, KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
     log.debug("Calling the LMNG proxy webservice, endpoint: {}", endpoint);
 
-
     HttpPost httppost = new HttpPost(endpoint);
     httppost.setProtocolVersion(HttpVersion.HTTP_1_1);
     httppost.setHeader("Content-Type", "application/soap+xml;charset=UTF-8");
@@ -279,7 +276,6 @@ public class LmngServiceImpl implements CrmService {
     if (debug) {
       lmngUtil.writeIO("lmngWsResponseStatus" + status, StringEscapeUtils.unescapeHtml4(stringResponse));
     }
-
 
     if (status != 200) {
       log.debug("LMNG webservice response content is:\n{}", stringResponse);

@@ -33,25 +33,24 @@ public interface CrmService {
   /**
    * Gets a list with Licenses for the given
    * identityProvider and services (lmngIdentifiers) which are valid on the given day
-   * 
+   *
    * @param identityProvider the identityProvider to get the licenses for
    * @param articleIdentifier lmngIdentifier (belonging to SP's) where the licenses are for.
    * @return a (possible) list of licenses
-   * @throws LmngException If connection or call fails (rethrows all exceptions)
    */
-  List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier) throws LmngException;
-  
+  List<License> getLicensesForIdpAndSp(IdentityProvider identityProvider, String articleIdentifier);
+
   /**
    * Get articles for the given serviceProviders.
    * @param serviceProviderEntityIds list of ID's of serviceproviders to get the lmng article for
    * @return a list of possible articles
-   * @throws LmngException 
+   * @throws LmngException
    */
   List<Article> getArticlesForServiceProviders(List<String> serviceProviderEntityIds) throws LmngException;
 
   /**
    * Get the name of the institution in LMNG belonging to given GUID
-   * 
+   *
    * @param guid
    *          guid of the IDP to check
    * @return the name of the institution in LMNG
@@ -60,16 +59,16 @@ public interface CrmService {
 
   /**
    * Get LMNG article by article ID
-   * 
+   *
    * @param guid
    *          guid of the article
    * @return the article found or null
    */
   Article getService(final String guid);
-  
+
   /**
    * Get the name of the service/product in LMNG belonging to given GUID
-   * 
+   *
    * @param lmngId
    * @return
    */

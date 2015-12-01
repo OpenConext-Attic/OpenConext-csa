@@ -62,7 +62,6 @@ public class CrmCache extends AbstractCache {
   private void populateMappings() {
     idpToLmngId = lmngIdentifierDao.findAllIdentityProviders();
     spToLmngId = lmngIdentifierDao.findAllServiceProviders();
-
   }
 
   private Map<String, Article> createNewArticleCache() {
@@ -102,20 +101,16 @@ public class CrmCache extends AbstractCache {
         IdentityProvider idp = new IdentityProvider(idpInstitutionId, idpInstitutionId, "dummy");
 
         List<License> licensesForIdpAndSp = crmService.getLicensesForIdpAndSp(idp, spLmngId);
-        if (licensesForIdpAndSp.size() > 0) {
-          if (licensesForIdpAndSp.size() > 1) {
-            LOG.warn("Unexpected: list of licenses by IdP and SP ({} and {}) is larger than 1: {}", idpInstitutionId, spEntityId, licensesForIdpAndSp.size());
-          }
-          License license = licensesForIdpAndSp.get(0);
-          if (LOG.isTraceEnabled()) {
-            LOG.trace("License found by IdP and SP ({} and {}): {}", idpInstitutionId, spEntityId, license);
-          }
-          newLicenseCache.put(new MappingEntry(idpInstitutionId, spEntityId), license);
-        } else {
-          if (LOG.isTraceEnabled()) {
-            LOG.trace("No result found for licenses by IdP and SP ({} and {})", idpInstitutionId, spEntityId);
-          }
+        if (licensesForIdpAndSp.isEmpty()) {
+          break;
         }
+
+        if (licensesForIdpAndSp.size() > 1) {
+          LOG.warn("Unexpected: list of licenses by IdP and SP ({} and {}) is larger than 1: {}", idpInstitutionId, spEntityId, licensesForIdpAndSp.size());
+        }
+        License license = licensesForIdpAndSp.get(0);
+        LOG.trace("License found by IdP and SP ({} and {}): {}", idpInstitutionId, spEntityId, license);
+        newLicenseCache.put(new MappingEntry(idpInstitutionId, spEntityId), license);
       }
     }
     return newLicenseCache;
