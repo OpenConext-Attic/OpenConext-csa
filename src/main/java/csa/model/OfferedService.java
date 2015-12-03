@@ -12,7 +12,6 @@ public class OfferedService {
 
   public OfferedService(Service service) {
     this.service = service;
-    this.identityProviders = identityProviders;
   }
 
   public Service getService() {

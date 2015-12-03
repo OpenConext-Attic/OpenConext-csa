@@ -18,8 +18,6 @@ package csa.service.impl;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +29,6 @@ import csa.service.ActionsService;
 
 @Service(value = "actionsService")
 public class ActionsServiceImpl implements ActionsService {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ActionsServiceImpl.class);
 
   @Autowired
   private ActionsDaoImpl actionsDao;
