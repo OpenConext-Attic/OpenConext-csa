@@ -16,36 +16,50 @@
 
 package csa.control.shopadmin;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.StreamSupport;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.common.base.Throwables;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
+import org.opensaml.ws.transport.http.HttpServletResponseAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
 import csa.command.LmngServiceBinding;
 import csa.control.BaseController;
 import csa.dao.CompoundServiceProviderDao;
 import csa.dao.LmngIdentifierDao;
 import csa.domain.CompoundServiceProvider;
-import csa.domain.ServiceProvider;
 import csa.model.License;
 import csa.service.CrmService;
 import csa.service.ExportService;
 import csa.service.ServiceProviderService;
 import csa.service.impl.CompoundSPService;
 import csa.service.impl.LmngUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.validator.routines.UrlValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Controller
 @RequestMapping(value = "/shopadmin/*")
@@ -53,10 +67,10 @@ public class SpLnmgListController extends BaseController {
 
   private static final Logger log = LoggerFactory.getLogger(SpLnmgListController.class);
 
-  @Resource
+  @Autowired
   private ServiceProviderService providerService;
 
-  @Resource
+  @Autowired
   private CrmService licensingService;
 
   @Autowired
@@ -78,8 +92,9 @@ public class SpLnmgListController extends BaseController {
   @RequestMapping(value = "/all-spslmng")
   public ModelAndView listAllSpsLmng(Map<String, Object> model) {
     List<LmngServiceBinding> lmngServiceBindings = getAllBindings();
-    model.put("bindings", lmngServiceBindings);
     List<LmngServiceBinding> cspOrphans = getOrphans(lmngServiceBindings);
+
+    model.put("bindings", lmngServiceBindings);
     model.put("orphans", cspOrphans);
     model.put("licenseStatuses", License.LicenseStatus.values());
     return new ModelAndView("shopadmin/sp-overview", model);
@@ -89,7 +104,7 @@ public class SpLnmgListController extends BaseController {
     Set<String> spEntitySet = lmngServiceBindings.stream().
       filter(lmngServiceBinding -> lmngServiceBinding.getCompoundServiceProvider() != null).
       map(lmngServiceBinding -> lmngServiceBinding.getCompoundServiceProvider().getServiceProviderEntityId()).
-      collect(Collectors.toSet());
+      collect(toSet());
 
     Iterable<CompoundServiceProvider> csps = compoundServiceProviderDao.findAll();
     Iterator<CompoundServiceProvider> cspIter = csps.iterator();
@@ -102,53 +117,49 @@ public class SpLnmgListController extends BaseController {
 
     return StreamSupport.stream(csps.spliterator(), false).
       map(csp -> new LmngServiceBinding(csp.getLmngId(), csp.getServiceProvider(), csp)).
-      collect(Collectors.toList());
+      collect(toList());
   }
 
   private List<LmngServiceBinding> getAllBindings() {
-    List<LmngServiceBinding> lmngServiceBindings = new ArrayList<>();
-    for (ServiceProvider serviceProvider : providerService.getAllServiceProviders(false)) {
+    return providerService.getAllServiceProviders(false).stream().map(serviceProvider -> {
       String lmngIdentifier = lmngIdentifierDao.getLmngIdForServiceProviderId(serviceProvider.getId());
       CompoundServiceProvider compoundServiceProvider = compoundSPService.getCSPByServiceProvider(serviceProvider);
-      lmngServiceBindings.add(new LmngServiceBinding(lmngIdentifier, serviceProvider, compoundServiceProvider));
-    }
-    return lmngServiceBindings;
+      return new LmngServiceBinding(lmngIdentifier, serviceProvider, compoundServiceProvider);
+    }).collect(toList());
   }
 
-  @RequestMapping(value = "/export/csv")
-  public
+  @RequestMapping(value = "/export.csv", produces = "text/csv")
   @ResponseBody
-  String exportToCSV(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "type", required = false) String type) throws URISyntaxException {
-    String result;
+  public String exportToCSV(HttpServletRequest request, @RequestParam(value = "type", required = false) String type) {
+    return getCsvContent(type, getBaseUrl(request));
+  }
+
+  private String getCsvContent(String type, String baseUrl) {
     List<LmngServiceBinding> lmngServiceBindings = getAllBindings();
-    String baseUrl = getBaseUrl(request);
 
     if (StringUtils.isEmpty(type)) {
-      result = exportService.exportServiceBindingsCsv(lmngServiceBindings, baseUrl);
+      return exportService.exportServiceBindingsCsv(lmngServiceBindings, baseUrl);
     } else if (type.equalsIgnoreCase("orphans")) {
       List<LmngServiceBinding> cspOrphans = getOrphans(lmngServiceBindings);
-      result = exportService.exportServiceBindingsCsv(cspOrphans, baseUrl);
+      return exportService.exportServiceBindingsCsv(cspOrphans, baseUrl);
     } else {
       throw new IllegalArgumentException("Unknown type given: " + type);
     }
-
-    // set content headers for CSV
-    response.setHeader("Content-Disposition", "attachment; filename=\"spEntityExport.csv\"");
-    response.setContentType("text/csv");
-    response.setContentLength(result.length());
-    return result;
   }
 
-  private String getBaseUrl(HttpServletRequest request) throws URISyntaxException {
-    String result = "";
+  private String getBaseUrl(HttpServletRequest request) {
+    try {
+      StringBuilder builder = new StringBuilder();
+      URI myUri = new URI(request.getRequestURL().toString());
+      builder.append(myUri.getScheme() + "://" + myUri.getHost());
+      if (myUri.getPort() > 0) {
+        builder.append(":" + myUri.getPort());
+      }
 
-    URI myUri = new URI(request.getRequestURL().toString());
-    result += myUri.getScheme() + "://" + myUri.getHost();
-    if (myUri.getPort() > 0) {
-      result += ":" + myUri.getPort();
+      return builder.toString();
+    } catch (URISyntaxException e) {
+      throw Throwables.propagate(e);
     }
-
-    return result;
   }
 
   @RequestMapping(value = "/save-splmng", method = RequestMethod.POST)
@@ -161,7 +172,7 @@ public class SpLnmgListController extends BaseController {
 
     String isClearPressed = req.getParameter("clearbutton");
     if (StringUtils.isBlank(lmngId) || StringUtils.isNotBlank(isClearPressed)) {
-      log.debug("Clearing lmng identifier for ServiceProvider with ID " + spId);
+      log.debug("Clearing lmng identifier for ServiceProvider with ID {}", spId);
       lmngId = null;
     } else {
       // extra validation (also done in frontend/jquery)
@@ -179,7 +190,7 @@ public class SpLnmgListController extends BaseController {
         model.put("infoMessage", serviceLmngName);
         model.put("messageIndex", index);
       }
-      log.debug("Storing lmng identifier " + lmngId + " for ServiceProvider with ID " + spId);
+      log.debug("Storing lmng identifier {} for ServiceProvider with ID {}", lmngId, spId);
     }
     lmngIdentifierDao.saveOrUpdateLmngIdForServiceProviderId(spId, lmngId);
 
@@ -196,7 +207,7 @@ public class SpLnmgListController extends BaseController {
 
     String isClearPressed = req.getParameter("clearbutton");
     if (StringUtils.isBlank(normenKaderUrl) || StringUtils.isNotBlank(isClearPressed)) {
-      log.debug("Clearing normenKaderUrl for CompoundServiceProvider with ID " + cspId);
+      log.debug("Clearing normenKaderUrl for CompoundServiceProvider with ID {}", cspId);
       normenKaderUrl = null;
     } else if (!urlValidator.isValid(normenKaderUrl)) {
       model.put("errorNormenKaderMessage", "jsp.lmng_binding_overview.normenkader.url.error");
@@ -206,51 +217,56 @@ public class SpLnmgListController extends BaseController {
     CompoundServiceProvider csp = compoundServiceProviderDao.findOne(cspId);
     csp.setNormenkaderUrl(normenKaderUrl);
     compoundServiceProviderDao.save(csp);
-    log.info("Updated CompoundServiceProvider(" + cspId + ") to have normenkader URL:" + normenKaderUrl);
+
+    log.info("Updated CompoundServiceProvider({}) to have normenkader URL: {}", cspId, normenKaderUrl);
+
     return listAllSpsLmng(model);
   }
 
   @RequestMapping(value = "/update-enduser-visible/{cspId}/{newValue}", method = RequestMethod.PUT)
-  public
   @ResponseBody
-  String updateCspPublicApi(@PathVariable("cspId") Long cspId, @PathVariable("newValue") boolean newValue) {
+  public String updateCspPublicApi(@PathVariable("cspId") Long cspId, @PathVariable("newValue") boolean newValue) {
     CompoundServiceProvider csp = compoundServiceProviderDao.findOne(cspId);
     csp.setAvailableForEndUser(newValue);
     compoundServiceProviderDao.save(csp);
-    log.info("Updated CompoundServiceProvider(" + cspId + ") to be available for end users:" + newValue);
+
+    log.info("Updated CompoundServiceProvider({}) to be available for end users: {}", cspId, newValue);
+
     return "ok";
   }
 
   @RequestMapping(value = "/update-normenkader-present/{cspId}/{newValue}", method = RequestMethod.PUT)
-  public
   @ResponseBody
-  String updateCspNormenKaderPresent(@PathVariable("cspId") Long cspId, @PathVariable("newValue") boolean newValue) {
+  public String updateCspNormenKaderPresent(@PathVariable("cspId") Long cspId, @PathVariable("newValue") boolean newValue) {
     CompoundServiceProvider csp = compoundServiceProviderDao.findOne(cspId);
     csp.setNormenkaderPresent(newValue);
     compoundServiceProviderDao.save(csp);
-    log.info("Updated CompoundServiceProvider(" + cspId + ") to normenkader present:" + newValue);
+
+    log.info("Updated CompoundServiceProvider({}) to normenkader present: {}", cspId, newValue);
+
     return "ok";
   }
 
   @RequestMapping(value = "/update-license-status/{cspId}/{newValue}", method = RequestMethod.PUT)
-  public
   @ResponseBody
-  String updateCspLicenseStatus(@PathVariable("cspId") Long cspId, @PathVariable("newValue") String newValue) {
+  public String updateCspLicenseStatus(@PathVariable("cspId") Long cspId, @PathVariable("newValue") String newValue) {
     CompoundServiceProvider csp = compoundServiceProviderDao.findOne(cspId);
     csp.setLicenseStatus(License.LicenseStatus.valueOf(newValue));
     compoundServiceProviderDao.save(csp);
-    log.info("Updated CompoundServiceProvider(" + cspId + ") license status:" + newValue);
+
+    log.info("Updated CompoundServiceProvider({}) license status: {}", cspId, newValue);
+
     return "ok";
   }
 
   @RequestMapping(value = "/delete-csp.shtml", method = RequestMethod.POST)
   public void deleteCompoundServiceProvider(@RequestParam("cspId") String postedCspId, HttpServletResponse response) throws IOException {
-    log.info("deleting compound service provider with ID " + postedCspId);
+    log.info("deleting compound service provider with ID {}", postedCspId);
     Long cspId = Long.parseLong(postedCspId);
     CompoundServiceProvider csp = compoundServiceProviderDao.findOne(cspId);
     compoundServiceProviderDao.delete(csp);
 
-    //redirect to services page
+    // redirect to services page
     response.sendRedirect("all-spslmng.shtml");
   }
 }

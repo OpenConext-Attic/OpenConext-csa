@@ -16,6 +16,7 @@
 
 package csa.service.impl;
 
+@SuppressWarnings("serial")
 public class LmngException extends RuntimeException {
 
   public LmngException(String message, Throwable cause) {

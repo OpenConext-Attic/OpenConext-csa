@@ -59,8 +59,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-
-
     http
       .csrf().disable()
       .addFilterBefore(
@@ -98,7 +96,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   @Bean
-  @Autowired
   public FilterRegistrationBean authorizationServerFilter(Environment environment,
                                                           @Value("${oauth.checkToken.endpoint.url}") String oauthCheckTokenEndpointUrl,
                                                           @Value("${oauth.checkToken.clientId}") String oauthCheckTokenClientId,
@@ -112,6 +109,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       final AuthorizationServerFilter authorizationServerFilter = new AuthorizationServerFilter(oauthCheckTokenEndpointUrl, oauthCheckTokenClientId, oauthCheckTokenSecret);
       filterRegistrationBean.setFilter(authorizationServerFilter);
     }
+
     return filterRegistrationBean;
   }
 }
