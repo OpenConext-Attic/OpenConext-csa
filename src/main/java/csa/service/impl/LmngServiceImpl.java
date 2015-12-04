@@ -18,6 +18,7 @@ package csa.service.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -250,7 +251,7 @@ public class LmngServiceImpl implements CrmService {
    * @throws UnrecoverableKeyException
    * @throws KeyManagementException
    */
-  protected String getWebServiceResult(final String soapRequest) throws IOException, KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
+  protected String getWebServiceResult(final String soapRequest) throws IOException {
     log.debug("Calling the LMNG proxy webservice, endpoint: {}", endpoint);
 
     HttpPost httppost = new HttpPost(endpoint);
