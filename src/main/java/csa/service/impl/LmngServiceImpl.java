@@ -272,6 +272,7 @@ public class LmngServiceImpl implements CrmService {
   @Override
   @CacheEvict(value = "crm", allEntries = true)
   public void evictCache() {
+    log.info("Clear cache...");
   }
 
 }

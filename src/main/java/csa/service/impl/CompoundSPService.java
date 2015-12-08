@@ -16,6 +16,7 @@
 
 package csa.service.impl;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.function.Function.identity;
 import static java.util.stream.StreamSupport.stream;
 
@@ -48,7 +49,7 @@ import csa.service.ServiceProviderService;
 @Service
 public class CompoundSPService {
 
-  private Logger LOG = LoggerFactory.getLogger(CompoundSPService.class);
+  private final Logger LOG = LoggerFactory.getLogger(CompoundSPService.class);
 
   @Autowired
   private CompoundServiceProviderDao compoundServiceProviderDao;
@@ -91,7 +92,6 @@ public class CompoundSPService {
     // Build a list of CSPs. Create new ones for SPs that have no CSP yet.
     List<CompoundServiceProvider> all = new ArrayList<>();
     for (ServiceProvider sp : allServiceProviders) {
-
       CompoundServiceProvider csp;
       if (mapByServiceProviderEntityId.containsKey(sp.getId())) {
         csp = mapByServiceProviderEntityId.get(sp.getId());
@@ -169,8 +169,8 @@ public class CompoundSPService {
   }
 
   public CompoundServiceProvider getCSPByServiceProvider(ServiceProvider serviceProvider) {
+    checkNotNull(serviceProvider, "ServiceProvider may not be null");
 
-    Assert.notNull(serviceProvider, "ServiceProvider may not be null");
     CompoundServiceProvider compoundServiceProvider = compoundServiceProviderDao.findByServiceProviderEntityId(serviceProvider.getId());
     if (compoundServiceProvider == null) {
       LOG.debug("No compound Service Provider for SP '{}' yet. Will init one and persist.", serviceProvider.getId());
@@ -186,7 +186,7 @@ public class CompoundSPService {
   }
 
   private Article getArticleForSp(ServiceProvider sp) {
-    Assert.notNull(sp);
+    checkNotNull(sp);
 
     List<String> allSpsIds = new ArrayList<>();
     allSpsIds.add(sp.getId());
@@ -201,7 +201,8 @@ public class CompoundSPService {
   }
 
   private List<License> getLicensesForIdpAndArticle(IdentityProvider idp, Article article) {
-    Assert.notNull(idp);
+    checkNotNull(idp);
+
     if (article != null) {
       return licensingService.getLicensesForIdpAndSp(idp, article.getLmngIdentifier());
     }

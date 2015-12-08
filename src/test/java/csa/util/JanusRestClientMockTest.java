@@ -15,16 +15,13 @@
  */
 package csa.util;
 
-import csa.janus.domain.EntityMetadata;
-import csa.janus.domain.ARP;
-
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
+
+import csa.janus.domain.ARP;
+import csa.janus.domain.EntityMetadata;
 
 /**
  * JanusRestClientMockTest.java
@@ -34,9 +31,6 @@ public class JanusRestClientMockTest {
   private JanusRestClientMock mock = new JanusRestClientMock();
   private final static String SP_ENTITY_ID = "http://mock-sp";
   private final static String IDP_ENTITY_ID = "http://mock-idp";
-
-  private ObjectMapper objectMapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-          .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
   /**
    * Test method for {@link JanusRestClientMock#getMetadataByEntityId(java.lang.String)}.
