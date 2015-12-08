@@ -34,6 +34,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableList;
 import com.jayway.awaitility.Duration;
 
 import csa.dao.LmngIdentifierDao;
@@ -52,19 +53,14 @@ public class CrmCacheTest {
 
   @Before
   public void before() throws Exception {
-
     service = mock(CrmService.class);
     dao = mock(LmngIdentifierDao.class);
 
     when(dao.findAllIdentityProviders()).thenReturn(getIdentityProviders());
     when(dao.findAllServiceProviders()).thenReturn(getServiceProviders());
 
-    List<License> licenses = new ArrayList<>();
-    licenses.add(createLicense());
-    when(service.getLicensesForIdpAndSp(any(IdentityProvider.class), anyString())).thenReturn(licenses);
-    List<Article> articles = new ArrayList<>();
-    articles.add(createArticle());
-    when(service.getArticlesForServiceProviders(anyListOf(String.class))).thenReturn(articles);
+    when(service.getLicensesForIdpAndSp(any(IdentityProvider.class), anyString())).thenReturn(ImmutableList.of(createLicense()));
+    when(service.getArticlesForServiceProviders(anyListOf(String.class))).thenReturn(ImmutableList.of(createArticle()));
 
     cache = new CrmCache(service, dao, 0, 1000);
   }

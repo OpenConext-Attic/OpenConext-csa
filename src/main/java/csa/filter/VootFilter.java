@@ -106,5 +106,4 @@ public class VootFilter implements Filter {
   public void destroy() {
   }
 
-
 }

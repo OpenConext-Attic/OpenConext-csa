@@ -142,13 +142,13 @@ public class Application extends SpringBootServletInitializer {
 
   @Bean
   public ServicesCache servicesCache(CompoundSPService compoundSPService, CrmService crmService,
-                                     @Value("${cacheMillisecondsStartupDelayTime}") long delay,
-                                     @Value("${cacheMillisecondsServices}") long duration,
+                                     @Value("${cache.default.initialDelay}") long initialDelay,
+                                     @Value("${cache.default.delay}") long delay,
                                      @Value("${cacheMillisecondsCallDelay}") long callDelay,
                                      @Value("${static.baseurl}") String staticBaseUrl,
                                      @Value("${lmngDeepLinkBaseUrl}") String lmngDeepLinkBaseUrl,
                                      @Value("${public.api.lmng.guids}") String[] guids) {
-    return new ServicesCache(new ServicesServiceImpl(compoundSPService, crmService, staticBaseUrl, lmngDeepLinkBaseUrl, guids), delay, duration, callDelay);
+    return new ServicesCache(new ServicesServiceImpl(compoundSPService, crmService, staticBaseUrl, lmngDeepLinkBaseUrl, guids), initialDelay, delay, callDelay);
   }
 
   @Bean

@@ -29,15 +29,6 @@ public class CrmCache extends AbstractCache {
   private final CrmService crmService;
   private final LmngIdentifierDao lmngIdentifierDao;
 
-  @Autowired
-  public CrmCache(CrmService crmService, LmngIdentifierDao lmngIdentifierDao,
-                  @Value("${cacheMillisecondsStartupDelayTime}") long delay,
-                  @Value("${cacheMillisecondsServices}") long duration) {
-    super(delay, duration);
-    this.crmService = crmService;
-    this.lmngIdentifierDao = lmngIdentifierDao;
-  }
-
   /**
    * Cache of Licenses, keyed by Entry of Idp institutionId and spEntityId
    */
@@ -50,6 +41,15 @@ public class CrmCache extends AbstractCache {
 
   private List<MappingEntry> idpToLmngId;
   private List<MappingEntry> spToLmngId;
+
+  @Autowired
+  public CrmCache(CrmService crmService, LmngIdentifierDao lmngIdentifierDao,
+                  @Value("${cache.crm.initialDelay}") long initialDelay,
+                  @Value("${cache.crm.delay}") long delay) {
+    super(initialDelay, delay);
+    this.crmService = crmService;
+    this.lmngIdentifierDao = lmngIdentifierDao;
+  }
 
 
   @Override

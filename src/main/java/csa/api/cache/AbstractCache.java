@@ -18,8 +18,12 @@
  */
 package csa.api.cache;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
+import com.google.common.base.Stopwatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,57 +33,40 @@ public abstract class AbstractCache implements DisposableBean {
 
   private static final Logger LOG = LoggerFactory.getLogger(AbstractCache.class);
 
-  private final Timer timer;
+  private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-  public AbstractCache(long delay, long period) {
-    timer = new Timer();
-    timer.scheduleAtFixedRate(new TimerTask() {
-      @Override
-      public void run() {
-        populateCache();
-      }
-    }, delay, period);
+  public AbstractCache(long initialDelay, long delay) {
+    LOG.info("Starting cache {}, with an initial delay of {} and a delay of {}", getCacheName(), initialDelay, delay);
+    executor.scheduleWithFixedDelay(() -> populateCache(), initialDelay, delay, MILLISECONDS);
   }
 
+  protected abstract void doPopulateCache();
+
+  protected abstract String getCacheName();
+
   private void populateCache() {
-    LOG.info("Starting refreshing {} cache", getCacheName());
-    long start = System.currentTimeMillis();
+    LOG.info("Refreshing {} cache", getCacheName());
+    Stopwatch stopwatch = Stopwatch.createStarted();
     try {
       doPopulateCache();
     } catch (Throwable t) {
-      /*
-       * Looks like anti pattern, but otherwise the repeated timer stops. See:
-       * http://stackoverflow.com/questions/8743027/java-timer-class-timer-tasks-stop-to-execute-if-in-one-of-the-tasks-exception-i
-       */
       LOG.error("Error in the refresh of the cache", t);
-    } finally {
-      LOG.info("Finished refreshing {} cache (took {} milliseconds)", getCacheName(), System.currentTimeMillis() - start);
     }
+
+    LOG.info("Finished refreshing {} cache ({} milliseconds)", getCacheName(), stopwatch.elapsed(MILLISECONDS));
   }
 
   @Override
   public void destroy() throws Exception {
-    LOG.debug("Cancelling timer ({}) for {}", timer.toString(), getCacheName());
-    timer.cancel();
+    LOG.debug("Cancelling refresh job for {}", getCacheName());
+    executor.shutdownNow();
   }
-
-  /**
-   * Template method that defines how to populate a certain cache
-   */
-  protected abstract void doPopulateCache();
-
-  protected abstract String getCacheName();
 
   /**
    * Evicts the cache (asynchronously), effectively by scheduling a one time populate-job.
    */
   public void evict() {
-    timer.schedule(new TimerTask() {
-      @Override
-      public void run() {
-        populateCache();
-      }
-    }, 0L);
+    executor.execute(() -> populateCache());
   }
 
   /**

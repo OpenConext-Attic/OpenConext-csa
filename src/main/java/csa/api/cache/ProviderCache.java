@@ -53,16 +53,15 @@ public class ProviderCache extends AbstractCache {
 
   @Autowired
   public ProviderCache(IdentityProviderService idpService,
-                       @Value("${cacheMillisecondsStartupDelayTime}") long delay,
-                       @Value("${cacheMillisecondsServices}") long duration,
+                       @Value("${cache.default.initialDelay}") long initialDelay,
+                       @Value("${cache.default.delay}") long delay,
                        @Value("${cacheMillisecondsCallDelay}") long callDelay) {
-    super(delay, duration);
+    super(initialDelay, delay);
     this.callDelay = callDelay;
     this.idpService = idpService;
   }
 
   public List<String> getServiceProviderIdentifiers(String identityProviderId) {
-
     List<String> spIdentifiers = spIdsCache.get(identityProviderId);
     if (spIdentifiers == null) {
       spIdentifiers = idpService.getLinkedServiceProviderIDs(identityProviderId);

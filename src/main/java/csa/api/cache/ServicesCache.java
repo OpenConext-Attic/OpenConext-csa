@@ -50,6 +50,7 @@ public class ServicesCache extends AbstractCache {
 
   public List<Service> getAllServices(final String lang) {
     Assert.isTrue("en".equalsIgnoreCase(lang) || "nl".equalsIgnoreCase(lang), "The only languages supported are 'nl' and 'en'");
+
     List<Service> services = allServicesCache.get().get(lang);
     if (services == null) {
       LOG.debug("Cache miss for lang '{}', will return empty list", lang);
@@ -63,7 +64,6 @@ public class ServicesCache extends AbstractCache {
     Map<String, List<Service>> services = servicesService.findAll(callDelay);
     allServicesCache.set(services);
   }
-
 
   @Override
   protected String getCacheName() {
