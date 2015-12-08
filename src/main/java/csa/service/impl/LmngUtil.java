@@ -22,7 +22,6 @@ import csa.domain.ArticleMedium;
 import csa.domain.ArticleMedium.ArticleMediumType;
 import csa.model.License;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,7 +30,6 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.util.Assert;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -42,11 +40,12 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -113,37 +112,39 @@ public class LmngUtil implements CrmUtil {
    * Parse the result to an article(list)
    */
   @Override
-  public List<Article> parseArticlesResult(String webserviceResult, boolean writeResponseToFile)
-          throws ParserConfigurationException, SAXException, IOException, ParseException {
-    List<Article> resultList = new ArrayList<Article>();
+  public List<Article> parseArticlesResult(String webserviceResult) throws ParserConfigurationException, SAXException, IOException {
+    List<Article> resultList = new ArrayList<>();
 
-    NodeList nodes = parse(webserviceResult, writeResponseToFile);
+    NodeList nodes = parse(webserviceResult);
 
-    if (nodes != null) {
-      int numberOfResults = nodes.getLength();
-      log.debug("Number of results in Fetch query:" + numberOfResults);
-      for (int i = 0; i < numberOfResults; i++) {
-        Node resultNode = nodes.item(i);
-        if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
-          Element resultElement = (Element) resultNode;
-          Article newArticle = createArticle(resultElement);
-          // try to find if this article is already in the list (possible multiple results for different mediatypes) and enrich the medium information
-          for (Article article : resultList) {
-            if (article.getLmngIdentifier() != null && article.getLmngIdentifier().equals(newArticle.getLmngIdentifier())) {
-              if (newArticle.getAndroidPlayStoreMedium() != null) {
-                article.setAndroidPlayStoreMedium(newArticle.getAndroidPlayStoreMedium());
-              } else if (newArticle.getAppleAppStoreMedium() != null) {
-                article.setAppleAppStoreMedium(newArticle.getAppleAppStoreMedium());
-              }
-              newArticle = null;
+    if (nodes == null) {
+      return resultList;
+    }
+
+    int numberOfResults = nodes.getLength();
+    log.debug("Number of results in Fetch query:" + numberOfResults);
+    for (int i = 0; i < numberOfResults; i++) {
+      Node resultNode = nodes.item(i);
+      if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
+        Element resultElement = (Element) resultNode;
+        Article newArticle = createArticle(resultElement);
+        // try to find if this article is already in the list (possible multiple results for different mediatypes) and enrich the medium information
+        for (Article article : resultList) {
+          if (article.getLmngIdentifier() != null && article.getLmngIdentifier().equals(newArticle.getLmngIdentifier())) {
+            if (newArticle.getAndroidPlayStoreMedium() != null) {
+              article.setAndroidPlayStoreMedium(newArticle.getAndroidPlayStoreMedium());
+            } else if (newArticle.getAppleAppStoreMedium() != null) {
+              article.setAppleAppStoreMedium(newArticle.getAppleAppStoreMedium());
             }
+            newArticle = null;
           }
-          if (newArticle != null) {
-            resultList.add(newArticle);
-          }
+        }
+        if (newArticle != null) {
+          resultList.add(newArticle);
         }
       }
     }
+
     return resultList;
   }
 
@@ -151,26 +152,28 @@ public class LmngUtil implements CrmUtil {
    * Parse the result to a license(list)
    */
   @Override
-  public List<License> parseLicensesResult(String webserviceResult, boolean writeResponseToFile)
-          throws ParserConfigurationException, SAXException, IOException, ParseException {
-    List<License> resultList = new ArrayList<License>();
+  public List<License> parseLicensesResult(String webserviceResult) throws ParserConfigurationException, SAXException, IOException {
+    List<License> resultList = new ArrayList<>();
 
-    NodeList nodes = parse(webserviceResult, writeResponseToFile);
+    NodeList nodes = parse(webserviceResult);
 
-    if (nodes != null) {
-      int numberOfResults = nodes.getLength();
-      log.debug("Number of results in Fetch query:" + numberOfResults);
-      for (int i = 0; i < numberOfResults; i++) {
-        Node resultNode = nodes.item(i);
-        if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
-          Element resultElement = (Element) resultNode;
-          License newLicense = createLicense(resultElement);
-          if (newLicense != null) {
-            resultList.add(newLicense);
-          }
+    if (nodes == null) {
+      return resultList;
+    }
+
+    int numberOfResults = nodes.getLength();
+    log.debug("Number of results in Fetch query:" + numberOfResults);
+    for (int i = 0; i < numberOfResults; i++) {
+      Node resultNode = nodes.item(i);
+      if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
+        Element resultElement = (Element) resultNode;
+        License newLicense = createLicense(resultElement);
+        if (newLicense != null) {
+          resultList.add(newLicense);
         }
       }
     }
+
     return resultList;
   }
 
@@ -178,51 +181,53 @@ public class LmngUtil implements CrmUtil {
    * Parse the result to an account(list)
    */
   @Override
-  public List<Account> parseAccountsResult(String webserviceResult, boolean writeResponseToFile)
-          throws ParserConfigurationException, SAXException, IOException, ParseException {
-    List<Account> resultList = new ArrayList<Account>();
+  public List<Account> parseAccountsResult(String webserviceResult) throws ParserConfigurationException, SAXException, IOException {
+    List<Account> resultList = new ArrayList<>();
 
-    NodeList nodes = parse(webserviceResult, writeResponseToFile);
+    NodeList nodes = parse(webserviceResult);
 
-    if (nodes != null) {
-      int numberOfResults = nodes.getLength();
-      log.debug("Number of results in Fetch query:" + numberOfResults);
-      for (int i = 0; i < numberOfResults; i++) {
-        Node resultNode = nodes.item(i);
-        if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
-          Element resultElement = (Element) resultNode;
-          Account account = createAccount(resultElement);
-          if (account != null) {
-            resultList.add(account);
-          }
+    if (nodes == null) {
+      return resultList;
+    }
+
+    int numberOfResults = nodes.getLength();
+    log.debug("Number of results in Fetch query:" + numberOfResults);
+    for (int i = 0; i < numberOfResults; i++) {
+      Node resultNode = nodes.item(i);
+      if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
+        Element resultElement = (Element) resultNode;
+        Account account = createAccount(resultElement);
+        if (account != null) {
+          resultList.add(account);
         }
       }
     }
+
     return resultList;
   }
 
   @Override
-  public String parseResultInstitute(String webserviceResult, boolean writeResponseToFile) throws ParserConfigurationException,
-          SAXException, IOException, ParseException {
-    NodeList nodes = parse(webserviceResult, writeResponseToFile);
-    String result = null;
-    if (nodes != null) {
-      int numberOfResults = nodes.getLength();
-      log.debug("Number of results in Fetch query:" + numberOfResults);
-      for (int i = 0; i < numberOfResults; i++) {
-        Node resultNode = nodes.item(i);
-        if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
-          Element resultElement = (Element) resultNode;
-          return getFirstSubElementStringValue(resultElement, FETCH_RESULT_INSTITUTE_NAME);
-        }
+  public String parseResultInstitute(String webserviceResult) throws ParserConfigurationException, SAXException, IOException {
+    NodeList nodes = parse(webserviceResult);
+
+    if (nodes == null) {
+      return null;
+    }
+
+    int numberOfResults = nodes.getLength();
+    log.debug("Number of results in Fetch query:" + numberOfResults);
+    for (int i = 0; i < numberOfResults; i++) {
+      Node resultNode = nodes.item(i);
+      if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
+        Element resultElement = (Element) resultNode;
+        return getFirstSubElementStringValue(resultElement, FETCH_RESULT_INSTITUTE_NAME);
       }
     }
-    return result;
+
+    return null;
   }
 
-  private NodeList parse(String webserviceResult, boolean writeResponseToFile) throws ParserConfigurationException, SAXException,
-          IOException, ParseException {
-
+  private NodeList parse(String webserviceResult) throws ParserConfigurationException, SAXException, IOException {
     DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
     DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
     InputStream inputStream = IOUtils.toInputStream(webserviceResult);
@@ -233,9 +238,6 @@ public class LmngUtil implements CrmUtil {
     if (fetchResultString == null) {
       log.warn("Webservice response did not contain a 'GetDataResult' element. WebserviceResult:\n" + webserviceResult);
     } else {
-      if (writeResponseToFile) {
-        writeIO("lmngFetchResponse", StringEscapeUtils.unescapeHtml4(fetchResultString));
-      }
       InputSource fetchInputSource = new InputSource(new StringReader(fetchResultString));
       Document fetchResultDocument = docBuilder.parse(fetchInputSource);
       Element resultset = fetchResultDocument.getDocumentElement();
@@ -278,7 +280,8 @@ public class LmngUtil implements CrmUtil {
       article.setAppleAppStoreMedium(articleMedium);
     }
 
-    log.debug("Created new Article object:" + article.toString());
+    log.debug("Created new Article object: {}", article);
+
     return article;
   }
 
@@ -286,28 +289,28 @@ public class LmngUtil implements CrmUtil {
     String name = getFirstSubElementStringValue(element, "name");
     String status = getFirstSubElementStringValue(element, "statuscode");
     String guid = getFirstSubElementStringValue(element, "accountid");
+
     return new Account(name, status, guid);
   }
 
   private License createLicense(Element resultElement) {
-    License license = null;
-
     String licenseNumber = getFirstSubElementStringValue(resultElement, FETCH_RESULT_LICENSE_NUMBER);
     if (licenseNumber == null) {
-      log.debug("Element did not contain a " + FETCH_RESULT_LICENSE_NUMBER + ". Unable to create license");
-    } else {
-      license = new License();
-      license.setLicenseNumber(licenseNumber);
-      Date startDate = new Date(dateTimeFormatter.parseMillis(getFirstSubElementStringValue(resultElement, FETCH_RESULT_VALID_FROM)));
-      license.setStartDate(startDate);
-      Date endDate = new Date(dateTimeFormatter.parseMillis(getFirstSubElementStringValue(resultElement, FETCH_RESULT_VALID_TO)));
-      license.setEndDate(endDate);
-      String licenseModel = getFirstSubElementStringValue(resultElement, FETCH_RESULT_LICENSEMODEL);
-      if (licenseModel != null && GROUP_LICENSEMODEL.equals(licenseModel)) {
-        license.setGroupLicense(true);
-      }
-      log.debug("Created new License object:" + license.toString());
+      log.debug("Element did not contain a {}. Unable to create license", FETCH_RESULT_LICENSE_NUMBER );
+      return null;
     }
+
+    License license = new License();
+    license.setLicenseNumber(licenseNumber);
+    Date startDate = new Date(dateTimeFormatter.parseMillis(getFirstSubElementStringValue(resultElement, FETCH_RESULT_VALID_FROM)));
+    license.setStartDate(startDate);
+    Date endDate = new Date(dateTimeFormatter.parseMillis(getFirstSubElementStringValue(resultElement, FETCH_RESULT_VALID_TO)));
+    license.setEndDate(endDate);
+    String licenseModel = getFirstSubElementStringValue(resultElement, FETCH_RESULT_LICENSEMODEL);
+    if (licenseModel != null && GROUP_LICENSEMODEL.equals(licenseModel)) {
+      license.setGroupLicense(true);
+    }
+    log.debug("Created new License object: {}", license);
     return license;
   }
 
@@ -321,36 +324,22 @@ public class LmngUtil implements CrmUtil {
    * @return a string representation of the content of the subelement
    */
   private String getFirstSubElementStringValue(Element element, String subItemName) {
-    String result = null;
     NodeList subItemListList = element.getElementsByTagName(subItemName);
-    if (subItemListList != null && subItemListList.getLength() > 0) {
-      Element subItemFirstElement = (Element) subItemListList.item(0);
-      NodeList textFNList = subItemFirstElement.getChildNodes();
-      if (textFNList != null) {
-        if (((Node) textFNList.item(0)) != null && ((Node) textFNList.item(0)).getNodeValue() != null) {
-          result = ((Node) textFNList.item(0)).getNodeValue().trim();
-        }
+
+    if (subItemListList == null || subItemListList.getLength() <= 0) {
+      return null;
+    }
+
+    String result = null;
+    Element subItemFirstElement = (Element) subItemListList.item(0);
+    NodeList textFNList = subItemFirstElement.getChildNodes();
+    if (textFNList != null) {
+      if (((Node) textFNList.item(0)) != null && ((Node) textFNList.item(0)).getNodeValue() != null) {
+        result = ((Node) textFNList.item(0)).getNodeValue().trim();
       }
     }
-    return result;
-  }
 
-  /**
-   * Write the given content to a file with the given filename (and add a
-   * datetime prefix). For debugging purposes
-   *
-   * @param filename
-   * @param content
-   */
-  public void writeIO(String filename, String content) {
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmssS");
-    try {
-      String fullFileName = System.getProperty("java.io.tmpdir") + "/" + filename + "_" + sdf.format(new Date()) + ".xml";
-      FileUtils.writeStringToFile(new File(fullFileName), content);
-      log.debug("wrote I/O file to " + fullFileName);
-    } catch (IOException e) {
-      log.debug("Failed to write input/output file. " + e.getMessage());
-    }
+    return result;
   }
 
   public boolean isValidGuid(String guid) {
@@ -359,9 +348,10 @@ public class LmngUtil implements CrmUtil {
 
   @Override
   public String getLmngSoapRequestForIdpAndSp(String institutionId, List<String> serviceIds, Date validOn, String endpoint, LicenseRetrievalAttempt licenseRetrievalAttempt) throws IOException {
+    checkNotNull(validOn);
+    checkNotNull(serviceIds);
+
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    Assert.notNull(validOn);
-    Assert.notNull(serviceIds);
 
     // Get the soap/fetch envelope
     String result = getLmngRequestEnvelope();
@@ -396,61 +386,55 @@ public class LmngUtil implements CrmUtil {
     query = StringEscapeUtils.escapeHtml4(query);
     result = fillInVariables(endpoint, result, query);
 
-
     return result;
   }
 
   private String fillInVariables(String endpoint, String result, String query) {
-    // Insert the query in the envelope and add a UID in the envelope
-    result = result.replaceAll(QUERY_PLACEHOLDER, query);
-    result = result.replaceAll(ENDPOINT_PLACEHOLDER, endpoint);
-    result = result.replaceAll(UID_PLACEHOLDER, UUID.randomUUID().toString());
-    return result;
+    return result.replaceAll(QUERY_PLACEHOLDER, query)
+        .replaceAll(ENDPOINT_PLACEHOLDER, endpoint)
+        .replaceAll(UID_PLACEHOLDER, UUID.randomUUID().toString());
   }
 
   public String getLmngSoapRequestForSps(Collection<String> serviceIds, String endpoint) throws IOException {
-    Assert.notNull(serviceIds);
+    checkNotNull(serviceIds);
 
     // Get the soap/fetch envelope
     String result = getLmngRequestEnvelope();
 
     ClassPathResource queryResource = new ClassPathResource(PATH_FETCH_QUERY_ARTICLES_FOR_SPS);
-
-    InputStream inputStream = queryResource.getInputStream();
-    String query = IOUtils.toString(inputStream);
-
     ClassPathResource articleConditionResource = new ClassPathResource(PATH_FETCH_QUERYCONDITION_ARTICLE);
-    InputStream articleInputStream = articleConditionResource.getInputStream();
-    String articleConditionTemplate = IOUtils.toString(articleInputStream);
-    String articleConditionValues = "";
-    for (String serviceId : serviceIds) {
-      articleConditionValues += articleConditionTemplate.replaceAll(SERVICE_IDENTIFIER_PLACEHOLDER, serviceId);
+
+    try (InputStream inputStream = queryResource.getInputStream();
+        InputStream articleInputStream = articleConditionResource.getInputStream()) {
+
+      String articleConditionTemplate = IOUtils.toString(articleInputStream);
+      String articleConditionValues = "";
+
+      for (String serviceId : serviceIds) {
+        articleConditionValues += articleConditionTemplate.replaceAll(SERVICE_IDENTIFIER_PLACEHOLDER, serviceId);
+      }
+
+      String query = IOUtils.toString(inputStream).replaceAll(ARTICLE_CONDITION_VALUE_PLACEHOLDER, articleConditionValues);
+
+      return fillInVariables(endpoint, result, StringEscapeUtils.escapeHtml4(query));
     }
-
-    // replace base query with placeholders
-    query = query.replaceAll(ARTICLE_CONDITION_VALUE_PLACEHOLDER, articleConditionValues);
-
-    // html encode the string
-    query = StringEscapeUtils.escapeHtml4(query);
-
-    // Insert the query in the envelope and add a UID in the envelope
-    result = fillInVariables(endpoint, result, query);
-    return result;
   }
 
   public String getLmngSoapRequestForAllAccount(boolean isInstitution, String endpoint) throws IOException {
     String result = getLmngRequestEnvelope();
-    String query = IOUtils.toString(new ClassPathResource(PATH_FETCH_ALL_ACCOUNTS).getInputStream());
-    query = query.replaceAll("%IS_INSTITUTION%", (isInstitution ? "1" : "0"));
-    query = StringEscapeUtils.escapeHtml4(query);
-    result = fillInVariables(endpoint, result, query);
-    return result;
+
+    try (InputStream inputStream = new ClassPathResource(PATH_FETCH_ALL_ACCOUNTS).getInputStream()) {
+      String query = IOUtils.toString(inputStream).replaceAll("%IS_INSTITUTION%", (isInstitution ? "1" : "0"));
+      return fillInVariables(endpoint, result, StringEscapeUtils.escapeHtml4(query));
+    }
   }
 
   public String getLmngRequestEnvelope() throws IOException {
     ClassPathResource envelopeResource = new ClassPathResource(PATH_SOAP_FETCH_REQUEST);
-    InputStream inputStream = envelopeResource.getInputStream();
-    return IOUtils.toString(inputStream);
+
+    try (InputStream inputStream = envelopeResource.getInputStream()) {
+      return IOUtils.toString(inputStream);
+    }
   }
 
 }

@@ -15,42 +15,35 @@
  */
 package csa.service.impl;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
-import csa.domain.Account;
 import csa.dao.LmngIdentifierDao;
-import csa.domain.Article;
+import csa.domain.Account;
 import csa.domain.IdentityProvider;
 import csa.model.License;
 
-/**
- * LmngServiceImplIT.java
- * NOTE! we us this for a local integration test only
- */
+@Ignore("Only used for integration testing")
 @RunWith(MockitoJUnitRunner.class)
 public class LmngServiceImplIT {
 
-  private static Logger LOG = LoggerFactory.getLogger(LmngServiceImpl.class);
-
-  @InjectMocks
   private LmngServiceImpl subject;
 
   @Mock
@@ -60,71 +53,38 @@ public class LmngServiceImplIT {
 
   @Before
   public void before() {
-
+    subject = new LmngServiceImpl(lmngIdentifierDao, ENDPOINT);
   }
 
-  //   we us this for a local integration test only
-//  @Test
-  public void testRetrieveLmngGoogleEdugroepGreencloudSurfMarket() throws IOException, LmngException {
-
-    List<String> spIds = new ArrayList<>();
-    spIds.add("http://www.google.com");
-    spIds.add("Greencloud");
-    spIds.add("EDUgroepen");
-
-    List<Article> articles = subject.getArticlesForServiceProviders(spIds);
-
-    assertNotNull(articles);
-    assertEquals("Incorrect number of results", 3, articles.size());
-
-    assertEquals("Incorrect name for product", "GreenQloud", articles.get(0).getProductName());
-
-    assertEquals("Incorrect name for product", "Google apps voor edu", articles.get(1).getProductName());
-
-    assertEquals("Incorrect name for product", "Edugroepen", articles.get(2).getProductName());
-
-  }
-
-  //  @Test
+  @Test
   public void testRetrievalAllAccounts() throws IOException {
     List<Account> accounts = subject.getAccounts(true);
-    LOG.debug("Num accounts: {}", accounts.size());
+
+    assertThat(accounts, hasSize(greaterThan(400)));
 
     accounts = subject.getAccounts(false);
-    LOG.debug("Num accounts: {}", accounts.size());
-    ObjectMapper objectMapper = new ObjectMapper().enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-      .setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
+    assertThat(accounts, hasSize(greaterThan(200)));
   }
 
-  //  @Test
+  @Test
   public void testPerformArticles() throws Exception {
     String query = IOUtils.toString(new ClassPathResource("lmngqueries/lmngQueryAllArticles.xml").getInputStream());
     String result = subject.performQuery(query);
+
+    assertThat(result, containsString("<GetDataResult>"));
   }
 
-  // we us this for a local integration test only
-  //@Test
+  @Test
   public void testRetrieveInstitutionName() throws IOException {
     String guid = "{ED3207DC-1910-DC11-A6C7-0019B9DE3AA4}";
 
     String instituteName = subject.getInstitutionName(guid);
 
-    assertNotNull(instituteName);
-    assertEquals("Incorrect institution name", "Open Universiteit Nederland", instituteName);
+    assertEquals("Open Universiteit Nederland", instituteName);
   }
 
-  // we us this for a local integration test only
-//  @Test
-  public void testRetrieveArticle() throws IOException {
-    String guid =
-      "{A1EA4AF9-6C9E-E111-B429-0050569E0013}";
-    Article instituteName = subject.getService(guid);
-
-    assertNotNull(instituteName);
-  }
-
-  //@Test
+  @Test
   public void testRetrieveLicenseWithTwoRevisions() throws LmngException {
     IdentityProvider identityProvider = new IdentityProvider();
     identityProvider.setId("erasmus");
@@ -140,7 +100,7 @@ public class LmngServiceImplIT {
   }
 
 
-  //  @Test
+  @Test
   public void testRawQuery() {
     subject.performQuery("<fetch version=\"1.0\" output-format=\"xml-platform\" mapping=\"logical\" distinct=\"true\">" +
       "<entity name=\"lmng_sdnarticle\">" +

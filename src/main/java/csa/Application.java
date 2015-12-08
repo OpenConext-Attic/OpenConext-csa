@@ -104,10 +104,9 @@ public class Application extends SpringBootServletInitializer {
     return environment.acceptsProfiles(DEV_PROFILE_NAME) ? new JiraClientMock() : new JiraClientImpl(baseUrl, username, password, projectKey);
   }
 
-
   @Bean
   public CrmService crmService(Environment environment, LmngIdentifierDao lmngIdentifierDao, @Value("${crmServiceClassEndpoint}") String endpoint) {
-    return environment.acceptsProfiles(DEV_PROFILE_NAME) ? new LmngServiceMock() : new LmngServiceImpl(lmngIdentifierDao, false, endpoint);
+    return environment.acceptsProfiles(DEV_PROFILE_NAME) ? new LmngServiceMock() : new LmngServiceImpl(lmngIdentifierDao, endpoint);
   }
 
   @Bean

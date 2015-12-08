@@ -17,43 +17,37 @@ package csa.service.impl;/*
  * under the License.
  */
 
-import csa.domain.Account;
-import csa.domain.Article;
-import csa.model.License;
-
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
+
+import csa.domain.Account;
+import csa.domain.Article;
+import csa.model.License;
+
 public interface CrmUtil {
 
-  public enum LicenseRetrievalAttempt{ One, Two, Three}
+  public enum LicenseRetrievalAttempt{ One, Two, Three }
 
-  List<Article> parseArticlesResult(String webserviceResult, boolean writeResponseToFile)
-          throws ParserConfigurationException, SAXException, IOException, ParseException ;
+  List<Article> parseArticlesResult(String webserviceResult) throws ParserConfigurationException, SAXException, IOException;
 
-  List<License> parseLicensesResult(String webserviceResult, boolean writeResponseToFile)
-          throws ParserConfigurationException, SAXException, IOException, ParseException ;
+  List<License> parseLicensesResult(String webserviceResult) throws ParserConfigurationException, SAXException, IOException;
 
-  List<Account> parseAccountsResult(String webserviceResult, boolean writeResponseToFile)
-          throws ParserConfigurationException, SAXException, IOException, ParseException ;
+  List<Account> parseAccountsResult(String webserviceResult) throws ParserConfigurationException, SAXException, IOException;
 
-  String parseResultInstitute(String webserviceResult, boolean writeResponseToFile) throws ParserConfigurationException,
-          SAXException, IOException, ParseException ;
+  String parseResultInstitute(String webserviceResult) throws ParserConfigurationException, SAXException, IOException;
 
   String getLmngSoapRequestForIdpAndSp(String institutionId, List<String> serviceIds, Date validOn, String endpoint, LicenseRetrievalAttempt licenseRetrievalAttempt) throws IOException;
 
-  void writeIO(String filename, String content);
+  String getLmngSoapRequestForSps(Collection<String> serviceIds, String endpoint) throws IOException;
 
-  String getLmngSoapRequestForSps(Collection<String> serviceIds, String endpoint) throws IOException ;
+  String getLmngSoapRequestForAllAccount(boolean isInstitution, String endpoint) throws IOException;
 
-  String getLmngSoapRequestForAllAccount(boolean isInstitution, String endpoint) throws IOException ;
-
-  String getLmngRequestEnvelope() throws IOException ;
+  String getLmngRequestEnvelope() throws IOException;
 
 }
