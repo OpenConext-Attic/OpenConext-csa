@@ -18,12 +18,13 @@
  */
 package csa.model;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Taxonomy {
+@SuppressWarnings("serial")
+public class Taxonomy implements Serializable {
 
   private List<Category> categories;
 

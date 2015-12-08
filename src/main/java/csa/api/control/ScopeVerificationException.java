@@ -16,6 +16,7 @@
 
 package csa.api.control;
 
+@SuppressWarnings("serial")
 public class ScopeVerificationException extends RuntimeException {
   public ScopeVerificationException(String message) {
     super(message);

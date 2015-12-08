@@ -16,9 +16,11 @@
 
 package csa.api.control;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
 import javax.annotation.Resource;
 
 import org.springframework.cache.annotation.Cacheable;
@@ -43,17 +45,15 @@ public class TaxonomyApiController extends BaseApiController {
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/public/taxonomy.json")
   @Cacheable(value = "csaApi")
-  public
   @ResponseBody
-  Taxonomy getTaxonomy(@RequestParam(value = "lang", defaultValue = "en") String language) {
+  public Taxonomy getTaxonomy(@RequestParam(value = "lang", defaultValue = "en") String language) {
     Iterable<Facet> facets = facetDao.findAll();
-    List<Category> categories = StreamSupport.stream(facets.spliterator(), false).
-      map(facet -> {
-        Category category = new Category(facet.getName());
-        List<CategoryValue> values = facet.getFacetValues().stream().map(fv -> new CategoryValue(fv.getValue())).collect(Collectors.toList());
-        category.setValues(values);
-        return category;
-      }).collect(Collectors.toList());
+    List<Category> categories = StreamSupport.stream(facets.spliterator(), false).map(facet -> {
+      Category category = new Category(facet.getName());
+      List<CategoryValue> values = facet.getFacetValues().stream().map(fv -> new CategoryValue(fv.getValue())).collect(toList());
+      category.setValues(values);
+      return category;
+    }).collect(toList());
 
     return new Taxonomy(categories);
   }

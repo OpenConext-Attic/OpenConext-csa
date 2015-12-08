@@ -5,6 +5,8 @@ import java.util.Locale;
 
 import javax.sql.DataSource;
 
+import com.google.common.collect.ImmutableList;
+
 import org.apache.catalina.Container;
 import org.apache.catalina.Wrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,11 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
@@ -51,6 +58,7 @@ import csa.util.mail.EmailerImpl;
 import csa.util.mail.MockEmailerImpl;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
+@EnableCaching
 public class Application extends SpringBootServletInitializer {
 
   public static final String DEV_PROFILE_NAME = "dev";
@@ -70,6 +78,17 @@ public class Application extends SpringBootServletInitializer {
   @Bean
   public JdbcTemplate jdbcTemplate(DataSource dataSource) {
     return new JdbcTemplate(dataSource);
+  }
+
+  @Bean
+  public CacheManager cacheManager(Environment environment) {
+    if (environment.acceptsProfiles(DEV_PROFILE_NAME)) {
+      SimpleCacheManager simpleCacheManager = new SimpleCacheManager();
+      simpleCacheManager.setCaches(ImmutableList.of(new ConcurrentMapCache("crm"), new ConcurrentMapCache("csaApi")));
+      return simpleCacheManager;
+    } else {
+      return new EhCacheCacheManager();
+    }
   }
 
   @Bean

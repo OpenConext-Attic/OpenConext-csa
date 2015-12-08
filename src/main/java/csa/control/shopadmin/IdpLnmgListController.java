@@ -139,7 +139,4 @@ public class IdpLnmgListController extends BaseController {
     return new RedirectView("all-spslmng.shtml", true);
   }
 
-
-
-
 }
