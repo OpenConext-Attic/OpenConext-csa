@@ -28,7 +28,7 @@
   <artifactId>csa</artifactId>
   <packaging>war</packaging>
   <name>OpenConext : Cloud Services API</name>
-  <version>4.0.11-SNAPSHOT</version>
+  <version>4.0.11</version>
   <properties>
     <!--
     TODO use the git-sha in the url when restrieving css file. Spring boot has a way of providing this
@@ -47,7 +47,7 @@
     <connection>scm:git:git@github.com:OpenConext/OpenConext-csa.git</connection>
     <url>scm:git:git@github.com:OpenConext/OpenConext-csa.git</url>
     <developerConnection>scm:git:git@github.com:OpenConext/OpenConext-csa.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>v4.0.11</tag>
   </scm>
   <dependencies>
     <dependency>
