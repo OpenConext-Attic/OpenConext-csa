@@ -5,8 +5,6 @@ import java.util.Locale;
 
 import javax.sql.DataSource;
 
-import com.google.common.collect.ImmutableList;
-
 import org.apache.catalina.Container;
 import org.apache.catalina.Wrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +17,13 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.cache.support.SimpleCacheManager;
+import org.springframework.cache.ehcache.EhCacheManagerUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -56,6 +53,7 @@ import csa.util.LicenseContactPersonService;
 import csa.util.mail.Emailer;
 import csa.util.mail.EmailerImpl;
 import csa.util.mail.MockEmailerImpl;
+import net.sf.ehcache.CacheManager;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @EnableCaching
@@ -81,14 +79,17 @@ public class Application extends SpringBootServletInitializer {
   }
 
   @Bean
-  public CacheManager cacheManager(Environment environment) {
-    if (environment.acceptsProfiles(DEV_PROFILE_NAME)) {
-      SimpleCacheManager simpleCacheManager = new SimpleCacheManager();
-      simpleCacheManager.setCaches(ImmutableList.of(new ConcurrentMapCache("crm"), new ConcurrentMapCache("csaApi")));
-      return simpleCacheManager;
-    } else {
-      return new EhCacheCacheManager();
+  public EhCacheCacheManager cacheManager(CacheManager ehCacheCacheManager) {
+    return new EhCacheCacheManager(ehCacheCacheManager);
+  }
+
+  @Bean
+  public CacheManager ehCacheCacheManager(@Value("${csa.cache.ehcache.config:classpath:/ehcache.xml}") Resource location) {
+    if (location.exists()) {
+      return EhCacheManagerUtils.buildCacheManager(location);
     }
+
+    return EhCacheManagerUtils.buildCacheManager();
   }
 
   @Bean
