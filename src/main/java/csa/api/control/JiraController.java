@@ -60,17 +60,15 @@ public class JiraController extends BaseApiController {
   private boolean createAdministrationJiraTicket;
 
   @RequestMapping(method = RequestMethod.GET, value = "/api/protected/actions.json")
-  public
   @ResponseBody
-  List<Action> listActions(@RequestParam("idpEntityId") String idpEntityId, HttpServletRequest request) throws IOException {
+  public List<Action> listActions(@RequestParam("idpEntityId") String idpEntityId, HttpServletRequest request) throws IOException {
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_ACTIONS);
     return actionsService.getActions(idpEntityId);
   }
 
   @RequestMapping(method = RequestMethod.POST, value = "/api/protected/action.json")
-  public
   @ResponseBody
-  Action newAction(HttpServletRequest request, @RequestBody Action action) throws IOException {
+  public Action newAction(HttpServletRequest request, @RequestBody Action action) throws IOException {
     verifyScope(request, AuthorityScopeInterceptor.OAUTH_CLIENT_SCOPE_ACTIONS);
 
     ServiceProvider serviceProvider = serviceProviderService.getServiceProvider(action.getSpId());

@@ -16,19 +16,19 @@
 
 package csa.service.impl;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static csa.model.JiraTask.Type.LINKREQUEST;
 import static csa.model.JiraTask.Type.QUESTION;
 import static csa.model.JiraTask.Type.UNLINKREQUEST;
 import static java.util.stream.Collectors.toList;
 
-import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +41,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
-
 import csa.domain.CoinUser;
 import csa.model.JiraTask;
+import csa.service.impl.JiraTicketSummaryAndDescriptionBuilder.SummaryAndDescription;
 
 public class JiraClientImpl implements JiraClient {
   private static final Logger LOG = LoggerFactory.getLogger(JiraClientImpl.class);
@@ -89,7 +87,7 @@ public class JiraClientImpl implements JiraClient {
     fields.put(IDP_CUSTOM_FIELD, task.getIdentityProvider());
     fields.put("issuetype", ImmutableMap.of("id", TASKTYPE_TO_ISSUETYPE_CODE.get(task.getIssueType())));
 
-    final SummaryAndDescription summaryAndDescription = buildSummaryAndDescription(task, user);
+    final SummaryAndDescription summaryAndDescription = JiraTicketSummaryAndDescriptionBuilder.build(task, user);
     fields.put("summary", summaryAndDescription.summary);
     fields.put("description", summaryAndDescription.description);
 
@@ -145,54 +143,4 @@ public class JiraClientImpl implements JiraClient {
     }
   }
 
-  private SummaryAndDescription buildSummaryAndDescription(final JiraTask task, final CoinUser user) {
-    checkNotNull(task.getIssueType());
-    checkNotNull(user);
-
-    StringBuilder description = new StringBuilder();
-
-    final StringBuilder summary = new StringBuilder();
-
-    if (task.getIssueType().equals(QUESTION)) {
-      description.append("Question: ").append(task.getBody()).append("\n");
-      summary.
-        append("Question about ").
-        append(task.getServiceProvider());
-    } else if (LINKREQUEST.equals(task.getIssueType())) {
-      description.append("Request: Create a new connection").append("\n");
-      summary.
-        append("New connection for IdP ").
-        append(task.getIdentityProvider()).
-        append(" to SP ").
-        append(task.getServiceProvider());
-    } else if (UNLINKREQUEST.equals(task.getIssueType())) {
-      description.append("Request: terminate a connection").append("\n");
-      summary.
-        append("Disconnect IdP ").
-        append(task.getIdentityProvider()).
-        append(" and SP ").
-        append(task.getServiceProvider());
-    } else {
-      throw new IllegalArgumentException("Don't know how to handle tasks of type " + task.getIssueType());
-    }
-
-    description.append("Applicant name: ").append(user.getDisplayName()).append("\n");
-    description.append("Applicant email: ").append(user.getEmail()).append("\n");
-    description.append("Identity Provider: ").append(task.getIdentityProvider()).append("\n");
-    description.append("Service Provider: ").append(task.getServiceProvider()).append("\n");
-    description.append("Time: ").append(new SimpleDateFormat("HH:mm dd-MM-yy").format(new Date())).append("\n");
-    description.append("Service Provider: ").append(task.getServiceProvider()).append("\n");
-
-    return new SummaryAndDescription(summary.toString(), description.toString());
-  }
-
-  private static class SummaryAndDescription {
-    public final String summary;
-    public final String description;
-
-    public SummaryAndDescription(String summary, String description) {
-      this.summary = summary;
-      this.description = description;
-    }
-  }
 }
