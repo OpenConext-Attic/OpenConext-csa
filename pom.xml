@@ -51,6 +51,18 @@
   </scm>
   <dependencies>
     <dependency>
+      <groupId>com.tapstream</groupId>
+      <artifactId>rollbar-logback</artifactId>
+      <version>0.1.4</version>
+      <scope>runtime</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
